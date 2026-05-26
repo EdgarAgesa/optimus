@@ -18,15 +18,32 @@ export default function Footer() {
 
         {/* Brand */}
         <div>
-          <div style={s.logoWrap} onClick={() => navigate('/')}>
-            <div style={s.logoBox}>
-              <img
-                src="/images/WhatsApp Image 2026-05-24 at 12.34.43.jpeg"
-                alt="Optimus Sphere Tech"
-                style={{ height: 48, objectFit: 'contain', display: 'block' }}
-              />
-            </div>
-          </div>
+         <div
+  style={{ cursor: 'pointer', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}
+  onClick={() => navigate('/')}
+>
+  <img
+    src="/images/logo.png"
+    alt="Optimus Sphere Tech"
+    style={{ height: 52, width: 'auto', objectFit: 'contain' }}
+  />
+  <div style={{ lineHeight: 1 }}>
+    <div style={{
+      fontSize: 20, fontWeight: 900, color: '#fff',
+      letterSpacing: '-0.5px', textTransform: 'uppercase',
+      fontFamily: 'Inter, sans-serif',
+    }}>
+      OPTIMUS
+    </div>
+    <div style={{
+      fontSize: 9, fontWeight: 700, color: '#0097a7',
+      letterSpacing: '2.5px', textTransform: 'uppercase',
+      fontFamily: 'Inter, sans-serif', marginTop: 3,
+    }}>
+      SPHERE TECH
+    </div>
+  </div>
+</div>
           <p style={s.desc}>
             Nairobi's premier tech store for gaming, phones, laptops, audio & TVs. Only original products. No fakes.
           </p>
@@ -78,7 +95,6 @@ export default function Footer() {
 
       </div>
 
-      {/* Bottom bar */}
       <div style={s.bottom}>
         <span>© 2025 Optimus Sphere Tech. All rights reserved.</span>
         <span style={{ color: '#0097a7' }}>Made with ❤️ in Nairobi, Kenya</span>
@@ -99,17 +115,6 @@ const s = {
     gap: 40,
     maxWidth: 1280,
     margin: '0 auto 40px',
-  },
-  logoWrap: {
-    cursor: 'pointer',
-    marginBottom: 14,
-    display: 'inline-block',
-  },
-  logoBox: {
-    background: '#0d2b33',
-    padding: '8px 14px',
-    borderRadius: 10,
-    display: 'inline-block',
   },
   desc: {
     fontSize: 12,
@@ -154,7 +159,6 @@ const s = {
     color: '#7a9eb0',
     marginBottom: 8,
     cursor: 'pointer',
-    transition: 'color .2s',
   },
   bottom: {
     display: 'flex',
