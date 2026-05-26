@@ -1,24 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
+import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import TrustBar from './components/TrustBar';
+import Categories from './components/Categories';
 import DealsOfDay from './components/DealsOfDay';
+import PopularGames from './components/PopularGames';
 import CategoryBanner from './components/CategoryBanner';
-import FeaturedProducts from './components/FeaturedProducts';
 import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
-import CategoryPage from './components/CategoryPage';
+import CategoryPage from './pages/CategoryPage';
+import CartDrawer from './components/CartDrawer';
+import Toast from './components/Toast';
+import SearchOverlay from './components/SearchOverlay';
+import ProductPage from './pages/ProductPage';
+
 
 function HomePage() {
   return (
     <>
       <Hero />
       <TrustBar />
-      <DealsOfDay />
       <CategoryBanner />
-      <FeaturedProducts />
+      <DealsOfDay />
+      <PopularGames />
+    </>
+  );
+}
+
+function AppContent() {
+  const [cartOpen, setCartOpen] = useState(false);
+  return (
+    <>
+      <Navbar onCartClick={() => setCartOpen(true)} />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/category/:slug" element={<CategoryPage />} />
+        <Route path="/product/:sku" element={<ProductPage />} />
+      </Routes>
+      <Footer />
+      <WhatsAppButton />
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <Toast />
+      <SearchOverlay />
     </>
   );
 }
@@ -26,13 +52,9 @@ function HomePage() {
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/category/:slug" element={<CategoryPage />} />
-      </Routes>
-      <Footer />
-      <WhatsAppButton />
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
     </BrowserRouter>
   );
 }
