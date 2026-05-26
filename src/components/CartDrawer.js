@@ -1,10 +1,8 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
-import { useNavigate } from 'react-router-dom';
 
 export default function CartDrawer({ open, onClose }) {
   const { cart, cartCount, cartTotal, updateQty, removeFromCart, clearCart, formatPrice } = useCart();
-  const navigate = useNavigate();
 
   if (!open) return null;
 

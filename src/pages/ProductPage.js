@@ -20,7 +20,7 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <div style={{ textAlign: 'center', padding: 80 }}>
+      <div style={{ textAlign: 'center', padding: 80, fontFamily: 'Inter, sans-serif' }}>
         <div style={{ fontSize: 52, marginBottom: 16 }}>🔍</div>
         <p style={{ fontSize: 16, color: '#555', marginBottom: 20 }}>Product not found</p>
         <button
@@ -39,12 +39,10 @@ export default function ProductPage() {
 
   const p = product;
 
-  // Related products — same category, different sku
   const related = products
     .filter(r => r.category === p.category && r.sku !== p.sku)
     .slice(0, 5);
 
-  // Multiple images — main + fallback extras
   const images = p.img ? [p.img] : [];
 
   const calcSave = () => {
@@ -66,8 +64,6 @@ export default function ProductPage() {
           min-height: 100vh;
           font-family: Inter, sans-serif;
         }
-
-        /* Breadcrumb */
         .pp-breadcrumb {
           background: #fff;
           border-bottom: 1px solid #eee;
@@ -78,14 +74,6 @@ export default function ProductPage() {
           display: flex; align-items: center; gap: 8px;
           font-size: 12px; color: #999; flex-wrap: wrap;
         }
-        .pp-breadcrumb a {
-          color: #0097a7; cursor: pointer; font-weight: 600;
-          text-decoration: none;
-        }
-        .pp-breadcrumb a:hover { text-decoration: underline; }
-        .pp-breadcrumb span { color: #ddd; }
-
-        /* Main layout */
         .pp-main {
           max-width: 1280px; margin: 0 auto;
           padding: 28px 32px;
@@ -94,9 +82,7 @@ export default function ProductPage() {
           gap: 40px;
           align-items: start;
         }
-
-        /* Images */
-        .pp-images { position: sticky; top: 100px; }
+        .pp-images { position: sticky; top: 20px; }
         .pp-main-img {
           width: 100%;
           aspect-ratio: 1;
@@ -111,9 +97,6 @@ export default function ProductPage() {
         .pp-main-img img {
           width: 100%; height: 100%; object-fit: cover;
         }
-        .pp-main-img-placeholder {
-          font-size: 120px; opacity: 0.4;
-        }
         .pp-thumbs {
           display: flex; gap: 10px; flex-wrap: wrap;
         }
@@ -127,8 +110,6 @@ export default function ProductPage() {
         .pp-thumb.active { border-color: #0097a7; }
         .pp-thumb:hover { border-color: #0097a7; }
         .pp-thumb img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Info */
         .pp-info {
           background: #fff; border-radius: 16px;
           padding: 28px; border: 1px solid #eee;
@@ -141,25 +122,28 @@ export default function ProductPage() {
           text-transform: uppercase; letter-spacing: 0.8px;
           margin-bottom: 12px;
         }
-        .pp-brand { font-size: 13px; color: #999; margin-bottom: 6px; font-weight: 600; }
+        .pp-brand {
+          font-size: 13px; color: #999;
+          margin-bottom: 6px; font-weight: 600;
+        }
         .pp-title {
           font-size: 28px; font-weight: 900; color: #111;
-          line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.5px;
+          line-height: 1.2; margin-bottom: 12px;
+          letter-spacing: -0.5px;
         }
         .pp-meta {
-          display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+          display: flex; gap: 12px;
+          margin-bottom: 20px; flex-wrap: wrap;
         }
-        .pp-meta-item {
-          font-size: 11px; color: #aaa;
-          display: flex; align-items: center; gap: 4px;
-        }
+        .pp-meta-item { font-size: 11px; color: #aaa; }
         .pp-price-box {
           background: #f8fffe; border: 1px solid #e0f7fa;
           border-radius: 12px; padding: 16px 20px;
           margin-bottom: 20px;
         }
         .pp-price-row {
-          display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+          display: flex; align-items: baseline;
+          gap: 12px; flex-wrap: wrap;
         }
         .pp-price {
           font-size: 32px; font-weight: 900; color: #0097a7;
@@ -179,18 +163,20 @@ export default function ProductPage() {
         }
         .pp-stock-dot {
           width: 7px; height: 7px; border-radius: 50%;
-          background: #22c55e; display: inline-block;
+          background: #22c55e;
         }
-
-        /* Qty + actions */
-        .pp-actions { margin-bottom: 16px; }
         .pp-qty-row {
-          display: flex; gap: 12px; margin-bottom: 12px; align-items: center;
+          display: flex; gap: 12px;
+          margin-bottom: 12px; align-items: center;
         }
-        .pp-qty-label { font-size: 13px; color: #666; font-weight: 600; width: 60px; }
+        .pp-qty-label {
+          font-size: 13px; color: #666;
+          font-weight: 600; width: 60px;
+        }
         .pp-qtybox {
           display: flex; align-items: center;
-          border: 1.5px solid #e0f7fa; border-radius: 8px; overflow: hidden;
+          border: 1.5px solid #e0f7fa;
+          border-radius: 8px; overflow: hidden;
         }
         .pp-qtybtn {
           width: 40px; height: 44px; border: none;
@@ -203,8 +189,8 @@ export default function ProductPage() {
           font-weight: 700; color: #111;
         }
         .pp-btn-row {
-          display: grid; grid-template-columns: 1fr 1fr;
-          gap: 10px;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+          margin-bottom: 16px;
         }
         .pp-add-btn {
           background: linear-gradient(135deg, #0097a7, #00bcd4);
@@ -212,7 +198,8 @@ export default function ProductPage() {
           padding: 14px 20px; font-size: 14px; font-weight: 700;
           cursor: pointer; font-family: Inter, sans-serif;
           transition: transform .2s, opacity .2s;
-          display: flex; align-items: center; justify-content: center; gap: 8px;
+          display: flex; align-items: center;
+          justify-content: center; gap: 8px;
         }
         .pp-add-btn:hover { transform: translateY(-2px); opacity: 0.92; }
         .pp-wa-btn {
@@ -221,25 +208,23 @@ export default function ProductPage() {
           padding: 14px 20px; font-size: 14px; font-weight: 700;
           cursor: pointer; font-family: Inter, sans-serif;
           text-decoration: none;
-          display: flex; align-items: center; justify-content: center; gap: 8px;
+          display: flex; align-items: center;
+          justify-content: center; gap: 8px;
           transition: opacity .2s;
         }
         .pp-wa-btn:hover { opacity: 0.88; }
-
-        /* Extras */
         .pp-extras {
-          display: flex; gap: 16px; padding-top: 12px;
-          border-top: 1px solid #f0f0f0; margin-top: 12px;
+          display: flex; gap: 16px;
+          padding-top: 12px; border-top: 1px solid #f0f0f0;
         }
         .pp-extra-btn {
           background: none; border: none; cursor: pointer;
-          font-size: 12px; color: #888; font-family: Inter, sans-serif;
+          font-size: 12px; color: #888;
+          font-family: Inter, sans-serif;
           display: flex; align-items: center; gap: 5px;
           transition: color .2s;
         }
         .pp-extra-btn:hover { color: #0097a7; }
-
-        /* Tags */
         .pp-tags {
           display: flex; gap: 6px; flex-wrap: wrap; margin-top: 16px;
         }
@@ -248,8 +233,6 @@ export default function ProductPage() {
           font-size: 11px; padding: 4px 12px;
           border-radius: 20px; font-weight: 500;
         }
-
-        /* Description + specs section */
         .pp-details {
           max-width: 1280px; margin: 0 auto;
           padding: 0 32px 32px;
@@ -265,7 +248,6 @@ export default function ProductPage() {
           font-size: 16px; font-weight: 800; color: #111;
           margin-bottom: 16px; padding-bottom: 12px;
           border-bottom: 2px solid #e0f7fa;
-          display: flex; align-items: center; gap: 8px;
         }
         .pp-desc {
           font-size: 14px; color: #555; line-height: 1.9;
@@ -276,14 +258,10 @@ export default function ProductPage() {
         .pp-specs-table tr { border-bottom: 1px solid #f5f5f5; }
         .pp-specs-table tr:last-child { border-bottom: none; }
         .pp-specs-table td {
-          padding: 10px 8px; font-size: 13px; font-weight: 500;
+          padding: 10px 8px; font-size: 13px;
         }
-        .pp-specs-table td:first-child {
-          color: #888; width: 42%; font-weight: 500;
-        }
+        .pp-specs-table td:first-child { color: #888; width: 42%; }
         .pp-specs-table td:last-child { color: #111; font-weight: 600; }
-
-        /* Related products */
         .pp-related {
           max-width: 1280px; margin: 0 auto;
           padding: 0 32px 48px;
@@ -294,8 +272,7 @@ export default function ProductPage() {
           display: flex; align-items: center; gap: 10px;
         }
         .pp-related-title::after {
-          content: '';
-          flex: 1; height: 1px; background: #eee;
+          content: ''; flex: 1; height: 1px; background: #eee;
         }
         .pp-related-grid {
           display: grid;
@@ -329,7 +306,9 @@ export default function ProductPage() {
           font-size: 13px; font-weight: 700; color: #111;
           margin: 3px 0 6px; line-height: 1.3;
         }
-        .pp-rcard-price { font-size: 15px; font-weight: 800; color: #0097a7; }
+        .pp-rcard-price {
+          font-size: 15px; font-weight: 800; color: #0097a7;
+        }
         .pp-rcard-btn {
           width: 100%;
           background: linear-gradient(135deg, #0097a7, #00bcd4);
@@ -339,7 +318,6 @@ export default function ProductPage() {
           font-family: Inter, sans-serif;
         }
 
-        /* Responsive */
         @media (max-width: 900px) {
           .pp-main { grid-template-columns: 1fr; padding: 20px; gap: 20px; }
           .pp-images { position: static; }
@@ -360,24 +338,32 @@ export default function ProductPage() {
         {/* Breadcrumb */}
         <div className="pp-breadcrumb">
           <div className="pp-breadcrumb-inner">
-            <a onClick={() => navigate('/')}>Home</a>
+            <span
+              onClick={() => navigate('/')}
+              style={{ color: '#0097a7', fontWeight: 600, cursor: 'pointer' }}
+            >
+              Home
+            </span>
             <span>›</span>
-            <a onClick={() => navigate(`/category/${p.category.toLowerCase().replace(/ /g, '-')}`)}>
+            <span
+              onClick={() => navigate(`/category/${p.category.toLowerCase().replace(/ /g, '-')}`)}
+              style={{ color: '#0097a7', fontWeight: 600, cursor: 'pointer' }}
+            >
               {p.category}
-            </a>
+            </span>
             <span>›</span>
             <span style={{ color: '#333', fontWeight: 600 }}>{p.name}</span>
           </div>
         </div>
 
-        {/* Main product section */}
+        {/* Main */}
         <div className="pp-main">
           {/* Images */}
           <div className="pp-images">
             <div className="pp-main-img">
               {images.length > 0
                 ? <img src={images[activeImg]} alt={p.name} />
-                : <span className="pp-main-img-placeholder">{p.icon}</span>
+                : <span style={{ fontSize: 120, opacity: 0.4 }}>{p.icon}</span>
               }
             </div>
             {images.length > 1 && (
@@ -395,7 +381,7 @@ export default function ProductPage() {
             )}
           </div>
 
-          {/* Product info */}
+          {/* Info */}
           <div className="pp-info">
             <span className="pp-category-tag">{p.category}</span>
             <div className="pp-brand">{p.brand}</div>
@@ -404,7 +390,6 @@ export default function ProductPage() {
               <span className="pp-meta-item">🏷 SKU: {p.sku}</span>
             </div>
 
-            {/* Price */}
             <div className="pp-price-box">
               <div className="pp-price-row">
                 <span className="pp-price">{p.price}</span>
@@ -417,35 +402,31 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Qty */}
-            <div className="pp-actions">
-              <div className="pp-qty-row">
-                <span className="pp-qty-label">Qty:</span>
-                <div className="pp-qtybox">
-                  <button className="pp-qtybtn" onClick={() => setQty(Math.max(1, qty - 1))}>−</button>
-                  <span className="pp-qtynum">{qty}</span>
-                  <button className="pp-qtybtn" onClick={() => setQty(qty + 1)}>+</button>
-                </div>
-              </div>
-              <div className="pp-btn-row">
-                <button className="pp-add-btn" onClick={handleAdd}>
-                  🛒 Add to Cart
-                </button>
-
-                <a
-                  href={`https://wa.me/254759962068?text=${encodeURIComponent(
-                    `Hi! I'd like to order: ${p.name} (${p.price}) × ${qty}`
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="pp-wa-btn"
-                >
-                  💚 Buy via WhatsApp
-                </a>
+            <div className="pp-qty-row">
+              <span className="pp-qty-label">Qty:</span>
+              <div className="pp-qtybox">
+                <button className="pp-qtybtn" onClick={() => setQty(Math.max(1, qty - 1))}>−</button>
+                <span className="pp-qtynum">{qty}</span>
+                <button className="pp-qtybtn" onClick={() => setQty(qty + 1)}>+</button>
               </div>
             </div>
 
-            {/* Tags */}
+            <div className="pp-btn-row">
+              <button className="pp-add-btn" onClick={handleAdd}>
+                🛒 Add to Cart
+              </button>
+              <a
+                href={`https://wa.me/254759962068?text=${encodeURIComponent(
+                  `Hi! I'd like to order: ${p.name} (${p.price}) × ${qty}`
+                )}`}
+                target="_blank"
+                rel="noreferrer"
+                className="pp-wa-btn"
+              >
+                💚 Buy via WhatsApp
+              </a>
+            </div>
+
             {p.tags && p.tags.length > 0 && (
               <div className="pp-tags">
                 {p.tags.map(t => (
@@ -454,14 +435,10 @@ export default function ProductPage() {
               </div>
             )}
 
-            {/* Extras */}
             <div className="pp-extras">
-              <button className="pp-extra-btn">♡ Add to Wishlist</button>
+              <button className="pp-extra-btn">♡ Wishlist</button>
               <button className="pp-extra-btn">⇄ Compare</button>
-              <button
-                className="pp-extra-btn"
-                onClick={() => navigate(-1)}
-              >
+              <button className="pp-extra-btn" onClick={() => navigate(-1)}>
                 ← Go Back
               </button>
             </div>

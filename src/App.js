@@ -5,7 +5,6 @@ import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import TrustBar from './components/TrustBar';
-import Categories from './components/Categories';
 import DealsOfDay from './components/DealsOfDay';
 import PopularGames from './components/PopularGames';
 import CategoryBanner from './components/CategoryBanner';

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import products from '../data/products';
@@ -144,7 +145,6 @@ export default function CategoryPage() {
           min-height: 80vh;
           font-family: Inter, sans-serif;
         }
-
         .cat-header {
           background: #fff;
           padding: 20px 32px 16px;
@@ -156,10 +156,6 @@ export default function CategoryPage() {
           margin-bottom: 8px;
           display: flex; align-items: center; gap: 6px;
         }
-        .cat-breadcrumb a {
-          color: #0097a7; font-weight: 600; cursor: pointer;
-        }
-        .cat-breadcrumb a:hover { text-decoration: underline; }
         .cat-title {
           font-size: 26px; font-weight: 800;
           color: #111; margin-bottom: 4px;
@@ -173,7 +169,6 @@ export default function CategoryPage() {
           margin-top: 8px; cursor: pointer; border: none;
           font-family: Inter, sans-serif;
         }
-
         .cat-body {
           display: grid;
           grid-template-columns: 240px 1fr;
@@ -183,8 +178,6 @@ export default function CategoryPage() {
           padding: 20px 32px;
           align-items: start;
         }
-
-        /* Desktop sidebar */
         .cat-sidebar {
           background: #fff;
           border: 1px solid #eee;
@@ -249,7 +242,6 @@ export default function CategoryPage() {
           padding: 2px 6px; border-radius: 10px; font-weight: 600;
         }
         .filter-item.active .filter-count { background: #0097a7; color: #fff; }
-
         .cat-main { min-width: 0; }
         .cat-toolbar {
           display: flex; justify-content: space-between;
@@ -279,7 +271,6 @@ export default function CategoryPage() {
           font-family: Inter, sans-serif; outline: none;
         }
         .sort-select:focus { border-color: #0097a7; }
-
         .product-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -321,9 +312,7 @@ export default function CategoryPage() {
         }
         .pcard-pricerow { display: flex; align-items: center; gap: 8px; }
         .pcard-price { font-size: 16px; font-weight: 800; color: #0097a7; }
-        .pcard-old {
-          font-size: 11px; color: #ccc; text-decoration: line-through;
-        }
+        .pcard-old { font-size: 11px; color: #ccc; text-decoration: line-through; }
         .pcard-btn {
           width: 100%;
           background: linear-gradient(135deg, #0097a7, #00bcd4);
@@ -333,7 +322,6 @@ export default function CategoryPage() {
           font-family: Inter, sans-serif; transition: opacity .2s;
         }
         .pcard-btn:hover { opacity: 0.9; }
-
         .empty-state {
           text-align: center; padding: 60px 24px;
           background: #fff; border-radius: 12px;
@@ -344,62 +332,38 @@ export default function CategoryPage() {
           font-weight: 700; cursor: pointer; border: none;
           margin-top: 16px; font-family: Inter, sans-serif;
         }
-
-        /* Mobile overlay */
         .sidebar-overlay {
-          display: none;
-          position: fixed; inset: 0;
-          background: rgba(0,0,0,0.6);
-          z-index: 999998;
+          display: none; position: fixed; inset: 0;
+          background: rgba(0,0,0,0.6); z-index: 999998;
         }
         .sidebar-overlay.show { display: block; }
 
-        /* ── Responsive ── */
         @media (max-width: 1024px) {
-          .cat-body {
-            grid-template-columns: 210px 1fr;
-            padding: 16px 20px;
-          }
+          .cat-body { grid-template-columns: 210px 1fr; padding: 16px 20px; }
         }
-
         @media (max-width: 768px) {
-          .cat-body {
-            grid-template-columns: 1fr;
-            padding: 12px 16px;
-          }
+          .cat-body { grid-template-columns: 1fr; padding: 12px 16px; }
           .cat-header { padding: 16px 20px; }
           .cat-title { font-size: 22px; }
-
-          /* Mobile sidebar — slides in from left OVER everything */
           .cat-sidebar {
             position: fixed;
-            top: 0 !important;
-            left: 0;
-            width: 85%;
-            max-width: 300px;
-            height: 100vh;
-            height: 100dvh;
-            z-index: 999999 !important;
+            top: 0; left: 0;
+            width: 85%; max-width: 300px;
+            height: 100vh; height: 100dvh;
+            z-index: 999999;
             border-radius: 0;
             transform: translateX(-110%);
             transition: transform .3s ease;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             box-shadow: 4px 0 32px rgba(0,0,0,0.25);
             border: none;
           }
-          .cat-sidebar.open {
-            transform: translateX(0);
-          }
+          .cat-sidebar.open { transform: translateX(0); }
           .filter-toggle { display: flex !important; }
         }
-
         @media (max-width: 600px) {
-          .product-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-          }
+          .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
           .pcard { padding: 12px 8px; }
           .pcard-imgbox { height: 130px; }
           .pcard-name { font-size: 12px; }
@@ -408,11 +372,15 @@ export default function CategoryPage() {
       `}</style>
 
       <div className="cat-page">
-        {/* Header */}
         <div className="cat-header">
           <div className="cat-header-inner">
             <div className="cat-breadcrumb">
-              <a onClick={() => navigate('/')}>Home</a>
+              <span
+                onClick={() => navigate('/')}
+                style={{ color: '#0097a7', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Home
+              </span>
               <span>›</span>
               <span style={{ color: '#333', fontWeight: 600 }}>{title}</span>
               {brandFilter && (
@@ -438,56 +406,38 @@ export default function CategoryPage() {
           </div>
         </div>
 
-        {/* Dark overlay — clicking closes sidebar */}
         <div
           className={`sidebar-overlay ${filtersOpen ? 'show' : ''}`}
           onClick={() => setFiltersOpen(false)}
         />
 
         <div className="cat-body">
-          {/* Sidebar */}
           <aside className={`cat-sidebar ${filtersOpen ? 'open' : ''}`}>
-
-            {/* Teal header with close button — always visible */}
             <div style={{
               padding: '18px 20px',
               background: 'linear-gradient(135deg, #0d2b33, #0097a7)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexShrink: 0,
+              display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', flexShrink: 0,
             }}>
               <div>
-                <div style={{
-                  color: '#fff', fontWeight: 800, fontSize: 15,
-                }}>
-                  Browse
-                </div>
-                <div style={{
-                  color: 'rgba(255,255,255,0.6)', fontSize: 11,
-                }}>
+                <div style={{ color: '#fff', fontWeight: 800, fontSize: 15 }}>Browse</div>
+                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>
                   Categories & Filters
                 </div>
               </div>
               <button
                 onClick={() => setFiltersOpen(false)}
                 style={{
-                  background: 'rgba(255,255,255,0.2)',
-                  border: 'none', width: 36, height: 36,
-                  borderRadius: '50%', cursor: 'pointer',
-                  fontSize: 16, color: '#fff', fontWeight: 700,
-                  display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', flexShrink: 0,
+                  background: 'rgba(255,255,255,0.2)', border: 'none',
+                  width: 36, height: 36, borderRadius: '50%',
+                  cursor: 'pointer', fontSize: 16, color: '#fff',
+                  fontWeight: 700, display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
                 }}
-              >
-                ✕
-              </button>
+              >✕</button>
             </div>
 
-            {/* Scrollable content */}
             <div style={{ overflowY: 'auto', flex: 1 }}>
-
-              {/* All categories */}
               <div className="sidebar-section">
                 <div className="sidebar-title">📂 Categories</div>
                 {allSidebarCategories.map((cat) => (
@@ -513,7 +463,6 @@ export default function CategoryPage() {
                 ))}
               </div>
 
-              {/* Brand filter */}
               {allInCategory.length > 0 && (
                 <div className="sidebar-section">
                   <div className="sidebar-title">🏷️ Filter by Brand</div>
@@ -542,7 +491,6 @@ export default function CategoryPage() {
             </div>
           </aside>
 
-          {/* Main content */}
           <main className="cat-main">
             <div className="cat-toolbar">
               <div className="toolbar-left">
@@ -574,10 +522,7 @@ export default function CategoryPage() {
             {filtered.length === 0 ? (
               <div className="empty-state">
                 <div style={{ fontSize: 52, marginBottom: 12 }}>🔍</div>
-                <p style={{
-                  fontSize: 15, fontWeight: 600,
-                  color: '#555', marginBottom: 6,
-                }}>
+                <p style={{ fontSize: 15, fontWeight: 600, color: '#555', marginBottom: 6 }}>
                   No products found
                 </p>
                 <p style={{ fontSize: 13, color: '#999', marginBottom: 16 }}>
@@ -614,9 +559,7 @@ export default function CategoryPage() {
                     {p.badge && (
                       <span
                         className="pcard-badge"
-                        style={{
-                          background: p.badge === 'SALE' ? '#e63946' : '#0097a7'
-                        }}
+                        style={{ background: p.badge === 'SALE' ? '#e63946' : '#0097a7' }}
                       >
                         {p.badge}
                       </span>
@@ -632,17 +575,12 @@ export default function CategoryPage() {
                       <div className="pcard-name">{p.name}</div>
                       <div className="pcard-pricerow">
                         <span className="pcard-price">{p.price}</span>
-                        {p.oldPrice && (
-                          <span className="pcard-old">{p.oldPrice}</span>
-                        )}
+                        {p.oldPrice && <span className="pcard-old">{p.oldPrice}</span>}
                       </div>
                     </div>
                     <button
                       className="pcard-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addToCart(p, 1);
-                      }}
+                      onClick={(e) => { e.stopPropagation(); addToCart(p, 1); }}
                     >
                       + Add to Cart
                     </button>
