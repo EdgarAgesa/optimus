@@ -15,6 +15,8 @@ import CartDrawer from './components/CartDrawer';
 import Toast from './components/Toast';
 import SearchOverlay from './components/SearchOverlay';
 import ProductPage from './pages/ProductPage';
+import AdminPage from './pages/AdminPage';
+
 
 
 function HomePage() {
@@ -38,6 +40,7 @@ function AppContent() {
         <Route path="/" element={<HomePage />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/product/:sku" element={<ProductPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
       <Footer />
       <WhatsAppButton />

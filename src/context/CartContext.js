@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import products from '../data/products';
+import { useProducts } from '../hooks/useProducts';
 
 const CartContext = createContext();
 
@@ -23,6 +23,7 @@ export function CartProvider({ children }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { products } = useProducts();
 
   useEffect(() => {
     localStorage.setItem('optimus-cart', JSON.stringify(cart));

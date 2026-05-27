@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import products from '../data/products';
+import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../context/CartContext';
 
 const categoryMap = {
@@ -85,6 +85,7 @@ export default function CategoryPage() {
   const [brandFilter, setBrandFilter] = useState(searchParams.get('brand'));
   const [sortBy, setSortBy] = useState('default');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const { products } = useProducts();
 
   useEffect(() => {
     setBrandFilter(searchParams.get('brand'));

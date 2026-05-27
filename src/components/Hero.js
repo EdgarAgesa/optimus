@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabase';
 
-const slides = [
+const defaultSlides = [
   {
+    id: 1,
     bg: 'linear-gradient(135deg, #0d1b2a 0%, #0d2b33 50%, #00838f 100%)',
     tag: 'Now in Stock',
     icon: '🎮',
@@ -17,6 +19,7 @@ const slides = [
     features: ['Ex-UK Quality', '1 Year Warranty', 'Free Delivery'],
   },
   {
+    id: 2,
     bg: 'linear-gradient(135deg, #1a0533 0%, #0d2b33 50%, #00838f 100%)',
     tag: 'Latest Arrivals',
     icon: '📱',
@@ -31,6 +34,7 @@ const slides = [
     features: ['Original Apple', 'Sealed Box', '128GB Storage'],
   },
   {
+    id: 3,
     bg: 'linear-gradient(135deg, #0a1628 0%, #0d2b33 50%, #006064 100%)',
     tag: 'Audio Deals',
     icon: '🎧',
@@ -46,16 +50,57 @@ const slides = [
   },
 ];
 
+// Fixed accent colors for Supabase slides
+const accentColors = ['#0097a7', '#00bcd4', '#26c6da'];
+const bgGradients = [
+  'linear-gradient(135deg, #0d1b2a 0%, #0d2b33 50%, #00838f 100%)',
+  'linear-gradient(135deg, #1a0533 0%, #0d2b33 50%, #00838f 100%)',
+  'linear-gradient(135deg, #0a1628 0%, #0d2b33 50%, #006064 100%)',
+];
+const icons = ['🎮', '📱', '🎧'];
+
 export default function Hero() {
   const [active, setActive] = useState(0);
+  const [slides, setSlides] = useState(defaultSlides);
   const navigate = useNavigate();
 
+  // Fetch slides from Supabase
+  useEffect(() => {
+    const fetchSlides = async () => {
+      const { data, error } = await supabase
+        .from('hero_slides')
+        .select('*')
+        .order('sort_order');
+
+      if (!error && data && data.length > 0) {
+        const mapped = data.map((s, i) => ({
+          id: s.id,
+          bg: bgGradients[i % bgGradients.length],
+          tag: s.tag || 'FEATURED',
+          icon: icons[i % icons.length],
+          title: s.title,
+          sub: s.subtitle || '',
+          price: s.price || '',
+          oldPrice: null,
+          cta: `Shop Now`,
+          slug: s.category_slug || 'gaming',
+          img: s.image || null,
+          accent: accentColors[i % accentColors.length],
+          features: s.features || [],
+        }));
+        setSlides(mapped);
+      }
+    };
+    fetchSlides();
+  }, []);
+
+  // Auto slide
   useEffect(() => {
     const timer = setInterval(() => {
       setActive(prev => (prev + 1) % slides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   const slide = slides[active];
 
@@ -215,8 +260,7 @@ export default function Hero() {
         }
         .hero-imgglow {
           position: absolute;
-          width: 420px;
-          height: 420px;
+          width: 420px; height: 420px;
           border-radius: 50%;
           filter: blur(80px);
           opacity: 0.6;
@@ -232,90 +276,61 @@ export default function Hero() {
           animation: float 6s ease-in-out infinite;
         }
         .hero-imgbox img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
+          width: 100%; height: 100%; object-fit: cover;
+        }
+        .hero-no-img {
+          width: 100%; height: 100%;
+          display: flex; align-items: center;
+          justify-content: center; font-size: 120px;
+          background: rgba(255,255,255,0.05);
         }
         @keyframes float {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-12px); }
         }
         .hero-pricebadge {
-          position: absolute;
-          top: 24px;
-          right: 24px;
-          background: #fff;
-          padding: 14px 18px;
+          position: absolute; top: 24px; right: 24px;
+          background: #fff; padding: 14px 18px;
           border-radius: 14px;
           box-shadow: 0 12px 32px rgba(0,0,0,0.25);
           z-index: 3;
         }
         .hero-pricebadge-label {
-          font-size: 9px;
-          color: #888;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          font-weight: 700;
+          font-size: 9px; color: #888;
+          text-transform: uppercase; letter-spacing: 1px; font-weight: 700;
         }
         .hero-pricebadge-val {
-          font-size: 16px;
-          font-weight: 800;
-          color: #0097a7;
+          font-size: 16px; font-weight: 800; color: #0097a7;
         }
         .hero-iconbadge {
-          position: absolute;
-          bottom: 24px;
-          left: 24px;
+          position: absolute; bottom: 24px; left: 24px;
           background: rgba(255,255,255,0.95);
-          width: 56px; height: 56px;
-          border-radius: 16px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 28px;
-          box-shadow: 0 12px 32px rgba(0,0,0,0.25);
-          z-index: 3;
+          width: 56px; height: 56px; border-radius: 16px;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 28px; box-shadow: 0 12px 32px rgba(0,0,0,0.25); z-index: 3;
         }
         .hero-dots {
-          position: absolute;
-          bottom: 28px;
-          left: 50%;
+          position: absolute; bottom: 28px; left: 50%;
           transform: translateX(-50%);
-          display: flex;
-          gap: 8px;
-          align-items: center;
-          z-index: 10;
+          display: flex; gap: 8px; align-items: center; z-index: 10;
         }
         .hero-dot {
-          height: 4px;
-          border-radius: 2px;
-          border: none;
-          cursor: pointer;
-          padding: 0;
-          transition: all .4s;
+          height: 4px; border-radius: 2px;
+          border: none; cursor: pointer; padding: 0; transition: all .4s;
         }
         .hero-counter {
-          position: absolute;
-          top: 24px;
-          left: 64px;
+          position: absolute; top: 24px; left: 64px;
           color: rgba(255,255,255,0.5);
-          font-size: 13px;
-          font-weight: 700;
-          letter-spacing: 1px;
-          z-index: 5;
+          font-size: 13px; font-weight: 700; letter-spacing: 1px; z-index: 5;
         }
-        .hero-counter strong {
-          color: #fff;
-          font-size: 16px;
-        }
+        .hero-counter strong { color: #fff; font-size: 16px; }
 
         @media (max-width: 900px) {
           .hero-section {
             grid-template-columns: 1fr;
             padding: 40px 24px 60px;
             text-align: center;
-            min-height: auto;
-            gap: 32px;
+            min-height: auto; gap: 32px;
           }
           .hero-content { order: 2; }
           .hero-imgwrap { order: 1; }
@@ -336,7 +351,6 @@ export default function Hero() {
       `}</style>
 
       <section className="hero-section" style={{ background: slide.bg }}>
-        {/* Counter */}
         <div className="hero-counter">
           <strong>0{active + 1}</strong> / 0{slides.length}
         </div>
@@ -352,7 +366,7 @@ export default function Hero() {
           <p className="hero-sub">{slide.sub}</p>
 
           <div className="hero-features">
-            {slide.features.map((f, i) => (
+            {(slide.features || []).map((f, i) => (
               <div key={i} className="hero-feature">
                 <span className="hero-check">✓</span>
                 {f}
@@ -361,8 +375,12 @@ export default function Hero() {
           </div>
 
           <div className="hero-price-row">
-            <span className="hero-price" style={{ color: slide.accent }}>{slide.price}</span>
-            {slide.oldPrice && <span className="hero-oldprice">{slide.oldPrice}</span>}
+            <span className="hero-price" style={{ color: slide.accent }}>
+              {slide.price}
+            </span>
+            {slide.oldPrice && (
+              <span className="hero-oldprice">{slide.oldPrice}</span>
+            )}
           </div>
 
           <div className="hero-btns">
@@ -371,8 +389,7 @@ export default function Hero() {
               style={{ background: slide.accent }}
               onClick={() => navigate(`/category/${slide.slug}`)}
             >
-              {slide.cta}
-              <span>→</span>
+              {slide.cta} <span>→</span>
             </button>
             <button className="hero-outline" onClick={() => navigate('/')}>
               View All Deals
@@ -382,16 +399,19 @@ export default function Hero() {
 
         {/* Right image */}
         <div className="hero-imgwrap">
-          <div
-            className="hero-imgglow"
-            style={{ background: slide.accent }}
-          />
+          <div className="hero-imgglow" style={{ background: slide.accent }} />
           <div className="hero-imgbox">
-            <img src={slide.img} alt={slide.title} />
-            <div className="hero-pricebadge">
-              <div className="hero-pricebadge-label">Starting at</div>
-              <div className="hero-pricebadge-val">{slide.price}</div>
-            </div>
+            {slide.img ? (
+              <img src={slide.img} alt={slide.title} />
+            ) : (
+              <div className="hero-no-img">{slide.icon}</div>
+            )}
+            {slide.price && (
+              <div className="hero-pricebadge">
+                <div className="hero-pricebadge-label">Starting at</div>
+                <div className="hero-pricebadge-val">{slide.price}</div>
+              </div>
+            )}
             <div className="hero-iconbadge">{slide.icon}</div>
           </div>
         </div>

@@ -1,11 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import products from '../data/products';
+import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../context/CartContext';
 
 export default function PopularGames() {
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const { products } = useProducts();
 
   const items = products.filter(p =>
     p.category === 'PS5 Games' ||
