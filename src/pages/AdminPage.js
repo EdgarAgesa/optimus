@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 
@@ -32,6 +32,13 @@ const HERO_CATEGORIES = [
 
 const emptySpec = () => ({ label: '', value: '' });
 
+const refreshBtn = {
+  background: '#f0fafb', color: '#0097a7',
+  border: '1.5px solid #e0f7fa', borderRadius: 8,
+  padding: '11px 16px', fontSize: 13, fontWeight: 700,
+  cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+};
+
 // ── Custom Select ──
 function CustomSelect({ value, onChange, options, placeholder = 'Select...' }) {
   const [open, setOpen] = useState(false);
@@ -44,19 +51,13 @@ function CustomSelect({ value, onChange, options, placeholder = 'Select...' }) {
         style={{
           width: '100%',
           border: `1.5px solid ${open ? '#0097a7' : '#e0e0e0'}`,
-          borderRadius: 8,
-          padding: '11px 14px',
-          fontSize: 16,
-          fontFamily: 'Inter, sans-serif',
+          borderRadius: 8, padding: '11px 14px',
+          fontSize: 16, fontFamily: 'Inter, sans-serif',
           color: selected ? '#111' : '#aaa',
-          background: '#fff',
-          boxSizing: 'border-box',
-          cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          userSelect: 'none',
-          minHeight: 46,
+          background: '#fff', boxSizing: 'border-box',
+          cursor: 'pointer', display: 'flex',
+          justifyContent: 'space-between', alignItems: 'center',
+          userSelect: 'none', minHeight: 46,
         }}
       >
         <span style={{
@@ -67,56 +68,37 @@ function CustomSelect({ value, onChange, options, placeholder = 'Select...' }) {
         </span>
         <span style={{
           fontSize: 10, color: '#0097a7', marginLeft: 8, flexShrink: 0,
-          display: 'inline-block',
-          transition: 'transform .2s',
+          display: 'inline-block', transition: 'transform .2s',
           transform: open ? 'rotate(180deg)' : 'rotate(0)',
         }}>▼</span>
       </div>
 
       {open && (
         <>
-          <div
-            onClick={() => setOpen(false)}
-            style={{
-              position: 'fixed', inset: 0,
-              zIndex: 9990, background: 'transparent',
-            }}
-          />
+          <div onClick={() => setOpen(false)}
+            style={{ position: 'fixed', inset: 0, zIndex: 9990, background: 'transparent' }} />
           <div style={{
-            position: 'absolute',
-            top: 'calc(100% + 4px)',
-            left: 0, right: 0,
-            background: '#fff',
-            border: '1.5px solid #e0f7fa',
-            borderTop: '3px solid #0097a7',
+            position: 'absolute', top: 'calc(100% + 4px)',
+            left: 0, right: 0, background: '#fff',
+            border: '1.5px solid #e0f7fa', borderTop: '3px solid #0097a7',
             borderRadius: '0 0 12px 12px',
             boxShadow: '0 16px 48px rgba(0,151,167,0.18)',
-            zIndex: 9999,
-            maxHeight: 280,
-            overflowY: 'auto',
+            zIndex: 9999, maxHeight: 280, overflowY: 'auto',
           }}>
             {options.map((opt) => (
-              <div
-                key={opt.value}
+              <div key={opt.value}
                 onClick={() => { onChange(opt.value); setOpen(false); }}
                 style={{
-                  padding: '13px 16px',
-                  fontSize: 15,
-                  fontFamily: 'Inter, sans-serif',
-                  cursor: 'pointer',
+                  padding: '13px 16px', fontSize: 15,
+                  fontFamily: 'Inter, sans-serif', cursor: 'pointer',
                   color: opt.value === value ? '#0097a7' : '#333',
                   fontWeight: opt.value === value ? 700 : 400,
                   background: opt.value === value ? '#e0f7fa' : '#fff',
                   borderBottom: '1px solid #f5f5f5',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                }}>
                 <span>{opt.label}</span>
-                {opt.value === value && (
-                  <span style={{ color: '#0097a7', fontSize: 16 }}>✓</span>
-                )}
+                {opt.value === value && <span style={{ color: '#0097a7', fontSize: 16 }}>✓</span>}
               </div>
             ))}
           </div>
@@ -165,6 +147,15 @@ export default function AdminPage() {
   const [deals, setDeals] = useState([]);
   const [dealSku, setDealSku] = useState('');
   const [savingDeal, setSavingDeal] = useState(false);
+
+  // Auto-refresh on tab switch
+  useEffect(() => {
+    if (!authed) return;
+    if (activeTab === 'products') loadProducts();
+    if (activeTab === 'hero') loadHeroSlides();
+    if (activeTab === 'deals') loadDeals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, authed]);
 
   // ── Auth ──
   const handleLogin = async () => {
@@ -483,9 +474,9 @@ export default function AdminPage() {
         }
         .img-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .img-thumb {
-        position: relative; width: 72px; height: 72px; flex-shrink: 0;
-        cursor: grab;
-      }
+          position: relative; width: 72px; height: 72px; flex-shrink: 0;
+          cursor: grab;
+        }
         .img-thumb:active { cursor: grabbing; opacity: 0.8; }
         .img-thumb img {
           width: 100%; height: 100%; object-fit: cover;
@@ -590,10 +581,13 @@ export default function AdminPage() {
               <h2 style={{ fontSize: 18, fontWeight: 800, color: '#111' }}>
                 Products ({products.length})
               </h2>
-              <button onClick={() => { resetProductForm(); setShowProductForm(true); }}
-                style={primaryBtn}>
-                + Add Product
-              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={loadProducts} style={refreshBtn}>🔄 Refresh</button>
+                <button onClick={() => { resetProductForm(); setShowProductForm(true); }}
+                  style={primaryBtn}>
+                  + Add Product
+                </button>
+              </div>
             </div>
 
             {showProductForm && (
@@ -686,28 +680,28 @@ export default function AdminPage() {
                 </div>
 
                 <div className="field-group" style={{ marginBottom: 14 }}>
-                <label>Description</label>
-                <textarea
-                  style={{ ...inputStyle, height: 180, resize: 'vertical', lineHeight: 1.7 }}
-                  placeholder={`Write the product description here.\n\nUse this format for better display:\n\nMain Features:\n- Feature one\n- Feature two\n\nWhat's in the Box:\n- Item one\n- Item two\n\nNote: Lines ending with ":" become bold headings. Lines starting with "-" become bullet points.`}
-                  value={productForm.description}
-                  onChange={e => setProductForm({ ...productForm, description: e.target.value })}
-                />
-                <div style={{
-                  marginTop: 8, padding: '10px 14px',
-                  background: '#f0fafb', borderRadius: 8,
-                  border: '1px solid #e0f7fa',
-                }}>
-                  <p style={{ fontSize: 11, color: '#0097a7', fontWeight: 700, marginBottom: 4 }}>
-                    💡 Formatting Tips:
-                  </p>
-                  <p style={{ fontSize: 11, color: '#666', lineHeight: 1.7, margin: 0 }}>
-                    • Lines ending with <strong>:</strong> → Bold heading (e.g. <em>Main Features:</em>)<br />
-                    • Lines starting with <strong>-</strong> → Bullet point (e.g. <em>- Feature one</em>)<br />
-                    • Press Enter between sections for spacing
-                  </p>
+                  <label>Description</label>
+                  <textarea
+                    style={{ ...inputStyle, height: 180, resize: 'vertical', lineHeight: 1.7 }}
+                    placeholder={`Write the product description here.\n\nUse this format for better display:\n\nMain Features:\n- Feature one\n- Feature two\n\nWhat's in the Box:\n- Item one\n- Item two`}
+                    value={productForm.description}
+                    onChange={e => setProductForm({ ...productForm, description: e.target.value })}
+                  />
+                  <div style={{
+                    marginTop: 8, padding: '10px 14px',
+                    background: '#f0fafb', borderRadius: 8,
+                    border: '1px solid #e0f7fa',
+                  }}>
+                    <p style={{ fontSize: 11, color: '#0097a7', fontWeight: 700, marginBottom: 4 }}>
+                      💡 Formatting Tips:
+                    </p>
+                    <p style={{ fontSize: 11, color: '#666', lineHeight: 1.7, margin: 0 }}>
+                      • Lines ending with <strong>:</strong> → Bold heading<br />
+                      • Lines starting with <strong>-</strong> → Bullet point<br />
+                      • Press Enter between sections for spacing
+                    </p>
+                  </div>
                 </div>
-              </div>
 
                 {/* Specs */}
                 <div style={{ marginBottom: 18 }}>
@@ -739,8 +733,7 @@ export default function AdminPage() {
                           border: 'none', borderRadius: 6,
                           width: 40, height: 46,
                           cursor: specs.length === 1 ? 'not-allowed' : 'pointer',
-                          fontSize: 15, fontWeight: 700,
-                          fontFamily: 'Inter, sans-serif',
+                          fontSize: 15, fontWeight: 700, fontFamily: 'Inter, sans-serif',
                         }}>
                         ✕
                       </button>
@@ -752,128 +745,111 @@ export default function AdminPage() {
                 </div>
 
                 {/* Images */}
-              <div style={{ marginBottom: 20 }}>
-                <label style={labelStyle}>Product Images</label>
-
-                {/* Upload new */}
-                <div style={{
-                  border: '2px dashed #e0f7fa', borderRadius: 10,
-                  padding: '20px 16px', textAlign: 'center',
-                  background: '#fafffe', marginBottom: 12,
-                }}>
-                  <input type="file" accept="image/*" multiple
-                    id="product-img-input" style={{ display: 'none' }}
-                    onChange={e => setImageFiles(prev => [...prev, ...Array.from(e.target.files)])} />
-                  <label htmlFor="product-img-input" style={{
-                    cursor: 'pointer', color: '#0097a7',
-                    fontWeight: 700, fontSize: 15,
+                <div style={{ marginBottom: 20 }}>
+                  <label style={labelStyle}>Product Images</label>
+                  <div style={{
+                    border: '2px dashed #e0f7fa', borderRadius: 10,
+                    padding: '20px 16px', textAlign: 'center',
+                    background: '#fafffe', marginBottom: 12,
                   }}>
-                    📷 {imageFiles.length > 0 ? '+ Add more images' : 'Tap to select images'}
-                  </label>
-                  <p style={{ fontSize: 11, color: '#aaa', marginTop: 4 }}>
-                    {imageFiles.length > 0
-                      ? 'Tap again to add more images'
-                      : 'You can select multiple photos at once or tap multiple times'
-                    }
-                  </p>
-                  {imageFiles.length > 0 && (
-                    <p style={{ fontSize: 13, color: '#0097a7', marginTop: 8, fontWeight: 600 }}>
-                      ✓ {imageFiles.length} new image(s) ready to upload
+                    <input type="file" accept="image/*" multiple
+                      id="product-img-input" style={{ display: 'none' }}
+                      onChange={e => setImageFiles(prev => [...prev, ...Array.from(e.target.files)])} />
+                    <label htmlFor="product-img-input" style={{
+                      cursor: 'pointer', color: '#0097a7', fontWeight: 700, fontSize: 15,
+                    }}>
+                      📷 {imageFiles.length > 0 ? '+ Add more images' : 'Tap to select images'}
+                    </label>
+                    <p style={{ fontSize: 11, color: '#aaa', marginTop: 4 }}>
+                      {imageFiles.length > 0
+                        ? 'Tap again to add more images'
+                        : 'You can select multiple photos at once or tap multiple times'}
                     </p>
+                    {imageFiles.length > 0 && (
+                      <p style={{ fontSize: 13, color: '#0097a7', marginTop: 8, fontWeight: 600 }}>
+                        ✓ {imageFiles.length} new image(s) ready to upload
+                      </p>
+                    )}
+                  </div>
+
+                  {/* New image previews */}
+                  {imageFiles.length > 0 && (
+                    <div style={{ marginBottom: 12 }}>
+                      <p style={{ fontSize: 11, color: '#888', marginBottom: 8 }}>
+                        New images to be added:
+                      </p>
+                      <div className="img-preview">
+                        {imageFiles.map((file, i) => (
+                          <div key={i} className="img-thumb" style={{ cursor: 'default' }}>
+                            <img src={URL.createObjectURL(file)} alt="" />
+                            <button className="img-thumb-del"
+                              onClick={() => setImageFiles(imageFiles.filter((_, idx) => idx !== i))}>
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Existing images */}
+                  {existingImages.length > 0 && (
+                    <div>
+                      <div style={{
+                        display: 'flex', justifyContent: 'space-between',
+                        alignItems: 'center', marginBottom: 8,
+                      }}>
+                        <p style={{ fontSize: 11, color: '#888' }}>
+                          Current images — tap ✕ to remove, drag to reorder:
+                        </p>
+                        <button onClick={() => setExistingImages([])}
+                          style={{
+                            background: '#fff0f0', color: '#e63946',
+                            border: '1px solid #ffd0d0', borderRadius: 6,
+                            padding: '4px 10px', fontSize: 11,
+                            fontWeight: 700, cursor: 'pointer',
+                            fontFamily: 'Inter, sans-serif',
+                          }}>
+                          Remove all
+                        </button>
+                      </div>
+                      <div className="img-preview">
+                        {existingImages.map((img, i) => (
+                          <div key={i} className="img-thumb"
+                            draggable
+                            onDragStart={e => e.dataTransfer.setData('text/plain', i)}
+                            onDragOver={e => e.preventDefault()}
+                            onDrop={e => {
+                              e.preventDefault();
+                              const from = parseInt(e.dataTransfer.getData('text/plain'));
+                              const to = i;
+                              if (from === to) return;
+                              const updated = [...existingImages];
+                              const [moved] = updated.splice(from, 1);
+                              updated.splice(to, 0, moved);
+                              setExistingImages(updated);
+                            }}>
+                            <img src={img} alt="" />
+                            <button className="img-thumb-del" onClick={() => removeExistingImage(i)}>✕</button>
+                            {i === 0 && (
+                              <div style={{
+                                position: 'absolute', bottom: 0, left: 0, right: 0,
+                                background: 'rgba(0,151,167,0.85)', color: '#fff',
+                                fontSize: 8, fontWeight: 700, textAlign: 'center',
+                                padding: '2px 0', borderRadius: '0 0 6px 6px',
+                              }}>
+                                MAIN
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      <p style={{ fontSize: 10, color: '#aaa', marginTop: 6 }}>
+                        First image is the main display image shown on product cards.
+                      </p>
+                    </div>
                   )}
                 </div>
-
-                {/* New image previews before upload */}
-                {imageFiles.length > 0 && (
-                  <div style={{ marginBottom: 12 }}>
-                    <p style={{ fontSize: 11, color: '#888', marginBottom: 8 }}>
-                      New images to be added:
-                    </p>
-                    <div className="img-preview">
-                      {imageFiles.map((file, i) => (
-                        <div key={i} className="img-thumb">
-                          <img src={URL.createObjectURL(file)} alt="" />
-                          <button
-                            className="img-thumb-del"
-                            onClick={() => setImageFiles(imageFiles.filter((_, idx) => idx !== i))}
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Existing images */}
-                {existingImages.length > 0 && (
-                  <div>
-                    <div style={{
-                      display: 'flex', justifyContent: 'space-between',
-                      alignItems: 'center', marginBottom: 8,
-                    }}>
-                      <p style={{ fontSize: 11, color: '#888' }}>
-                        Current images — tap ✕ to remove, drag to reorder:
-                      </p>
-                      <button
-                        onClick={() => setExistingImages([])}
-                        style={{
-                          background: '#fff0f0', color: '#e63946',
-                          border: '1px solid #ffd0d0', borderRadius: 6,
-                          padding: '4px 10px', fontSize: 11,
-                          fontWeight: 700, cursor: 'pointer',
-                          fontFamily: 'Inter, sans-serif',
-                        }}
-                      >
-                        Remove all
-                      </button>
-                    </div>
-                    <div className="img-preview">
-                      {existingImages.map((img, i) => (
-                        <div
-                          key={i}
-                          className="img-thumb"
-                          draggable
-                          onDragStart={e => e.dataTransfer.setData('text/plain', i)}
-                          onDragOver={e => e.preventDefault()}
-                          onDrop={e => {
-                            e.preventDefault();
-                            const from = parseInt(e.dataTransfer.getData('text/plain'));
-                            const to = i;
-                            if (from === to) return;
-                            const updated = [...existingImages];
-                            const [moved] = updated.splice(from, 1);
-                            updated.splice(to, 0, moved);
-                            setExistingImages(updated);
-                          }}
-                          style={{ cursor: 'grab', position: 'relative' }}
-                        >
-                          <img src={img} alt="" />
-                          <button
-                            className="img-thumb-del"
-                            onClick={() => removeExistingImage(i)}
-                          >
-                            ✕
-                          </button>
-                          {i === 0 && (
-                            <div style={{
-                              position: 'absolute', bottom: 0, left: 0, right: 0,
-                              background: 'rgba(0,151,167,0.85)', color: '#fff',
-                              fontSize: 8, fontWeight: 700, textAlign: 'center',
-                              padding: '2px 0', borderRadius: '0 0 6px 6px',
-                            }}>
-                              MAIN
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    <p style={{ fontSize: 10, color: '#aaa', marginTop: 6 }}>
-                      First image is the main display image shown on product cards.
-                    </p>
-                  </div>
-                )}
-              </div>
 
                 <div className="btn-row">
                   <button onClick={handleSaveProduct} disabled={savingProduct}
@@ -960,10 +936,13 @@ export default function AdminPage() {
               <h2 style={{ fontSize: 18, fontWeight: 800, color: '#111' }}>
                 Hero Slides ({heroSlides.length}/3)
               </h2>
-              <button onClick={() => setShowHeroForm(true)} style={primaryBtn}
-                disabled={heroSlides.length >= 3}>
-                + Add Slide
-              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={loadHeroSlides} style={refreshBtn}>🔄 Refresh</button>
+                <button onClick={() => setShowHeroForm(true)} style={primaryBtn}
+                  disabled={heroSlides.length >= 3}>
+                  + Add Slide
+                </button>
+              </div>
             </div>
 
             {showHeroForm && (
@@ -1110,9 +1089,12 @@ export default function AdminPage() {
         {/* ══ DEALS ══ */}
         {activeTab === 'deals' && (
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 800, color: '#111', marginBottom: 6 }}>
-              🔥 Deals of the Day
-            </h2>
+            <div className="section-header" style={{ marginBottom: 6 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 800, color: '#111' }}>
+                🔥 Deals of the Day
+              </h2>
+              <button onClick={loadDeals} style={refreshBtn}>🔄 Refresh</button>
+            </div>
             <p style={{ fontSize: 13, color: '#888', marginBottom: 20 }}>
               Pick up to 8 products to feature on the homepage.
             </p>
