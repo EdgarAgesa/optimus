@@ -7,7 +7,7 @@ const menuData = [
     label: 'Gaming', slug: 'gaming',
     sub: [
       { label: 'Games', slug: 'gaming', brands: ['PS4', 'PS5', 'Nintendo', 'Xbox'] },
-      { label: 'Consoles', slug: 'gaming-consoles', brands: ['PS4', 'PS5', 'PS3'] },
+      { label: 'Consoles', slug: 'gaming-consoles', brands: ['PS3', 'PS4', 'PS5', 'Xbox', 'Nintendo', 'Portable'] },
       { label: 'Accessories', slug: 'gaming-accessories', brands: ['PS4', 'PS5', 'Nintendo', 'Xbox', 'VR', 'Driving Wheel', 'Handheld', 'Game Pad'] },
     ],
   },

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 
 const CATEGORY_DATA = {
-  'Gaming Consoles': { parent: 'Gaming', brands: ['Sony', 'Microsoft', 'Nintendo', 'PS3', 'PS4', 'PS5'] },
+  'Gaming Consoles': { parent: 'Gaming', brands: ['Portable', 'Xbox', 'Nintendo', 'PS3', 'PS4', 'PS5'] },
   'PS5 Games': { parent: 'Gaming', brands: ['Sony', 'Pearl Abyss', 'Sucker Punch', 'Ubisoft', 'EA', 'Activision'] },
   'PS4 Games': { parent: 'Gaming', brands: ['Sony', 'Pearl Abyss', 'Sucker Punch', 'Ubisoft', 'EA', 'Activision'] },
   'Gaming Accessories': { parent: 'Gaming', brands: ['PS4', 'PS5', 'Nintendo', 'Xbox', 'VR', 'Driving Wheel', 'Handheld', 'Game Pad'] },
