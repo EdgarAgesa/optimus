@@ -482,7 +482,11 @@ export default function AdminPage() {
           gap: 8px; margin-bottom: 8px; align-items: center;
         }
         .img-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .img-thumb { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
+        .img-thumb {
+        position: relative; width: 72px; height: 72px; flex-shrink: 0;
+        cursor: grab;
+      }
+        .img-thumb:active { cursor: grabbing; opacity: 0.8; }
         .img-thumb img {
           width: 100%; height: 100%; object-fit: cover;
           border-radius: 8px; border: 1px solid #eee;
@@ -682,12 +686,28 @@ export default function AdminPage() {
                 </div>
 
                 <div className="field-group" style={{ marginBottom: 14 }}>
-                  <label>Description</label>
-                  <textarea style={{ ...inputStyle, height: 90, resize: 'vertical' }}
-                    placeholder="Describe the product..."
-                    value={productForm.description}
-                    onChange={e => setProductForm({ ...productForm, description: e.target.value })} />
+                <label>Description</label>
+                <textarea
+                  style={{ ...inputStyle, height: 180, resize: 'vertical', lineHeight: 1.7 }}
+                  placeholder={`Write the product description here.\n\nUse this format for better display:\n\nMain Features:\n- Feature one\n- Feature two\n\nWhat's in the Box:\n- Item one\n- Item two\n\nNote: Lines ending with ":" become bold headings. Lines starting with "-" become bullet points.`}
+                  value={productForm.description}
+                  onChange={e => setProductForm({ ...productForm, description: e.target.value })}
+                />
+                <div style={{
+                  marginTop: 8, padding: '10px 14px',
+                  background: '#f0fafb', borderRadius: 8,
+                  border: '1px solid #e0f7fa',
+                }}>
+                  <p style={{ fontSize: 11, color: '#0097a7', fontWeight: 700, marginBottom: 4 }}>
+                    💡 Formatting Tips:
+                  </p>
+                  <p style={{ fontSize: 11, color: '#666', lineHeight: 1.7, margin: 0 }}>
+                    • Lines ending with <strong>:</strong> → Bold heading (e.g. <em>Main Features:</em>)<br />
+                    • Lines starting with <strong>-</strong> → Bullet point (e.g. <em>- Feature one</em>)<br />
+                    • Press Enter between sections for spacing
+                  </p>
                 </div>
+              </div>
 
                 {/* Specs */}
                 <div style={{ marginBottom: 18 }}>
@@ -732,47 +752,128 @@ export default function AdminPage() {
                 </div>
 
                 {/* Images */}
-                <div style={{ marginBottom: 20 }}>
-                  <label style={labelStyle}>Product Images</label>
-                  <div style={{
-                    border: '2px dashed #e0f7fa', borderRadius: 10,
-                    padding: '20px 16px', textAlign: 'center',
-                    background: '#fafffe', marginBottom: 10,
+              <div style={{ marginBottom: 20 }}>
+                <label style={labelStyle}>Product Images</label>
+
+                {/* Upload new */}
+                <div style={{
+                  border: '2px dashed #e0f7fa', borderRadius: 10,
+                  padding: '20px 16px', textAlign: 'center',
+                  background: '#fafffe', marginBottom: 12,
+                }}>
+                  <input type="file" accept="image/*" multiple
+                    id="product-img-input" style={{ display: 'none' }}
+                    onChange={e => setImageFiles(prev => [...prev, ...Array.from(e.target.files)])} />
+                  <label htmlFor="product-img-input" style={{
+                    cursor: 'pointer', color: '#0097a7',
+                    fontWeight: 700, fontSize: 15,
                   }}>
-                    <input type="file" accept="image/*" multiple
-                      id="product-img-input" style={{ display: 'none' }}
-                      onChange={e => setImageFiles(Array.from(e.target.files))} />
-                    <label htmlFor="product-img-input" style={{
-                      cursor: 'pointer', color: '#0097a7',
-                      fontWeight: 700, fontSize: 15,
-                    }}>
-                      📷 Tap to select images
-                    </label>
-                    <p style={{ fontSize: 11, color: '#aaa', marginTop: 4 }}>
-                      Select multiple photos at once
+                    📷 {imageFiles.length > 0 ? '+ Add more images' : 'Tap to select images'}
+                  </label>
+                  <p style={{ fontSize: 11, color: '#aaa', marginTop: 4 }}>
+                    {imageFiles.length > 0
+                      ? 'Tap again to add more images'
+                      : 'You can select multiple photos at once or tap multiple times'
+                    }
+                  </p>
+                  {imageFiles.length > 0 && (
+                    <p style={{ fontSize: 13, color: '#0097a7', marginTop: 8, fontWeight: 600 }}>
+                      ✓ {imageFiles.length} new image(s) ready to upload
                     </p>
-                    {imageFiles.length > 0 && (
-                      <p style={{ fontSize: 13, color: '#0097a7', marginTop: 8, fontWeight: 600 }}>
-                        ✓ {imageFiles.length} image(s) selected
-                      </p>
-                    )}
-                  </div>
-                  {existingImages.length > 0 && (
-                    <div>
-                      <p style={{ fontSize: 11, color: '#888', marginBottom: 8 }}>
-                        Current images (tap ✕ to remove):
-                      </p>
-                      <div className="img-preview">
-                        {existingImages.map((img, i) => (
-                          <div key={i} className="img-thumb">
-                            <img src={img} alt="" />
-                            <button className="img-thumb-del" onClick={() => removeExistingImage(i)}>✕</button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   )}
                 </div>
+
+                {/* New image previews before upload */}
+                {imageFiles.length > 0 && (
+                  <div style={{ marginBottom: 12 }}>
+                    <p style={{ fontSize: 11, color: '#888', marginBottom: 8 }}>
+                      New images to be added:
+                    </p>
+                    <div className="img-preview">
+                      {imageFiles.map((file, i) => (
+                        <div key={i} className="img-thumb">
+                          <img src={URL.createObjectURL(file)} alt="" />
+                          <button
+                            className="img-thumb-del"
+                            onClick={() => setImageFiles(imageFiles.filter((_, idx) => idx !== i))}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Existing images */}
+                {existingImages.length > 0 && (
+                  <div>
+                    <div style={{
+                      display: 'flex', justifyContent: 'space-between',
+                      alignItems: 'center', marginBottom: 8,
+                    }}>
+                      <p style={{ fontSize: 11, color: '#888' }}>
+                        Current images — tap ✕ to remove, drag to reorder:
+                      </p>
+                      <button
+                        onClick={() => setExistingImages([])}
+                        style={{
+                          background: '#fff0f0', color: '#e63946',
+                          border: '1px solid #ffd0d0', borderRadius: 6,
+                          padding: '4px 10px', fontSize: 11,
+                          fontWeight: 700, cursor: 'pointer',
+                          fontFamily: 'Inter, sans-serif',
+                        }}
+                      >
+                        Remove all
+                      </button>
+                    </div>
+                    <div className="img-preview">
+                      {existingImages.map((img, i) => (
+                        <div
+                          key={i}
+                          className="img-thumb"
+                          draggable
+                          onDragStart={e => e.dataTransfer.setData('text/plain', i)}
+                          onDragOver={e => e.preventDefault()}
+                          onDrop={e => {
+                            e.preventDefault();
+                            const from = parseInt(e.dataTransfer.getData('text/plain'));
+                            const to = i;
+                            if (from === to) return;
+                            const updated = [...existingImages];
+                            const [moved] = updated.splice(from, 1);
+                            updated.splice(to, 0, moved);
+                            setExistingImages(updated);
+                          }}
+                          style={{ cursor: 'grab', position: 'relative' }}
+                        >
+                          <img src={img} alt="" />
+                          <button
+                            className="img-thumb-del"
+                            onClick={() => removeExistingImage(i)}
+                          >
+                            ✕
+                          </button>
+                          {i === 0 && (
+                            <div style={{
+                              position: 'absolute', bottom: 0, left: 0, right: 0,
+                              background: 'rgba(0,151,167,0.85)', color: '#fff',
+                              fontSize: 8, fontWeight: 700, textAlign: 'center',
+                              padding: '2px 0', borderRadius: '0 0 6px 6px',
+                            }}>
+                              MAIN
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <p style={{ fontSize: 10, color: '#aaa', marginTop: 6 }}>
+                      First image is the main display image shown on product cards.
+                    </p>
+                  </div>
+                )}
+              </div>
 
                 <div className="btn-row">
                   <button onClick={handleSaveProduct} disabled={savingProduct}

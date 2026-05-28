@@ -3,6 +3,55 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../context/CartContext';
 
+function renderDescription(text) {
+  if (!text) return null;
+  return text.split('\n').map((line, i) => {
+    const trimmed = line.trim();
+    if (!trimmed) return <div key={i} style={{ height: 8 }} />;
+
+    if (trimmed.endsWith(':')) {
+      return (
+        <div key={i} style={{
+          fontWeight: 800, color: '#0d2b33',
+          fontSize: 12, marginTop: i === 0 ? 0 : 14,
+          marginBottom: 6, textTransform: 'uppercase',
+          letterSpacing: 0.8, borderLeft: '3px solid #0097a7',
+          paddingLeft: 8,
+        }}>
+          {trimmed}
+        </div>
+      );
+    }
+
+    if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
+      return (
+        <div key={i} style={{
+          display: 'flex', gap: 8,
+          marginBottom: 5, alignItems: 'flex-start',
+          paddingLeft: 4,
+        }}>
+          <span style={{
+            color: '#0097a7', fontWeight: 700,
+            fontSize: 14, flexShrink: 0, marginTop: 2,
+          }}>•</span>
+          <span style={{ fontSize: 13, color: '#555', lineHeight: 1.7 }}>
+            {trimmed.replace(/^[-•]\s*/, '')}
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <p key={i} style={{
+        fontSize: 13, color: '#555',
+        lineHeight: 1.8, marginBottom: 8, margin: '0 0 8px 0',
+      }}>
+        {trimmed}
+      </p>
+    );
+  });
+}
+
 export default function ProductPage() {
   const { sku } = useParams();
   const navigate = useNavigate();
@@ -80,8 +129,7 @@ export default function ProductPage() {
           color: #999; flex-wrap: wrap;
         }
         .pp-bc-link {
-          color: #0097a7; font-weight: 600;
-          cursor: pointer;
+          color: #0097a7; font-weight: 600; cursor: pointer;
         }
         .pp-bc-link:hover { text-decoration: underline; }
         .pp-main {
@@ -158,11 +206,9 @@ export default function ProductPage() {
           border-radius: 50%; font-size: 22px;
           cursor: pointer; display: flex;
           align-items: center; justify-content: center;
-          z-index: 100000; transition: background .2s;
-          font-weight: 700;
+          z-index: 100000; transition: background .2s; font-weight: 700;
         }
-        .pp-zoom-prev:hover,
-        .pp-zoom-next:hover { background: rgba(255,255,255,0.3); }
+        .pp-zoom-prev:hover, .pp-zoom-next:hover { background: rgba(255,255,255,0.3); }
         .pp-zoom-prev { left: 16px; }
         .pp-zoom-next { right: 16px; }
         .pp-info {
@@ -213,8 +259,7 @@ export default function ProductPage() {
         .pp-qty-label { font-size: 13px; color: #666; font-weight: 600; }
         .pp-qtybox {
           display: flex; align-items: center;
-          border: 1.5px solid #e0f7fa;
-          border-radius: 8px; overflow: hidden;
+          border: 1.5px solid #e0f7fa; border-radius: 8px; overflow: hidden;
         }
         .pp-qtybtn {
           width: 40px; height: 44px; border: none;
@@ -282,7 +327,7 @@ export default function ProductPage() {
           margin-bottom: 16px; padding-bottom: 12px;
           border-bottom: 2px solid #e0f7fa;
         }
-        .pp-desc { font-size: 14px; color: #555; line-height: 1.9; }
+        .pp-desc { font-size: 13px; color: #555; line-height: 1.8; }
         .pp-specs-table { width: 100%; border-collapse: collapse; }
         .pp-specs-table tr { border-bottom: 1px solid #f5f5f5; }
         .pp-specs-table tr:last-child { border-bottom: none; }
@@ -364,9 +409,7 @@ export default function ProductPage() {
       {/* Zoom overlay */}
       {imgZoomed && allImages.length > 0 && (
         <div className="pp-zoom-overlay" onClick={() => setImgZoomed(false)}>
-          <button className="pp-zoom-close" onClick={() => setImgZoomed(false)}>
-            ✕
-          </button>
+          <button className="pp-zoom-close" onClick={() => setImgZoomed(false)}>✕</button>
           {allImages.length > 1 && (
             <button
               className="pp-zoom-prev"
@@ -434,7 +477,6 @@ export default function ProductPage() {
                 </div>
               )}
             </div>
-
             {allImages.length > 1 && (
               <div className="pp-thumbs">
                 {allImages.map((img, i) => (
@@ -472,24 +514,16 @@ export default function ProductPage() {
             <div className="pp-qty-row">
               <span className="pp-qty-label">Qty:</span>
               <div className="pp-qtybox">
-                <button className="pp-qtybtn" onClick={() => setQty(Math.max(1, qty - 1))}>
-                  −
-                </button>
+                <button className="pp-qtybtn" onClick={() => setQty(Math.max(1, qty - 1))}>−</button>
                 <span className="pp-qtynum">{qty}</span>
-                <button className="pp-qtybtn" onClick={() => setQty(qty + 1)}>
-                  +
-                </button>
+                <button className="pp-qtybtn" onClick={() => setQty(qty + 1)}>+</button>
               </div>
             </div>
 
             <div className="pp-btn-row">
-              <button
-                className="pp-add-btn"
-                onClick={() => addToCart(p, qty)}
-              >
+              <button className="pp-add-btn" onClick={() => addToCart(p, qty)}>
                 🛒 Add to Cart
               </button>
-
               <a
                 href={`https://wa.me/254759962068?text=${encodeURIComponent(
                   `Hi! I would like to order:\n${p.name}\nPrice: ${p.price}\nQty: ${qty}`
@@ -504,18 +538,14 @@ export default function ProductPage() {
 
             {p.tags && p.tags.length > 0 && (
               <div className="pp-tags">
-                {p.tags.map(t => (
-                  <span key={t} className="pp-tag">#{t}</span>
-                ))}
+                {p.tags.map(t => <span key={t} className="pp-tag">#{t}</span>)}
               </div>
             )}
 
             <div className="pp-extras">
               <button className="pp-extra-btn">♡ Wishlist</button>
               <button className="pp-extra-btn">⇄ Compare</button>
-              <button className="pp-extra-btn" onClick={() => navigate(-1)}>
-                ← Go Back
-              </button>
+              <button className="pp-extra-btn" onClick={() => navigate(-1)}>← Go Back</button>
             </div>
           </div>
         </div>
@@ -525,7 +555,9 @@ export default function ProductPage() {
           <div className="pp-section">
             <div className="pp-section-title">📋 Description</div>
             {p.description ? (
-              <p className="pp-desc">{p.description}</p>
+              <div className="pp-desc">
+                {renderDescription(p.description)}
+              </div>
             ) : (
               <p className="pp-no-data">No description available.</p>
             )}
@@ -549,15 +581,13 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* Related products */}
+        {/* Related */}
         {related.length > 0 && (
           <div className="pp-related">
             <div className="pp-related-header">
               <div className="pp-related-title">You may also like</div>
               <button
-                onClick={() => navigate(
-                  `/category/${p.category.toLowerCase().replace(/ /g, '-')}`
-                )}
+                onClick={() => navigate(`/category/${p.category.toLowerCase().replace(/ /g, '-')}`)}
                 style={{
                   background: 'none', border: '1.5px solid #0097a7',
                   color: '#0097a7', borderRadius: 8, padding: '8px 16px',
