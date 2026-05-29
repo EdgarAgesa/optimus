@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
@@ -405,6 +406,14 @@ export default function ProductPage() {
           .pp-zoom-next { right: 8px; }
         }
       `}</style>
+
+      <Helmet>
+        <title>{p.name} — {p.price} — Optimus Sphere Tech</title>
+        <meta name="description" content={p.description ? p.description.substring(0, 160) : `${p.name} by ${p.brand}. ${p.price}. Available at Optimus Sphere Tech Nairobi.`} />
+        <meta property="og:title" content={`${p.name} — ${p.price}`} />
+        <meta property="og:description" content={`${p.brand} · ${p.category} · ${p.price}`} />
+        {p.images?.[0] && <meta property="og:image" content={p.images[0]} />}
+      </Helmet>
 
       {/* Zoom overlay */}
       {imgZoomed && allImages.length > 0 && (

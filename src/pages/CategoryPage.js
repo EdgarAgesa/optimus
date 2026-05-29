@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { Helmet } from 'react-helmet';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
@@ -164,6 +165,10 @@ export default function CategoryPage() {
 
   return (
     <>
+    <Helmet>
+      <title>{title} — Optimus Sphere Tech</title>
+      <meta name="description" content={`Shop ${title.toLowerCase()} at Optimus Sphere Tech Nairobi. ${filtered.length} products available with warranty and free delivery.`} />
+    </Helmet>
       <style>{`
         .cat-page {
           background: #f5f6fa;
