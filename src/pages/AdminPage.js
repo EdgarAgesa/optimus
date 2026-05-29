@@ -129,6 +129,8 @@ export default function AdminPage() {
     description: '', icon: '📦', tags: '',
   });
   const [customBrand, setCustomBrand] = useState(false);
+  const [productPage, setProductPage] = useState(1);
+  const PRODUCTS_PER_ADMIN_PAGE = 10;
   const [specs, setSpecs] = useState([emptySpec()]);
   const [imageFiles, setImageFiles] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
@@ -180,15 +182,16 @@ export default function AdminPage() {
   };
 
   // ── Load ──
-  const loadProducts = async () => {
-    setLoadingProducts(true);
-    const { data } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
-    setProducts(data || []);
-    setLoadingProducts(false);
-  };
+ const loadProducts = async () => {
+  setLoadingProducts(true);
+  const { data } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
+  setProducts(data || []);
+  setProductPage(1);  // ← add this
+  setLoadingProducts(false);
+};
 
   const loadHeroSlides = async () => {
     const { data } = await supabase
@@ -891,58 +894,105 @@ export default function AdminPage() {
                 <p>No products yet. Add your first product!</p>
               </div>
             ) : (
-              products.map(p => (
-                <div key={p.id} className="p-row">
-                  <div className="p-row-info">
-                    {p.images?.[0] ? (
-                      <img src={p.images[0]} alt={p.name} style={{
-                        width: 52, height: 52, objectFit: 'cover',
-                        borderRadius: 8, flexShrink: 0,
-                      }} />
-                    ) : (
-                      <div style={{
-                        width: 52, height: 52, background: '#f5f5f5',
-                        borderRadius: 8, display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', fontSize: 22, flexShrink: 0,
-                      }}>
-                        {p.icon}
-                      </div>
-                    )}
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{
-                        fontWeight: 700, fontSize: 13, color: '#111',
-                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                      }}>
-                        {p.name}
-                      </div>
-                      <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
-                        {p.brand} · {p.category} · {p.sku}
-                      </div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#0097a7', marginTop: 2 }}>
-                        {p.price}
-                        {p.old_price && (
-                          <span style={{ fontSize: 11, color: '#ccc', textDecoration: 'line-through', marginLeft: 8 }}>
-                            {p.old_price}
-                          </span>
-                        )}
-                        {p.badge && (
-                          <span style={{
-                            marginLeft: 8, background: '#e63946', color: '#fff',
-                            fontSize: 9, padding: '2px 6px', borderRadius: 4, fontWeight: 800,
-                          }}>
-                            {p.badge}
-                          </span>
-                        )}
+            <>
+              {products
+                .slice(
+                  (productPage - 1) * PRODUCTS_PER_ADMIN_PAGE,
+                  productPage * PRODUCTS_PER_ADMIN_PAGE
+                )
+                .map(p => (
+                  <div key={p.id} className="p-row">
+                    <div className="p-row-info">
+                      {p.images?.[0] ? (
+                        <img src={p.images[0]} alt={p.name} style={{
+                          width: 52, height: 52, objectFit: 'cover',
+                          borderRadius: 8, flexShrink: 0,
+                        }} />
+                      ) : (
+                        <div style={{
+                          width: 52, height: 52, background: '#f5f5f5',
+                          borderRadius: 8, display: 'flex', alignItems: 'center',
+                          justifyContent: 'center', fontSize: 22, flexShrink: 0,
+                        }}>
+                          {p.icon}
+                        </div>
+                      )}
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{
+                          fontWeight: 700, fontSize: 13, color: '#111',
+                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                        }}>
+                          {p.name}
+                        </div>
+                        <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
+                          {p.brand} · {p.category} · {p.sku}
+                        </div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#0097a7', marginTop: 2 }}>
+                          {p.price}
+                          {p.old_price && (
+                            <span style={{ fontSize: 11, color: '#ccc', textDecoration: 'line-through', marginLeft: 8 }}>
+                              {p.old_price}
+                            </span>
+                          )}
+                          {p.badge && (
+                            <span style={{
+                              marginLeft: 8, background: '#e63946', color: '#fff',
+                              fontSize: 9, padding: '2px 6px', borderRadius: 4, fontWeight: 800,
+                            }}>
+                              {p.badge}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
+                    <div className="p-row-actions">
+                      <button onClick={() => handleEditProduct(p)} style={editBtn}>✏️ Edit</button>
+                      <button onClick={() => handleDeleteProduct(p.id)} style={deleteBtn}>🗑️</button>
+                    </div>
                   </div>
-                  <div className="p-row-actions">
-                    <button onClick={() => handleEditProduct(p)} style={editBtn}>✏️ Edit</button>
-                    <button onClick={() => handleDeleteProduct(p.id)} style={deleteBtn}>🗑️</button>
-                  </div>
+                ))}
+
+              {/* Admin pagination */}
+              {products.length > PRODUCTS_PER_ADMIN_PAGE && (
+                <div style={{
+                  display: 'flex', justifyContent: 'center',
+                  alignItems: 'center', gap: 8,
+                  marginTop: 20, flexWrap: 'wrap',
+                }}>
+                  <button
+                    onClick={() => setProductPage(productPage - 1)}
+                    disabled={productPage === 1}
+                    style={{
+                      background: '#fff', border: '1.5px solid #e0f7fa',
+                      color: '#0097a7', padding: '8px 14px',
+                      fontSize: 12, fontWeight: 700, borderRadius: 8,
+                      cursor: productPage === 1 ? 'not-allowed' : 'pointer',
+                      opacity: productPage === 1 ? 0.4 : 1,
+                      fontFamily: 'Inter, sans-serif',
+                    }}>
+                    ← Prev
+                  </button>
+                  <span style={{ fontSize: 13, color: '#666', padding: '0 12px' }}>
+                    Page <strong style={{ color: '#0097a7' }}>{productPage}</strong> of{' '}
+                    <strong>{Math.ceil(products.length / PRODUCTS_PER_ADMIN_PAGE)}</strong>
+                  </span>
+                  <button
+                    onClick={() => setProductPage(productPage + 1)}
+                    disabled={productPage >= Math.ceil(products.length / PRODUCTS_PER_ADMIN_PAGE)}
+                    style={{
+                      background: '#fff', border: '1.5px solid #e0f7fa',
+                      color: '#0097a7', padding: '8px 14px',
+                      fontSize: 12, fontWeight: 700, borderRadius: 8,
+                      cursor: productPage >= Math.ceil(products.length / PRODUCTS_PER_ADMIN_PAGE) ? 'not-allowed' : 'pointer',
+                      opacity: productPage >= Math.ceil(products.length / PRODUCTS_PER_ADMIN_PAGE) ? 0.4 : 1,
+                      fontFamily: 'Inter, sans-serif',
+                    }}>
+                    Next →
+                  </button>
                 </div>
-              ))
-            )}
+              )}
+            </>
+          )}
           </div>
         )}
 
