@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import ProductDrawer from './ProductDrawer';
 
 export default function SearchOverlay() {
   const { searchQuery, searchResults, searchOpen, clearSearch, addToCart } = useCart();
-  const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
 
   if (!searchOpen) return null;
@@ -228,7 +226,10 @@ export default function SearchOverlay() {
                 <div
                   key={p.sku}
                   className="search-card"
-                  onClick={() => setSelected(p)}
+                  onClick={() => {
+                    navigate(`/product/${p.sku}`);
+                    clearSearch();
+                  }}
                 >
                   <div className="search-card-img">
                     {p.img
@@ -255,13 +256,6 @@ export default function SearchOverlay() {
           )}
         </div>
       </div>
-
-      {selected && (
-        <ProductDrawer
-          product={selected}
-          onClose={() => { setSelected(null); clearSearch(); }}
-        />
-      )}
     </>
   );
 }
