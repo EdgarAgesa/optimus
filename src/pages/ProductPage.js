@@ -552,12 +552,40 @@ export default function ProductPage() {
             )}
 
             <div className="pp-extras">
-              <button className="pp-extra-btn">♡ Wishlist</button>
-              <button className="pp-extra-btn">⇄ Compare</button>
-              <button className="pp-extra-btn" onClick={() => navigate(-1)}>← Go Back</button>
+              <button className="pp-extra-btn" onClick={() => navigate(-1)}>
+                ← Go Back
+              </button>   
+              <a
+                href={`https://wa.me/254759962068?text=${encodeURIComponent(
+                  `Hi! I have a question about ${p.name} (${p.sku})`
+                )}`}
+                target="_blank"
+                rel="noreferrer"
+                className="pp-extra-btn"
+                style={{ textDecoration: 'none' }}
+              >
+                💬 Ask a Question
+              </a>
+              <button
+                className="pp-extra-btn"
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: p.name,
+                      text: `${p.name} — ${p.price}`,
+                      url: window.location.href,
+                    });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link copied to clipboard!');
+                  }
+                }}
+              >
+                🔗 Share
+              </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
         {/* Description + Specs */}
         <div className="pp-details">
