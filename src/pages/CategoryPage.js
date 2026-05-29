@@ -581,7 +581,7 @@ export default function CategoryPage() {
                 <div className="product-grid">
                   {paginatedProducts.map((p) => (
                     <div key={p.sku} className="pcard"
-                      onClick={() => navigate(`/product/${p.sku}`)}>
+                      >onClick={() => navigate(`/product/${encodeURIComponent(p.sku)}`)}
                       {p.badge && (
                         <span className="pcard-badge"
                           style={{ background: p.badge === 'SALE' ? '#e63946' : '#0097a7' }}>

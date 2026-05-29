@@ -126,7 +126,7 @@ export default function PopularGames() {
             <div
               key={p.sku}
               className="pop-card"
-              onClick={() => navigate(`/product/${p.sku}`)}
+              onClick={() => navigate(`/product/${encodeURIComponent(p.sku)}`)}
             >
               {p.badge && (
                 <span

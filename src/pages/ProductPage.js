@@ -54,8 +54,8 @@ function renderDescription(text) {
 }
 
 export default function ProductPage() {
-  const { sku } = useParams();
-  const navigate = useNavigate();
+  const { sku: rawSku } = useParams();
+  const sku = decodeURIComponent(rawSku || '');  const navigate = useNavigate();
   const { addToCart } = useCart();
   const { products } = useProducts();
   const [qty, setQty] = useState(1);
@@ -640,7 +640,7 @@ export default function ProductPage() {
                 <div
                   key={r.sku}
                   className="pp-rcard"
-                  onClick={() => navigate(`/product/${r.sku}`)}
+                  onClick={() => navigate(`/product/${encodeURIComponent(r.sku)}`)}
                 >
                   <div className="pp-rcard-img">
                     {r.img

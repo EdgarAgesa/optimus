@@ -227,9 +227,9 @@ export default function SearchOverlay() {
                   key={p.sku}
                   className="search-card"
                   onClick={() => {
-                    navigate(`/product/${p.sku}`);
-                    clearSearch();
-                  }}
+                  navigate(`/product/${encodeURIComponent(p.sku)}`);
+                  clearSearch();
+                }}
                 >
                   <div className="search-card-img">
                     {p.img

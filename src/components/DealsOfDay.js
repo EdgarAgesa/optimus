@@ -170,7 +170,7 @@ export default function DealsOfDay() {
         </div>
         <div className="deals-grid">
           {deals.map((p) => (
-            <div key={p.sku} className="deal-card" onClick={() => navigate(`/product/${p.sku}`)}>
+            <div key={p.sku} className="deal-card" onClick={() => navigate(`/product/${encodeURIComponent(p.sku)}`)}>
               {p.badge && (
                 <span className="deal-badge" style={{ background: p.badge === 'SALE' ? '#e63946' : '#0097a7' }}>
                   {p.badge}
@@ -191,7 +191,7 @@ export default function DealsOfDay() {
                 <button className="deal-cart-btn" onClick={(e) => { e.stopPropagation(); addToCart(p, 1); }}>
                   + Cart
                 </button>
-                <button className="deal-view-btn" onClick={(e) => { e.stopPropagation(); navigate(`/product/${p.sku}`); }}>
+                <button className="deal-view-btn" onClick={(e) => {e.stopPropagation(); navigate(`/product/${encodeURIComponent(p.sku)}`); }}>
                   Details
                 </button>
               </div>
