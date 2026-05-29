@@ -10,7 +10,7 @@ const products = [
     sku: 'WA0082',
     category: 'PS5 Games',
     description:
-      'Crimson Desert is a massive open-world action-adventure RPG for PS5. Play as Kliff, leader of the Greymanes, across the stunning fantasy continent of Pywel. Features cinematic storytelling, intense melee combat, large boss fights, ray tracing, and full DualSense haptic feedback support.',
+      'Crimson Desert is a massive open-world action-adventure RPG for PS5. Play as Kliff, leader of the Greymanes, across the stunning fantasy continent of Pywel.\n\nMain Features:\n- Cinematic storytelling\n- Intense melee combat\n- Large boss fights\n- Ray tracing support\n- Full DualSense haptic feedback',
     specs: [
       { label: 'Platform', value: 'PlayStation 5' },
       { label: 'Genre', value: 'Open-world Action RPG' },
@@ -36,7 +36,7 @@ const products = [
     sku: 'WA0084',
     category: 'Televisions',
     description:
-      'The TCL 75-inch V6C is a large-screen 4K UHD Google TV built for cinematic home entertainment. Features built-in Google TV, Dolby Vision HDR, Google Assistant voice control, Chromecast, and smart streaming from Netflix, YouTube, Prime Video and more.',
+      'The TCL 75-inch V6C is a large-screen 4K UHD Google TV built for cinematic home entertainment.\n\nMain Features:\n- Built-in Google TV\n- Dolby Vision HDR\n- Google Assistant voice control\n- Chromecast built-in\n- Smart streaming from Netflix, YouTube, Prime Video and more',
     specs: [
       { label: 'Screen Size', value: '75 inches' },
       { label: 'Resolution', value: '4K Ultra HD (3840 x 2160)' },
@@ -56,14 +56,14 @@ const products = [
     img: '/images/IMG-20260524-WA0083.jpg',
     icon: '🎮',
     name: 'Ghost of Tsushima',
-    brand: 'Sony / Sucker Punch',
+    brand: 'Sony',
     price: 'KSh 5,300',
     oldPrice: null,
     badge: null,
     sku: 'WA0083',
     category: 'PS4 Games',
     description:
-      'Ghost of Tsushima is an open-world action-adventure set in feudal Japan during the Mongol invasion of Tsushima Island. Play as Jin Sakai, a samurai who must abandon his code to become The Ghost. Features cinematic sword combat, stunning visuals, stealth gameplay, and a free Legends online co-op mode.',
+      'Ghost of Tsushima is an open-world action-adventure set in feudal Japan during the Mongol invasion of Tsushima Island. Play as Jin Sakai, a samurai who must abandon his code to become The Ghost.\n\nMain Features:\n- Cinematic sword combat\n- Stunning visuals\n- Stealth gameplay\n- Free Legends online co-op mode\n- Kurosawa Mode (classic black & white film mode)',
     specs: [
       { label: 'Platform', value: 'PlayStation 4' },
       { label: 'Genre', value: 'Open-world Action Adventure' },
@@ -71,7 +71,7 @@ const products = [
       { label: 'Publisher', value: 'Sony Interactive Entertainment' },
       { label: 'Players', value: 'Single-player + Online multiplayer (Legends)' },
       { label: 'Frame Rate', value: '30FPS (PS4) / Enhanced on PS4 Pro' },
-      { label: 'Kurosawa Mode', value: 'Yes — classic black & white film mode' },
+      { label: 'Kurosawa Mode', value: 'Yes' },
       { label: 'Photo Mode', value: 'Yes' },
       { label: 'Voice Options', value: 'Japanese and English' },
       { label: 'Age Rating', value: '18+' },
@@ -89,7 +89,7 @@ const products = [
     sku: 'WA0090',
     category: 'Smartphones',
     description:
-      'The Apple iPhone 13 128GB offers powerful A15 Bionic performance, an excellent dual-camera system with Cinematic Mode, a stunning 6.1-inch OLED display, and strong battery life. Available in Green, Midnight, Blue, Pink, Starlight, and RED.',
+      'The Apple iPhone 13 128GB offers powerful A15 Bionic performance, an excellent dual-camera system with Cinematic Mode, a stunning 6.1-inch OLED display, and strong battery life.\n\nMain Features:\n- A15 Bionic chip\n- Cinematic Mode video recording\n- 6.1" Super Retina XDR OLED\n- Available in Green, Midnight, Blue, Pink, Starlight, and RED\n- Face ID security',
     specs: [
       { label: 'Display', value: '6.1" Super Retina XDR OLED' },
       { label: 'Resolution', value: '2532 × 1170 pixels' },
@@ -113,13 +113,13 @@ const products = [
     icon: '📱',
     name: 'Samsung Galaxy S25 Ultra 256GB',
     brand: 'Samsung',
-    price: 'KSh 0',
+    price: 'KSh 145,000',
     oldPrice: null,
     badge: 'NEW',
     sku: 'WA0089',
     category: 'Smartphones',
     description:
-      "The Samsung Galaxy S25 Ultra is Samsung's most powerful flagship, featuring a 200MP camera system, built-in S Pen, Snapdragon 8 Elite processor, and a stunning 6.9-inch QHD+ AMOLED display. Packed with Galaxy AI features including Circle to Search, Live Translation, and AI photo editing.",
+      "The Samsung Galaxy S25 Ultra is Samsung's most powerful flagship, featuring a 200MP camera system, built-in S Pen, and Snapdragon 8 Elite processor.\n\nMain Features:\n- 200MP camera system\n- Built-in S Pen\n- 6.9\" QHD+ AMOLED display\n- Galaxy AI features (Circle to Search, Live Translation)\n- Titanium frame with Gorilla Armor 2",
     specs: [
       { label: 'Display', value: '6.9" Dynamic AMOLED 2X, QHD+' },
       { label: 'Refresh Rate', value: '1Hz–120Hz adaptive' },
@@ -151,7 +151,7 @@ const products = [
     sku: 'WA0079',
     category: 'Bluetooth Speakers',
     description:
-      'The JBL PartyBox Encore Essential 2 is a compact but powerful party speaker designed for loud sound, deep bass, karaoke, and outdoor entertainment. Features a dynamic RGB light show, Auracast multi-speaker support, and mic/guitar input for karaoke sessions.',
+      'The JBL PartyBox Encore Essential 2 is a compact but powerful party speaker designed for loud sound, deep bass, karaoke, and outdoor entertainment.\n\nMain Features:\n- 100W RMS output\n- Dynamic RGB light show\n- Auracast multi-speaker support\n- Mic/guitar input for karaoke\n- IPX4 splash-proof',
     specs: [
       { label: 'Output Power', value: '100W RMS' },
       { label: 'Woofer', value: '1 × 5.25-inch' },
@@ -172,14 +172,14 @@ const products = [
     img: '/images/IMG-20260524-WA0071.jpg',
     icon: '🎮',
     name: 'PS4 Pro 1TB + 1 Controller',
-    brand: 'Sony',
+    brand: 'PS4',
     price: 'KSh 35,000',
     oldPrice: null,
     badge: 'SALE',
     sku: 'WA0071',
     category: 'Gaming Consoles',
     description:
-      'The PlayStation 4 Pro 1TB is the more powerful PS4, built for enhanced graphics, smoother gameplay, and 4K HDR support. Ex-UK unit with 1 DualShock 4 controller. Compatible with all PS4 games, accessories, and PlayStation VR.',
+      'The PlayStation 4 Pro 1TB is the more powerful PS4, built for enhanced graphics, smoother gameplay, and 4K HDR support. Ex-UK unit with 1 DualShock 4 controller.\n\nMain Features:\n- 4K upscaled gaming\n- HDR support\n- Enhanced performance for PS4 Pro patched games\n- PlayStation VR compatible\n- 1 DualShock 4 controller included\n\nCondition:\n- Ex-UK unit, tested and working',
     specs: [
       { label: 'CPU', value: '8-core AMD Jaguar' },
       { label: 'GPU', value: '4.2 TFLOPS AMD Radeon' },
@@ -199,14 +199,14 @@ const products = [
     img: '/images/IMG-20260524-WA0075.jpg',
     icon: '🎧',
     name: 'Soundcore Liberty 5',
-    brand: 'Soundcore by Anker',
+    brand: 'Soundcore',
     price: 'KSh 13,500',
     oldPrice: null,
     badge: 'NEW',
     sku: 'WA0075',
     category: 'Earbuds',
     description:
-      'The Soundcore Liberty 5 are premium true wireless earbuds designed for powerful sound, strong active noise cancellation, long battery life, and immersive Dolby Audio. Perfect for daily commuting, gym workouts, and anyone who wants Hi-Res audio without paying flagship prices.',
+      'The Soundcore Liberty 5 are premium true wireless earbuds designed for powerful sound, strong active noise cancellation, long battery life, and immersive Dolby Audio.\n\nMain Features:\n- Adaptive ANC 3.0\n- Up to 48 hours total battery (with case)\n- Hi-Res audio with LDAC support\n- IP55 sweat & water resistance\n- Multipoint connection (2 devices)',
     specs: [
       { label: 'Drivers', value: '9.2mm wool-paper diaphragm' },
       { label: 'Bluetooth', value: 'Version 5.4' },
@@ -227,14 +227,14 @@ const products = [
     img: '/images/IMG-20260524-WA0072.jpg',
     icon: '🎮',
     name: 'PS4 Slim 500GB + 1 Controller',
-    brand: 'Sony',
+    brand: 'PS4',
     price: 'KSh 28,000',
     oldPrice: null,
     badge: 'SALE',
     sku: 'WA0072-500',
     category: 'Gaming Consoles',
     description:
-      'The PlayStation 4 Slim 500GB is a slimmer, quieter, and more power-efficient PS4. Ex-UK unit with 1 DualShock 4 controller included. Supports all PS4 games, HDR gaming, Blu-ray, and streaming apps like Netflix and YouTube.',
+      'The PlayStation 4 Slim 500GB is a slimmer, quieter, and more power-efficient PS4. Ex-UK unit with 1 DualShock 4 controller included.\n\nMain Features:\n- Supports all PS4 games\n- HDR gaming\n- Blu-ray and DVD playback\n- Netflix and YouTube apps\n- 1 DualShock 4 controller included\n\nCondition:\n- Ex-UK unit, tested and working',
     specs: [
       { label: 'CPU', value: '8-core AMD Jaguar' },
       { label: 'GPU', value: 'AMD Radeon, 1.84 TFLOPS' },
@@ -253,14 +253,14 @@ const products = [
     img: '/images/IMG-20260524-WA0072.jpg',
     icon: '🎮',
     name: 'PS4 Slim 1TB + 1 Controller',
-    brand: 'Sony',
+    brand: 'PS4',
     price: 'KSh 31,000',
     oldPrice: null,
     badge: 'SALE',
     sku: 'WA0072-1TB',
     category: 'Gaming Consoles',
     description:
-      'The PlayStation 4 Slim 1TB is a slimmer, quieter, and more power-efficient PS4 with double the storage. Ex-UK unit with 1 DualShock 4 controller included. Supports all PS4 games, HDR gaming, Blu-ray, and streaming apps like Netflix and YouTube.',
+      'The PlayStation 4 Slim 1TB is a slimmer, quieter, and more power-efficient PS4 with double the storage. Ex-UK unit with 1 DualShock 4 controller included.\n\nMain Features:\n- 1TB internal storage\n- Supports all PS4 games\n- HDR gaming\n- Blu-ray and DVD playback\n- 1 DualShock 4 controller included\n\nCondition:\n- Ex-UK unit, tested and working',
     specs: [
       { label: 'CPU', value: '8-core AMD Jaguar' },
       { label: 'GPU', value: 'AMD Radeon, 1.84 TFLOPS' },
@@ -286,7 +286,7 @@ const products = [
     sku: 'WA0077',
     category: 'Headphones',
     description:
-      'The Sony WH-1000XM5 are flagship wireless noise-canceling headphones built for premium sound quality, industry-leading ANC, excellent call quality, and all-day comfort. Considered among the best over-ear ANC headphones available today.',
+      'The Sony WH-1000XM5 are flagship wireless noise-canceling headphones built for premium sound quality, industry-leading ANC, excellent call quality, and all-day comfort.\n\nMain Features:\n- Industry-leading active noise cancellation\n- Up to 30 hours battery with ANC on\n- LDAC Hi-Res audio support\n- 8 microphones for crystal-clear calls\n- Lightweight comfort (250g)\n- Multipoint connection',
     specs: [
       { label: 'Driver Size', value: '30mm dynamic drivers' },
       { label: 'Bluetooth', value: 'Version 5.2' },
@@ -314,7 +314,7 @@ const products = [
     sku: 'WA0078',
     category: 'Bluetooth Speakers',
     description:
-      'The JBL Xtreme 4 is a premium portable Bluetooth speaker built for powerful outdoor sound, deep bass, rugged durability, and long battery life. Features AI Sound Boost, Auracast multi-speaker connection, and a built-in power bank. Available in Black and Blue.',
+      'The JBL Xtreme 4 is a premium portable Bluetooth speaker built for powerful outdoor sound, deep bass, rugged durability, and long battery life.\n\nMain Features:\n- AI Sound Boost\n- Up to 30 hours battery (Playtime Boost)\n- IP67 waterproof & dustproof\n- Auracast multi-speaker connection\n- Built-in power bank to charge devices\n- Available in Black and Blue',
     specs: [
       { label: 'Audio System', value: 'Dual woofers + dual tweeters + passive radiators' },
       { label: 'Bluetooth', value: 'Version 5.3' },
@@ -333,14 +333,14 @@ const products = [
     img: '/images/IMG-20260524-WA0073.jpg',
     icon: '🎮',
     name: 'PS4 Standard 500GB + 1 Controller',
-    brand: 'Sony',
+    brand: 'PS4',
     price: 'KSh 25,000',
     oldPrice: null,
     badge: 'SALE',
     sku: 'WA0073-500',
     category: 'Gaming Consoles',
     description:
-      'The original PlayStation 4 Standard 500GB — the console that started it all. Ex-UK unit with 1 DualShock 4 controller. Access a massive library of PS4 exclusives, Blu-ray, Netflix, YouTube, and online multiplayer.',
+      'The original PlayStation 4 Standard 500GB — the console that started it all. Ex-UK unit with 1 DualShock 4 controller.\n\nMain Features:\n- Massive PS4 game library\n- Blu-ray and DVD playback\n- Netflix and YouTube apps\n- Online multiplayer support\n- 1 DualShock 4 controller included\n\nCondition:\n- Ex-UK unit, tested and working',
     specs: [
       { label: 'CPU', value: '8-core AMD Jaguar' },
       { label: 'GPU', value: 'AMD Radeon, 1.84 TFLOPS' },
@@ -358,14 +358,14 @@ const products = [
     img: '/images/IMG-20260524-WA0073.jpg',
     icon: '🎮',
     name: 'PS4 Standard 1TB + 1 Controller',
-    brand: 'Sony',
+    brand: 'PS4',
     price: 'KSh 29,000',
     oldPrice: null,
     badge: 'SALE',
     sku: 'WA0073-1TB',
     category: 'Gaming Consoles',
     description:
-      'The original PlayStation 4 Standard 1TB — the console that started it all. Ex-UK unit with 1 DualShock 4 controller and double the storage. Access a massive library of PS4 exclusives, Blu-ray, Netflix, YouTube, and online multiplayer.',
+      'The original PlayStation 4 Standard 1TB — the console that started it all. Ex-UK unit with 1 DualShock 4 controller and double the storage.\n\nMain Features:\n- 1TB internal storage\n- Massive PS4 game library\n- Blu-ray and DVD playback\n- Netflix and YouTube apps\n- Online multiplayer support\n- 1 DualShock 4 controller included\n\nCondition:\n- Ex-UK unit, tested and working',
     specs: [
       { label: 'CPU', value: '8-core AMD Jaguar' },
       { label: 'GPU', value: 'AMD Radeon, 1.84 TFLOPS' },
@@ -390,7 +390,7 @@ const products = [
     sku: 'WA0076',
     category: 'Headphones',
     description:
-      'The Sony WH-CH720N are lightweight wireless over-ear headphones designed for everyday music listening, active noise cancellation, long battery life, and comfortable all-day use. Ideal for commuting, students, and office use.',
+      'The Sony WH-CH720N are lightweight wireless over-ear headphones designed for everyday music listening, active noise cancellation, long battery life, and comfortable all-day use.\n\nMain Features:\n- Active noise cancellation\n- Up to 35 hours battery with ANC\n- Lightweight 192g design\n- Multipoint connection\n- Quick charge (3 min = 1 hour playback)\n- Perfect for commuting and office use',
     specs: [
       { label: 'Driver Size', value: '30mm dynamic drivers' },
       { label: 'Bluetooth', value: 'Version 5.2' },
@@ -418,7 +418,7 @@ const products = [
     sku: 'WA0080',
     category: 'Soundbars',
     description:
-      'The JBL Bar 800 MK2 is a premium 7.1-channel soundbar system with detachable wireless surround speakers, a 10-inch wireless subwoofer, and Dolby Atmos support. Perfect for home theater, PS5/Xbox gaming, and movie lovers who want immersive cinematic audio without messy cables.',
+      'The JBL Bar 800 MK2 is a premium 7.1-channel soundbar system with detachable wireless surround speakers, a 10-inch wireless subwoofer, and Dolby Atmos support.\n\nMain Features:\n- 7.1 channel surround sound\n- Detachable wireless rear speakers\n- 10-inch wireless subwoofer\n- Dolby Atmos & DTS Virtual:X\n- 780W total peak power\n- HDR10+ and Dolby Vision pass-through\n\nPerfect For:\n- Home theater setups\n- PS5/Xbox gaming\n- Movie nights',
     specs: [
       { label: 'Sound System', value: '7.1 channels' },
       { label: 'Total Power', value: '780W peak / 390W RMS' },
@@ -445,7 +445,7 @@ const products = [
     sku: 'WA0081',
     category: 'Soundbars',
     description:
-      'The TCL S55H is a 2.1-channel Dolby Atmos soundbar with a wireless subwoofer, AI Sonic-Adaptation room calibration, and HDMI eARC connectivity. A great budget upgrade from built-in TV speakers — perfect for bedroom setups, gaming, and small living rooms.',
+      'The TCL S55H is a 2.1-channel Dolby Atmos soundbar with a wireless subwoofer, AI Sonic-Adaptation room calibration, and HDMI eARC connectivity.\n\nMain Features:\n- 2.1 channel with wireless subwoofer\n- Dolby Atmos & DTS Virtual:X\n- AI Sonic-Adaptation room calibration\n- HDMI eARC connectivity\n- TCL TV integration (Tutti Choral)\n- Wall-mountable\n\nPerfect For:\n- Bedroom setups\n- Small living rooms\n- Budget-friendly soundbar upgrade',
     specs: [
       { label: 'Channels', value: '2.1-channel' },
       { label: 'Power Output', value: 'Around 220W total' },
