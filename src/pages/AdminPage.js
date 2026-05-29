@@ -22,6 +22,7 @@ const BADGES = ['', 'SALE', 'NEW', 'HOT'];
 const HERO_CATEGORIES = [
   { value: 'gaming', label: 'Gaming' },
   { value: 'gaming-consoles', label: 'Gaming Consoles' },
+  { value: 'gaming-accessories', label: 'Gaming Accessories' },
   { value: 'ps5-games', label: 'PS5 Games' },
   { value: 'ps4-games', label: 'PS4 Games' },
   { value: 'phones', label: 'Phones' },
@@ -30,8 +31,10 @@ const HERO_CATEGORIES = [
   { value: 'audio', label: 'Audio & Sound' },
   { value: 'headphones', label: 'Headphones' },
   { value: 'tv-streaming', label: 'TV & Streaming' },
+  { value: 'streaming-devices', label: 'Streaming Devices' },
 ];
 
+const PRODUCTS_PER_ADMIN_PAGE = 10;
 const emptySpec = () => ({ label: '', value: '' });
 
 const refreshBtn = {
@@ -129,13 +132,13 @@ export default function AdminPage() {
     description: '', icon: '📦', tags: '',
   });
   const [customBrand, setCustomBrand] = useState(false);
-  const [productPage, setProductPage] = useState(1);
-  const PRODUCTS_PER_ADMIN_PAGE = 10;
   const [specs, setSpecs] = useState([emptySpec()]);
   const [imageFiles, setImageFiles] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [savingProduct, setSavingProduct] = useState(false);
+  const [productPage, setProductPage] = useState(1);
+  const [productSearch, setProductSearch] = useState('');
 
   // Hero
   const [heroSlides, setHeroSlides] = useState([]);
@@ -182,16 +185,16 @@ export default function AdminPage() {
   };
 
   // ── Load ──
- const loadProducts = async () => {
-  setLoadingProducts(true);
-  const { data } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false });
-  setProducts(data || []);
-  setProductPage(1);  // ← add this
-  setLoadingProducts(false);
-};
+  const loadProducts = async () => {
+    setLoadingProducts(true);
+    const { data } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+    setProducts(data || []);
+    setProductPage(1);
+    setLoadingProducts(false);
+  };
 
   const loadHeroSlides = async () => {
     const { data } = await supabase
@@ -527,6 +530,19 @@ export default function AdminPage() {
         }
         .deals-add-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .deals-add-row > div { flex: 1; min-width: 0; }
+        .admin-pagination {
+          display: flex; justify-content: center;
+          align-items: center; gap: 8px;
+          margin-top: 20px; flex-wrap: wrap;
+        }
+        .admin-page-btn {
+          background: #fff; border: 1.5px solid #e0f7fa;
+          color: #0097a7; padding: 8px 14px;
+          font-size: 12px; font-weight: 700;
+          border-radius: 8px; cursor: pointer;
+          font-family: Inter, sans-serif;
+        }
+        .admin-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         @media (max-width: 600px) {
           .admin-grid { grid-template-columns: 1fr !important; }
@@ -624,7 +640,10 @@ export default function AdminPage() {
                       value={productForm.category}
                       placeholder="Select category..."
                       options={Object.keys(CATEGORY_DATA).map(c => ({ value: c, label: c }))}
-                      onChange={val => setProductForm({ ...productForm, category: val, brand: '' })}
+                      onChange={val => {
+                        setProductForm({ ...productForm, category: val, brand: '' });
+                        setCustomBrand(false);
+                      }}
                     />
                   </div>
                   <div className="field-group">
@@ -792,7 +811,6 @@ export default function AdminPage() {
                     )}
                   </div>
 
-                  {/* New image previews */}
                   {imageFiles.length > 0 && (
                     <div style={{ marginBottom: 12 }}>
                       <p style={{ fontSize: 11, color: '#888', marginBottom: 8 }}>
@@ -812,7 +830,6 @@ export default function AdminPage() {
                     </div>
                   )}
 
-                  {/* Existing images */}
                   {existingImages.length > 0 && (
                     <div>
                       <div style={{
@@ -884,6 +901,43 @@ export default function AdminPage() {
               </div>
             )}
 
+            {/* Search bar */}
+            {!loadingProducts && products.length > 0 && (
+              <div style={{ marginBottom: 16, position: 'relative' }}>
+                <input
+                  type="text"
+                  placeholder="🔍 Search by name, SKU, brand, or category..."
+                  value={productSearch}
+                  onChange={e => {
+                    setProductSearch(e.target.value);
+                    setProductPage(1);
+                  }}
+                  style={{
+                    ...inputStyle,
+                    paddingRight: productSearch ? 40 : 12,
+                  }}
+                />
+                {productSearch && (
+                  <button
+                    onClick={() => { setProductSearch(''); setProductPage(1); }}
+                    style={{
+                      position: 'absolute', right: 8, top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: '#fff0f0', color: '#e63946',
+                      border: 'none', borderRadius: '50%',
+                      width: 26, height: 26, fontSize: 12,
+                      fontWeight: 700, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: 'Inter, sans-serif',
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            )}
+
             {loadingProducts ? (
               <div style={{ textAlign: 'center', padding: 40, color: '#888' }}>
                 Loading products...
@@ -894,105 +948,126 @@ export default function AdminPage() {
                 <p>No products yet. Add your first product!</p>
               </div>
             ) : (
-            <>
-              {products
-                .slice(
-                  (productPage - 1) * PRODUCTS_PER_ADMIN_PAGE,
-                  productPage * PRODUCTS_PER_ADMIN_PAGE
-                )
-                .map(p => (
-                  <div key={p.id} className="p-row">
-                    <div className="p-row-info">
-                      {p.images?.[0] ? (
-                        <img src={p.images[0]} alt={p.name} style={{
-                          width: 52, height: 52, objectFit: 'cover',
-                          borderRadius: 8, flexShrink: 0,
-                        }} />
-                      ) : (
-                        <div style={{
-                          width: 52, height: 52, background: '#f5f5f5',
-                          borderRadius: 8, display: 'flex', alignItems: 'center',
-                          justifyContent: 'center', fontSize: 22, flexShrink: 0,
-                        }}>
-                          {p.icon}
+              <>
+                {(() => {
+                  const searchLower = productSearch.toLowerCase();
+                  const searchedProducts = productSearch
+                    ? products.filter(p =>
+                        p.name?.toLowerCase().includes(searchLower) ||
+                        p.sku?.toLowerCase().includes(searchLower) ||
+                        p.brand?.toLowerCase().includes(searchLower) ||
+                        p.category?.toLowerCase().includes(searchLower)
+                      )
+                    : products;
+
+                  const totalAdminPages = Math.ceil(searchedProducts.length / PRODUCTS_PER_ADMIN_PAGE);
+                  const startIdx = (productPage - 1) * PRODUCTS_PER_ADMIN_PAGE;
+                  const paginated = searchedProducts.slice(startIdx, startIdx + PRODUCTS_PER_ADMIN_PAGE);
+
+                  if (searchedProducts.length === 0) {
+                    return (
+                      <div style={{ textAlign: 'center', padding: 40, color: '#888' }}>
+                        <div style={{ fontSize: 36, marginBottom: 8 }}>🔍</div>
+                        <p style={{ fontSize: 13 }}>No products match "{productSearch}"</p>
+                        <button onClick={() => setProductSearch('')}
+                          style={{
+                            marginTop: 12, background: '#0097a7',
+                            color: '#fff', border: 'none',
+                            padding: '8px 16px', borderRadius: 8,
+                            fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                            fontFamily: 'Inter, sans-serif',
+                          }}>
+                          Clear search
+                        </button>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <>
+                      {productSearch && (
+                        <p style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>
+                          Found <strong style={{ color: '#0097a7' }}>{searchedProducts.length}</strong> result(s)
+                        </p>
+                      )}
+
+                      {paginated.map(p => (
+                        <div key={p.id} className="p-row">
+                          <div className="p-row-info">
+                            {p.images?.[0] ? (
+                              <img src={p.images[0]} alt={p.name} style={{
+                                width: 52, height: 52, objectFit: 'cover',
+                                borderRadius: 8, flexShrink: 0,
+                              }} />
+                            ) : (
+                              <div style={{
+                                width: 52, height: 52, background: '#f5f5f5',
+                                borderRadius: 8, display: 'flex', alignItems: 'center',
+                                justifyContent: 'center', fontSize: 22, flexShrink: 0,
+                              }}>
+                                {p.icon}
+                              </div>
+                            )}
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{
+                                fontWeight: 700, fontSize: 13, color: '#111',
+                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                              }}>
+                                {p.name}
+                              </div>
+                              <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
+                                {p.brand} · {p.category} · {p.sku}
+                              </div>
+                              <div style={{ fontSize: 13, fontWeight: 700, color: '#0097a7', marginTop: 2 }}>
+                                {p.price}
+                                {p.old_price && (
+                                  <span style={{ fontSize: 11, color: '#ccc', textDecoration: 'line-through', marginLeft: 8 }}>
+                                    {p.old_price}
+                                  </span>
+                                )}
+                                {p.badge && (
+                                  <span style={{
+                                    marginLeft: 8, background: '#e63946', color: '#fff',
+                                    fontSize: 9, padding: '2px 6px', borderRadius: 4, fontWeight: 800,
+                                  }}>
+                                    {p.badge}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="p-row-actions">
+                            <button onClick={() => handleEditProduct(p)} style={editBtn}>✏️ Edit</button>
+                            <button onClick={() => handleDeleteProduct(p.id)} style={deleteBtn}>🗑️</button>
+                          </div>
+                        </div>
+                      ))}
+
+                      {totalAdminPages > 1 && (
+                        <div className="admin-pagination">
+                          <button
+                            className="admin-page-btn"
+                            onClick={() => setProductPage(productPage - 1)}
+                            disabled={productPage === 1}>
+                            ← Prev
+                          </button>
+                          <span style={{ fontSize: 13, color: '#666', padding: '0 12px' }}>
+                            Page <strong style={{ color: '#0097a7' }}>{productPage}</strong> of{' '}
+                            <strong>{totalAdminPages}</strong>
+                          </span>
+                          <button
+                            className="admin-page-btn"
+                            onClick={() => setProductPage(productPage + 1)}
+                            disabled={productPage >= totalAdminPages}>
+                            Next →
+                          </button>
                         </div>
                       )}
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{
-                          fontWeight: 700, fontSize: 13, color: '#111',
-                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                        }}>
-                          {p.name}
-                        </div>
-                        <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
-                          {p.brand} · {p.category} · {p.sku}
-                        </div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#0097a7', marginTop: 2 }}>
-                          {p.price}
-                          {p.old_price && (
-                            <span style={{ fontSize: 11, color: '#ccc', textDecoration: 'line-through', marginLeft: 8 }}>
-                              {p.old_price}
-                            </span>
-                          )}
-                          {p.badge && (
-                            <span style={{
-                              marginLeft: 8, background: '#e63946', color: '#fff',
-                              fontSize: 9, padding: '2px 6px', borderRadius: 4, fontWeight: 800,
-                            }}>
-                              {p.badge}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-row-actions">
-                      <button onClick={() => handleEditProduct(p)} style={editBtn}>✏️ Edit</button>
-                      <button onClick={() => handleDeleteProduct(p.id)} style={deleteBtn}>🗑️</button>
-                    </div>
-                  </div>
-                ))}
-
-              {/* Admin pagination */}
-              {products.length > PRODUCTS_PER_ADMIN_PAGE && (
-                <div style={{
-                  display: 'flex', justifyContent: 'center',
-                  alignItems: 'center', gap: 8,
-                  marginTop: 20, flexWrap: 'wrap',
-                }}>
-                  <button
-                    onClick={() => setProductPage(productPage - 1)}
-                    disabled={productPage === 1}
-                    style={{
-                      background: '#fff', border: '1.5px solid #e0f7fa',
-                      color: '#0097a7', padding: '8px 14px',
-                      fontSize: 12, fontWeight: 700, borderRadius: 8,
-                      cursor: productPage === 1 ? 'not-allowed' : 'pointer',
-                      opacity: productPage === 1 ? 0.4 : 1,
-                      fontFamily: 'Inter, sans-serif',
-                    }}>
-                    ← Prev
-                  </button>
-                  <span style={{ fontSize: 13, color: '#666', padding: '0 12px' }}>
-                    Page <strong style={{ color: '#0097a7' }}>{productPage}</strong> of{' '}
-                    <strong>{Math.ceil(products.length / PRODUCTS_PER_ADMIN_PAGE)}</strong>
-                  </span>
-                  <button
-                    onClick={() => setProductPage(productPage + 1)}
-                    disabled={productPage >= Math.ceil(products.length / PRODUCTS_PER_ADMIN_PAGE)}
-                    style={{
-                      background: '#fff', border: '1.5px solid #e0f7fa',
-                      color: '#0097a7', padding: '8px 14px',
-                      fontSize: 12, fontWeight: 700, borderRadius: 8,
-                      cursor: productPage >= Math.ceil(products.length / PRODUCTS_PER_ADMIN_PAGE) ? 'not-allowed' : 'pointer',
-                      opacity: productPage >= Math.ceil(products.length / PRODUCTS_PER_ADMIN_PAGE) ? 0.4 : 1,
-                      fontFamily: 'Inter, sans-serif',
-                    }}>
-                    Next →
-                  </button>
-                </div>
-              )}
-            </>
-          )}
+                    </>
+                  );
+                })()}
+              </>
+            )}
           </div>
         )}
 
