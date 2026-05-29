@@ -20,7 +20,8 @@ const categoryMap = {
   'soundbars':          ['Soundbars'],
   'audio':              ['Headphones', 'Earbuds', 'Bluetooth Speakers', 'Soundbars'],
   'televisions':        ['Televisions'],
-  'tv-streaming':       ['Televisions'],
+  'streaming-devices':  ['Streaming Devices'],
+  'tv-streaming':       ['Televisions', 'Streaming Devices'],
 };
 
 const slugToTitle = {
@@ -39,7 +40,7 @@ const slugToTitle = {
   'soundbars':          'Soundbars',
   'audio':              'Audio & Sound',
   'televisions':        'Televisions',
-  'tv-streaming':       'TV & Streaming',
+  'streaming-devices':  'Streaming Devices',
 };
 
 const allSidebarCategories = [
@@ -76,8 +77,9 @@ const allSidebarCategories = [
     label: 'TV & Streaming', slug: 'tv-streaming', icon: '📺',
     children: [
       { label: 'Televisions', slug: 'televisions' },
+      { label: 'Streaming Devices', slug: 'streaming-devices' },
     ],
-  },
+},
 ];
 
 export default function CategoryPage() {

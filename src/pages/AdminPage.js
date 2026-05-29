@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 
 const CATEGORY_DATA = {
-  'Gaming Consoles': { parent: 'Gaming', brands: ['Portable', 'Xbox', 'Nintendo', 'PS3', 'PS4', 'PS5'] },
+  'Gaming Consoles': { parent: 'Gaming', brands: ['PS3', 'PS4', 'PS5', 'Xbox', 'Nintendo', 'Portable'] },
   'PS5 Games': { parent: 'Gaming', brands: ['Sony', 'Pearl Abyss', 'Sucker Punch', 'Ubisoft', 'EA', 'Activision'] },
   'PS4 Games': { parent: 'Gaming', brands: ['Sony', 'Pearl Abyss', 'Sucker Punch', 'Ubisoft', 'EA', 'Activision'] },
-  'Gaming Accessories': { parent: 'Gaming', brands: ['PS4', 'PS5', 'Nintendo', 'Xbox', 'VR', 'Driving Wheel', 'Handheld', 'Game Pad'] },
+  'Gaming Accessories': { parent: 'Gaming', brands: ['PS4', 'PS5', 'Nintendo', 'Xbox', 'VR', 'Driving Wheel', 'Handheld'] },
   'Smartphones': { parent: 'Phones', brands: ['Apple', 'Samsung', 'Google', 'Nothing', 'Redmi', 'Xiaomi'] },
   'Tablets': { parent: 'Phones', brands: ['Apple', 'Samsung', 'Modio'] },
   'Laptops': { parent: 'Laptops', brands: ['HP', 'Lenovo', 'Dell', 'Apple', 'Asus', 'Acer'] },
@@ -15,6 +15,7 @@ const CATEGORY_DATA = {
   'Bluetooth Speakers': { parent: 'Audio & Sound', brands: ['JBL', 'Sony', 'Oraimo', 'Soundcore', 'Harman Kardon', 'Beats'] },
   'Soundbars': { parent: 'Audio & Sound', brands: ['JBL', 'Sony', 'Samsung', 'TCL', 'Hisense'] },
   'Televisions': { parent: 'TV & Streaming', brands: ['TCL', 'Samsung', 'LG', 'Hisense', 'Vitron'] },
+  'Streaming Devices': { parent: 'TV & Streaming', brands: ['Fire Stick', 'Google', 'Xiaomi', 'Apple'] },
 };
 
 const BADGES = ['', 'SALE', 'NEW', 'HOT'];
@@ -127,6 +128,7 @@ export default function AdminPage() {
     price: '', old_price: '', badge: '',
     description: '', icon: '📦', tags: '',
   });
+  const [customBrand, setCustomBrand] = useState(false);
   const [specs, setSpecs] = useState([emptySpec()]);
   const [imageFiles, setImageFiles] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
@@ -290,10 +292,13 @@ export default function AdminPage() {
     setExistingImages([]);
     setEditingProduct(null);
     setShowProductForm(false);
+    setCustomBrand(false);
   };
 
   const handleEditProduct = (p) => {
     setEditingProduct(p);
+    const categoryBrands = CATEGORY_DATA[p.category]?.brands || [];
+    setCustomBrand(p.brand && !categoryBrands.includes(p.brand));
     setProductForm({
       sku: p.sku, name: p.name, brand: p.brand,
       category: p.category, price: p.price,
@@ -624,18 +629,29 @@ export default function AdminPage() {
                     {currentBrands.length > 0 ? (
                       <>
                         <CustomSelect
-                          value={productForm.brand}
+                          value={customBrand ? '__other__' : productForm.brand}
                           placeholder="Select brand..."
                           options={[
                             ...currentBrands.map(b => ({ value: b, label: b })),
                             { value: '__other__', label: '✏️ Other (type below)' },
                           ]}
-                          onChange={val => setProductForm({ ...productForm, brand: val })}
+                          onChange={val => {
+                            if (val === '__other__') {
+                              setCustomBrand(true);
+                              setProductForm({ ...productForm, brand: '' });
+                            } else {
+                              setCustomBrand(false);
+                              setProductForm({ ...productForm, brand: val });
+                            }
+                          }}
                         />
-                        {productForm.brand === '__other__' && (
-                          <input style={{ ...inputStyle, marginTop: 8 }}
+                        {customBrand && (
+                          <input
+                            style={{ ...inputStyle, marginTop: 8 }}
                             placeholder="Type brand name"
-                            onChange={e => setProductForm({ ...productForm, brand: e.target.value })} />
+                            value={productForm.brand}
+                            onChange={e => setProductForm({ ...productForm, brand: e.target.value })}
+                          />
                         )}
                       </>
                     ) : (

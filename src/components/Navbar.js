@@ -38,8 +38,9 @@ const menuData = [
     label: 'TV & Streaming', slug: 'tv-streaming',
     sub: [
       { label: 'Televisions', slug: 'televisions', brands: ['TCL', 'LG', 'Samsung', 'Vitron', 'Hisense'] },
+      { label: 'Streaming Devices', slug: 'streaming-devices', brands: ['Fire Stick', 'Google', 'Xiaomi', 'Apple'] },
     ],
-  },
+},
 ];
 
 export default function Navbar({ onCartClick }) {
