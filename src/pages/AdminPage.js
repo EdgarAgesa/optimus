@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
+import '../styles/AdminPage.css';
 
 const CATEGORY_DATA = {
   'Gaming Consoles': { parent: 'Gaming', brands: ['PS3', 'PS4', 'PS5', 'Xbox', 'Nintendo', 'Portable'] },
@@ -37,73 +38,33 @@ const HERO_CATEGORIES = [
 const PRODUCTS_PER_ADMIN_PAGE = 10;
 const emptySpec = () => ({ label: '', value: '' });
 
-const refreshBtn = {
-  background: '#f0fafb', color: '#0097a7',
-  border: '1.5px solid #e0f7fa', borderRadius: 8,
-  padding: '11px 16px', fontSize: 13, fontWeight: 700,
-  cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-};
-
 // ── Custom Select ──
 function CustomSelect({ value, onChange, options, placeholder = 'Select...' }) {
   const [open, setOpen] = useState(false);
   const selected = options.find(o => o.value === value);
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
+    <div className="cs-wrap">
       <div
         onClick={() => setOpen(!open)}
-        style={{
-          width: '100%',
-          border: `1.5px solid ${open ? '#0097a7' : '#e0e0e0'}`,
-          borderRadius: 8, padding: '11px 14px',
-          fontSize: 16, fontFamily: 'Inter, sans-serif',
-          color: selected ? '#111' : '#aaa',
-          background: '#fff', boxSizing: 'border-box',
-          cursor: 'pointer', display: 'flex',
-          justifyContent: 'space-between', alignItems: 'center',
-          userSelect: 'none', minHeight: 46,
-        }}
+        className={`cs-trigger ${open ? 'open' : ''} ${selected ? '' : 'placeholder'}`}
       >
-        <span style={{
-          overflow: 'hidden', textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap', flex: 1,
-        }}>
+        <span className="cs-label">
           {selected ? selected.label : placeholder}
         </span>
-        <span style={{
-          fontSize: 10, color: '#0097a7', marginLeft: 8, flexShrink: 0,
-          display: 'inline-block', transition: 'transform .2s',
-          transform: open ? 'rotate(180deg)' : 'rotate(0)',
-        }}>▼</span>
+        <span className={`cs-chevron ${open ? 'open' : ''}`}>▼</span>
       </div>
 
       {open && (
         <>
-          <div onClick={() => setOpen(false)}
-            style={{ position: 'fixed', inset: 0, zIndex: 9990, background: 'transparent' }} />
-          <div style={{
-            position: 'absolute', top: 'calc(100% + 4px)',
-            left: 0, right: 0, background: '#fff',
-            border: '1.5px solid #e0f7fa', borderTop: '3px solid #0097a7',
-            borderRadius: '0 0 12px 12px',
-            boxShadow: '0 16px 48px rgba(0,151,167,0.18)',
-            zIndex: 9999, maxHeight: 280, overflowY: 'auto',
-          }}>
+          <div onClick={() => setOpen(false)} className="cs-backdrop" />
+          <div className="cs-dropdown">
             {options.map((opt) => (
               <div key={opt.value}
                 onClick={() => { onChange(opt.value); setOpen(false); }}
-                style={{
-                  padding: '13px 16px', fontSize: 15,
-                  fontFamily: 'Inter, sans-serif', cursor: 'pointer',
-                  color: opt.value === value ? '#0097a7' : '#333',
-                  fontWeight: opt.value === value ? 700 : 400,
-                  background: opt.value === value ? '#e0f7fa' : '#fff',
-                  borderBottom: '1px solid #f5f5f5',
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                }}>
+                className={`cs-option ${opt.value === value ? 'selected' : ''}`}>
                 <span>{opt.label}</span>
-                {opt.value === value && <span style={{ color: '#0097a7', fontSize: 16 }}>✓</span>}
+                {opt.value === value && <span className="cs-check">✓</span>}
               </div>
             ))}
           </div>
@@ -412,39 +373,27 @@ export default function AdminPage() {
   // ── Login ──
   if (!authed) {
     return (
-      <div style={{
-        minHeight: '100vh', background: '#f5f6fa',
-        display: 'flex', alignItems: 'center',
-        justifyContent: 'center', padding: 20,
-        fontFamily: 'Inter, sans-serif',
-      }}>
-        <div style={{
-          background: '#fff', borderRadius: 16,
-          padding: 32, width: '100%', maxWidth: 380,
-          boxShadow: '0 8px 40px rgba(0,0,0,0.1)',
-        }}>
-          <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <img src="/images/logo.png" alt="logo"
-              style={{ height: 56, marginBottom: 12, objectFit: 'contain' }} />
-            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0d2b33' }}>Admin Panel</h2>
-            <p style={{ fontSize: 13, color: '#888', marginTop: 4 }}>Optimus Sphere Tech</p>
+      <div className="adm-login-page">
+        <div className="adm-login-card">
+          <div className="adm-login-header">
+            <img src="/images/logo.png" alt="logo" className="adm-login-logo" />
+            <h2 className="adm-login-title">Admin Panel</h2>
+            <p className="adm-login-sub">Optimus Sphere Tech</p>
           </div>
-          <label style={labelStyle}>Username</label>
-          <input style={inputStyle} placeholder="admin"
+          <label className="adm-label">Username</label>
+          <input className="adm-input" placeholder="admin"
             value={username} onChange={e => setUsername(e.target.value)} />
-          <label style={{ ...labelStyle, marginTop: 14 }}>Password</label>
-          <input type="password" style={inputStyle} placeholder="••••••••"
+          <label className="adm-label adm-label-mt">Password</label>
+          <input type="password" className="adm-input" placeholder="••••••••"
             value={password} onChange={e => setPassword(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') handleLogin(); }} />
           {loginError && (
-            <p style={{ color: '#e63946', fontSize: 12, marginTop: 8 }}>{loginError}</p>
+            <p className="adm-login-error">{loginError}</p>
           )}
-          <button onClick={handleLogin}
-            style={{ ...primaryBtn, width: '100%', marginTop: 20, padding: '14px 0', fontSize: 15 }}>
+          <button onClick={handleLogin} className="adm-primary-btn adm-login-submit">
             Login
           </button>
-          <button onClick={() => navigate('/')}
-            style={{ ...cancelBtn, width: '100%', marginTop: 10, padding: '12px 0' }}>
+          <button onClick={() => navigate('/')} className="adm-cancel-btn adm-login-back">
             ← Back to Store
           </button>
         </div>
@@ -454,126 +403,19 @@ export default function AdminPage() {
 
   // ── Dashboard ──
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f6fa', fontFamily: 'Inter, sans-serif' }}>
-      <style>{`
-        * { box-sizing: border-box; }
-        .admin-tabs-bar {
-          background: #fff; border-bottom: 1px solid #eee;
-          overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
-        }
-        .admin-tabs-bar::-webkit-scrollbar { display: none; }
-        .admin-tabs-inner { display: flex; padding: 0 14px; min-width: max-content; }
-        .admin-tab-btn {
-          padding: 14px 16px; border: none; background: none;
-          font-size: 13px; font-weight: 700; cursor: pointer;
-          white-space: nowrap; font-family: Inter, sans-serif;
-          border-bottom: 3px solid transparent;
-          transition: color .15s, border-color .15s;
-        }
-        .admin-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-          gap: 14px; margin-bottom: 16px;
-        }
-        .field-group { display: flex; flex-direction: column; }
-        .field-group label {
-          font-size: 10px; font-weight: 700; color: #888;
-          text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
-        }
-        .spec-row {
-          display: grid; grid-template-columns: 1fr 1fr 40px;
-          gap: 8px; margin-bottom: 8px; align-items: center;
-        }
-        .img-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .img-thumb {
-          position: relative; width: 72px; height: 72px; flex-shrink: 0;
-          cursor: grab;
-        }
-        .img-thumb:active { cursor: grabbing; opacity: 0.8; }
-        .img-thumb img {
-          width: 100%; height: 100%; object-fit: cover;
-          border-radius: 8px; border: 1px solid #eee;
-        }
-        .img-thumb-del {
-          position: absolute; top: -6px; right: -6px;
-          background: #e63946; color: #fff; border: none;
-          width: 20px; height: 20px; border-radius: 50%;
-          font-size: 11px; cursor: pointer;
-          display: flex; align-items: center; justify-content: center; font-weight: 700;
-        }
-        .p-row {
-          background: #fff; border: 1px solid #eee; border-radius: 12px;
-          padding: 14px 16px; display: flex; align-items: center;
-          justify-content: space-between; gap: 12px; margin-bottom: 10px;
-        }
-        .p-row-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
-        .p-row-actions { display: flex; gap: 8px; flex-shrink: 0; }
-        .d-row {
-          background: #fff; border: 1px solid #eee; border-radius: 12px;
-          padding: 12px 16px; display: flex; align-items: center;
-          justify-content: space-between; gap: 12px; margin-bottom: 8px;
-        }
-        .form-card {
-          background: #fff; border-radius: 14px; padding: 20px;
-          margin-bottom: 20px; border: 1px solid #eee;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-        }
-        .form-title {
-          font-size: 15px; font-weight: 800; color: #111;
-          margin-bottom: 18px; padding-bottom: 12px;
-          border-bottom: 2px solid #e0f7fa;
-        }
-        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        .section-header {
-          display: flex; justify-content: space-between;
-          align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
-        }
-        .deals-add-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .deals-add-row > div { flex: 1; min-width: 0; }
-        .admin-pagination {
-          display: flex; justify-content: center;
-          align-items: center; gap: 8px;
-          margin-top: 20px; flex-wrap: wrap;
-        }
-        .admin-page-btn {
-          background: #fff; border: 1.5px solid #e0f7fa;
-          color: #0097a7; padding: 8px 14px;
-          font-size: 12px; font-weight: 700;
-          border-radius: 8px; cursor: pointer;
-          font-family: Inter, sans-serif;
-        }
-        .admin-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        @media (max-width: 600px) {
-          .admin-grid { grid-template-columns: 1fr !important; }
-          .spec-row { grid-template-columns: 1fr 1fr 40px; }
-          .p-row { flex-wrap: wrap; }
-          .p-row-actions { width: 100%; }
-          .p-row-actions button { flex: 1; }
-          .d-row { flex-wrap: wrap; }
-          .d-row > button { width: 100%; margin-top: 8px; }
-          .btn-row button { flex: 1; }
-          .deals-add-row { flex-direction: column; }
-          .deals-add-row button { width: 100%; }
-        }
-      `}</style>
-
+    <div className="adm-page">
       {/* Top bar */}
-      <div style={{
-        background: 'linear-gradient(135deg, #0d2b33, #0097a7)',
-        padding: '14px 16px',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img src="/images/logo.png" alt="logo" style={{ height: 32, objectFit: 'contain' }} />
+      <div className="adm-topbar">
+        <div className="adm-topbar-left">
+          <img src="/images/logo.png" alt="logo" className="adm-topbar-logo" />
           <div>
-            <div style={{ color: '#fff', fontWeight: 800, fontSize: 14 }}>Admin Panel</div>
-            <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 10 }}>Optimus Sphere Tech</div>
+            <div className="adm-topbar-title">Admin Panel</div>
+            <div className="adm-topbar-sub">Optimus Sphere Tech</div>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => navigate('/')} style={topBarBtn}>Store</button>
-          <button onClick={() => setAuthed(false)} style={topBarBtn}>Logout</button>
+        <div className="adm-topbar-right">
+          <button onClick={() => navigate('/')} className="adm-topbar-btn">Store</button>
+          <button onClick={() => setAuthed(false)} className="adm-topbar-btn">Logout</button>
         </div>
       </div>
 
@@ -585,31 +427,28 @@ export default function AdminPage() {
             { key: 'hero', label: '🎯 Hero Slides' },
             { key: 'deals', label: '🔥 Deals' },
           ].map(tab => (
-            <button key={tab.key} className="admin-tab-btn"
-              onClick={() => setActiveTab(tab.key)}
-              style={{
-                color: activeTab === tab.key ? '#0097a7' : '#666',
-                borderBottomColor: activeTab === tab.key ? '#0097a7' : 'transparent',
-              }}>
+            <button key={tab.key}
+              className={`admin-tab-btn ${activeTab === tab.key ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.key)}>
               {tab.label}
             </button>
           ))}
         </div>
       </div>
 
-      <div style={{ maxWidth: 960, margin: '0 auto', padding: '20px 14px', overflowX: 'hidden' }}>
+      <div className="adm-main">
 
         {/* ══ PRODUCTS ══ */}
         {activeTab === 'products' && (
           <div>
             <div className="section-header">
-              <h2 style={{ fontSize: 18, fontWeight: 800, color: '#111' }}>
+              <h2 className="adm-section-title">
                 Products ({products.length})
               </h2>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={loadProducts} style={refreshBtn}>🔄 Refresh</button>
+              <div className="adm-header-actions">
+                <button onClick={loadProducts} className="adm-refresh-btn">🔄 Refresh</button>
                 <button onClick={() => { resetProductForm(); setShowProductForm(true); }}
-                  style={primaryBtn}>
+                  className="adm-primary-btn">
                   + Add Product
                 </button>
               </div>
@@ -624,13 +463,13 @@ export default function AdminPage() {
                 <div className="admin-grid">
                   <div className="field-group">
                     <label>SKU *</label>
-                    <input style={inputStyle} placeholder="e.g. WA0091"
+                    <input className="adm-input" placeholder="e.g. WA0091"
                       value={productForm.sku}
                       onChange={e => setProductForm({ ...productForm, sku: e.target.value })} />
                   </div>
                   <div className="field-group">
                     <label>Product Name *</label>
-                    <input style={inputStyle} placeholder="e.g. Sony WH-1000XM5"
+                    <input className="adm-input" placeholder="e.g. Sony WH-1000XM5"
                       value={productForm.name}
                       onChange={e => setProductForm({ ...productForm, name: e.target.value })} />
                   </div>
@@ -669,7 +508,7 @@ export default function AdminPage() {
                         />
                         {customBrand && (
                           <input
-                            style={{ ...inputStyle, marginTop: 8 }}
+                            className="adm-input adm-mt8"
                             placeholder="Type brand name"
                             value={productForm.brand}
                             onChange={e => setProductForm({ ...productForm, brand: e.target.value })}
@@ -677,20 +516,20 @@ export default function AdminPage() {
                         )}
                       </>
                     ) : (
-                      <input style={inputStyle} placeholder="e.g. Sony"
+                      <input className="adm-input" placeholder="e.g. Sony"
                         value={productForm.brand}
                         onChange={e => setProductForm({ ...productForm, brand: e.target.value })} />
                     )}
                   </div>
                   <div className="field-group">
                     <label>Price * (e.g. KSh 15,000)</label>
-                    <input style={inputStyle} placeholder="KSh 15,000"
+                    <input className="adm-input" placeholder="KSh 15,000"
                       value={productForm.price}
                       onChange={e => setProductForm({ ...productForm, price: e.target.value })} />
                   </div>
                   <div className="field-group">
                     <label>Old Price (optional)</label>
-                    <input style={inputStyle} placeholder="KSh 20,000"
+                    <input className="adm-input" placeholder="KSh 20,000"
                       value={productForm.old_price}
                       onChange={e => setProductForm({ ...productForm, old_price: e.target.value })} />
                   </div>
@@ -705,36 +544,32 @@ export default function AdminPage() {
                   </div>
                   <div className="field-group">
                     <label>Icon emoji</label>
-                    <input style={inputStyle} placeholder="📦"
+                    <input className="adm-input" placeholder="📦"
                       value={productForm.icon}
                       onChange={e => setProductForm({ ...productForm, icon: e.target.value })} />
                   </div>
                 </div>
 
-                <div className="field-group" style={{ marginBottom: 14 }}>
+                <div className="field-group adm-mb14">
                   <label>Tags (comma separated)</label>
-                  <input style={inputStyle} placeholder="gaming, ps4, controller"
+                  <input className="adm-input" placeholder="gaming, ps4, controller"
                     value={productForm.tags}
                     onChange={e => setProductForm({ ...productForm, tags: e.target.value })} />
                 </div>
 
-                <div className="field-group" style={{ marginBottom: 14 }}>
+                <div className="field-group adm-mb14">
                   <label>Description</label>
                   <textarea
-                    style={{ ...inputStyle, height: 180, resize: 'vertical', lineHeight: 1.7 }}
+                    className="adm-input adm-textarea"
                     placeholder={`Write the product description here.\n\nUse this format for better display:\n\nMain Features:\n- Feature one\n- Feature two\n\nWhat's in the Box:\n- Item one\n- Item two`}
                     value={productForm.description}
                     onChange={e => setProductForm({ ...productForm, description: e.target.value })}
                   />
-                  <div style={{
-                    marginTop: 8, padding: '10px 14px',
-                    background: '#f0fafb', borderRadius: 8,
-                    border: '1px solid #e0f7fa',
-                  }}>
-                    <p style={{ fontSize: 11, color: '#0097a7', fontWeight: 700, marginBottom: 4 }}>
+                  <div className="adm-tips">
+                    <p className="adm-tips-title">
                       💡 Formatting Tips:
                     </p>
-                    <p style={{ fontSize: 11, color: '#666', lineHeight: 1.7, margin: 0 }}>
+                    <p className="adm-tips-text">
                       • Lines ending with <strong>:</strong> → Bold heading<br />
                       • Lines starting with <strong>-</strong> → Bullet point<br />
                       • Press Enter between sections for spacing
@@ -743,82 +578,65 @@ export default function AdminPage() {
                 </div>
 
                 {/* Specs */}
-                <div style={{ marginBottom: 18 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                    <label style={labelStyle}>Specifications</label>
-                    <button onClick={addSpec} style={{
-                      background: '#e0f7fa', color: '#0097a7', border: 'none',
-                      borderRadius: 6, padding: '6px 14px', fontSize: 12,
-                      fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-                    }}>
+                <div className="adm-specs">
+                  <div className="adm-specs-head">
+                    <label className="adm-label">Specifications</label>
+                    <button onClick={addSpec} className="adm-addrow-btn">
                       + Add Row
                     </button>
                   </div>
                   {specs.map((spec, i) => (
                     <div key={i} className="spec-row">
-                      <input style={{ ...inputStyle, fontSize: 14 }}
+                      <input className="adm-input adm-input-sm"
                         placeholder="Label (e.g. Platform)"
                         value={spec.label}
                         onChange={e => updateSpec(i, 'label', e.target.value)} />
-                      <input style={{ ...inputStyle, fontSize: 14 }}
+                      <input className="adm-input adm-input-sm"
                         placeholder="Value (e.g. PS4)"
                         value={spec.value}
                         onChange={e => updateSpec(i, 'value', e.target.value)} />
                       <button onClick={() => removeSpec(i)}
                         disabled={specs.length === 1}
-                        style={{
-                          background: specs.length === 1 ? '#f5f5f5' : '#fff0f0',
-                          color: specs.length === 1 ? '#ccc' : '#e63946',
-                          border: 'none', borderRadius: 6,
-                          width: 40, height: 46,
-                          cursor: specs.length === 1 ? 'not-allowed' : 'pointer',
-                          fontSize: 15, fontWeight: 700, fontFamily: 'Inter, sans-serif',
-                        }}>
+                        className="adm-spec-remove">
                         ✕
                       </button>
                     </div>
                   ))}
-                  <p style={{ fontSize: 11, color: '#aaa', marginTop: 4 }}>
+                  <p className="adm-specs-eg">
                     Example — Platform: PlayStation 4 · Storage: 500GB · Color: Black
                   </p>
                 </div>
 
                 {/* Images */}
-                <div style={{ marginBottom: 20 }}>
-                  <label style={labelStyle}>Product Images</label>
-                  <div style={{
-                    border: '2px dashed #e0f7fa', borderRadius: 10,
-                    padding: '20px 16px', textAlign: 'center',
-                    background: '#fafffe', marginBottom: 12,
-                  }}>
+                <div className="adm-images">
+                  <label className="adm-label">Product Images</label>
+                  <div className="adm-dropzone adm-dropzone--mb">
                     <input type="file" accept="image/*" multiple
-                      id="product-img-input" style={{ display: 'none' }}
+                      id="product-img-input" className="adm-hidden"
                       onChange={e => setImageFiles(prev => [...prev, ...Array.from(e.target.files)])} />
-                    <label htmlFor="product-img-input" style={{
-                      cursor: 'pointer', color: '#0097a7', fontWeight: 700, fontSize: 15,
-                    }}>
+                    <label htmlFor="product-img-input" className="adm-dropzone-label">
                       📷 {imageFiles.length > 0 ? '+ Add more images' : 'Tap to select images'}
                     </label>
-                    <p style={{ fontSize: 11, color: '#aaa', marginTop: 4 }}>
+                    <p className="adm-dropzone-hint">
                       {imageFiles.length > 0
                         ? 'Tap again to add more images'
                         : 'You can select multiple photos at once or tap multiple times'}
                     </p>
                     {imageFiles.length > 0 && (
-                      <p style={{ fontSize: 13, color: '#0097a7', marginTop: 8, fontWeight: 600 }}>
+                      <p className="adm-dropzone-ready">
                         ✓ {imageFiles.length} new image(s) ready to upload
                       </p>
                     )}
                   </div>
 
                   {imageFiles.length > 0 && (
-                    <div style={{ marginBottom: 12 }}>
-                      <p style={{ fontSize: 11, color: '#888', marginBottom: 8 }}>
+                    <div className="adm-newimgs">
+                      <p className="adm-newimgs-label">
                         New images to be added:
                       </p>
                       <div className="img-preview">
                         {imageFiles.map((file, i) => (
-                          <div key={i} className="img-thumb" style={{ cursor: 'default' }}>
+                          <div key={i} className="img-thumb img-thumb--static">
                             <img src={URL.createObjectURL(file)} alt="" />
                             <button className="img-thumb-del"
                               onClick={() => setImageFiles(imageFiles.filter((_, idx) => idx !== i))}>
@@ -832,21 +650,11 @@ export default function AdminPage() {
 
                   {existingImages.length > 0 && (
                     <div>
-                      <div style={{
-                        display: 'flex', justifyContent: 'space-between',
-                        alignItems: 'center', marginBottom: 8,
-                      }}>
-                        <p style={{ fontSize: 11, color: '#888' }}>
+                      <div className="adm-existimgs-head">
+                        <p className="adm-existimgs-label">
                           Current images — tap ✕ to remove, drag to reorder:
                         </p>
-                        <button onClick={() => setExistingImages([])}
-                          style={{
-                            background: '#fff0f0', color: '#e63946',
-                            border: '1px solid #ffd0d0', borderRadius: 6,
-                            padding: '4px 10px', fontSize: 11,
-                            fontWeight: 700, cursor: 'pointer',
-                            fontFamily: 'Inter, sans-serif',
-                          }}>
+                        <button onClick={() => setExistingImages([])} className="adm-removeall-btn">
                           Remove all
                         </button>
                       </div>
@@ -869,19 +677,14 @@ export default function AdminPage() {
                             <img src={img} alt="" />
                             <button className="img-thumb-del" onClick={() => removeExistingImage(i)}>✕</button>
                             {i === 0 && (
-                              <div style={{
-                                position: 'absolute', bottom: 0, left: 0, right: 0,
-                                background: 'rgba(0,151,167,0.85)', color: '#fff',
-                                fontSize: 8, fontWeight: 700, textAlign: 'center',
-                                padding: '2px 0', borderRadius: '0 0 6px 6px',
-                              }}>
+                              <div className="adm-main-badge">
                                 MAIN
                               </div>
                             )}
                           </div>
                         ))}
                       </div>
-                      <p style={{ fontSize: 10, color: '#aaa', marginTop: 6 }}>
+                      <p className="adm-mainimg-note">
                         First image is the main display image shown on product cards.
                       </p>
                     </div>
@@ -890,20 +693,21 @@ export default function AdminPage() {
 
                 <div className="btn-row">
                   <button onClick={handleSaveProduct} disabled={savingProduct}
-                    style={{ ...primaryBtn, opacity: savingProduct ? 0.7 : 1, padding: '12px 24px' }}>
+                    className="adm-primary-btn adm-save-btn"
+                    style={{ opacity: savingProduct ? 0.7 : 1 }}>
                     {savingProduct
                       ? (uploadingImages ? '📤 Uploading...' : '💾 Saving...')
                       : (editingProduct ? '✅ Update Product' : '✅ Save Product')
                     }
                   </button>
-                  <button onClick={resetProductForm} style={cancelBtn}>Cancel</button>
+                  <button onClick={resetProductForm} className="adm-cancel-btn">Cancel</button>
                 </div>
               </div>
             )}
 
             {/* Search bar */}
             {!loadingProducts && products.length > 0 && (
-              <div style={{ marginBottom: 16, position: 'relative' }}>
+              <div className="adm-search">
                 <input
                   type="text"
                   placeholder="🔍 Search by name, SKU, brand, or category..."
@@ -912,25 +716,13 @@ export default function AdminPage() {
                     setProductSearch(e.target.value);
                     setProductPage(1);
                   }}
-                  style={{
-                    ...inputStyle,
-                    paddingRight: productSearch ? 40 : 12,
-                  }}
+                  className="adm-input"
+                  style={{ paddingRight: productSearch ? 40 : 12 }}
                 />
                 {productSearch && (
                   <button
                     onClick={() => { setProductSearch(''); setProductPage(1); }}
-                    style={{
-                      position: 'absolute', right: 8, top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: '#fff0f0', color: '#e63946',
-                      border: 'none', borderRadius: '50%',
-                      width: 26, height: 26, fontSize: 12,
-                      fontWeight: 700, cursor: 'pointer',
-                      display: 'flex', alignItems: 'center',
-                      justifyContent: 'center',
-                      fontFamily: 'Inter, sans-serif',
-                    }}
+                    className="adm-search-clear"
                   >
                     ✕
                   </button>
@@ -939,12 +731,12 @@ export default function AdminPage() {
             )}
 
             {loadingProducts ? (
-              <div style={{ textAlign: 'center', padding: 40, color: '#888' }}>
+              <div className="adm-loading">
                 Loading products...
               </div>
             ) : products.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: 60, color: '#888' }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>📦</div>
+              <div className="adm-empty">
+                <div className="adm-empty-icon">📦</div>
                 <p>No products yet. Add your first product!</p>
               </div>
             ) : (
@@ -966,17 +758,11 @@ export default function AdminPage() {
 
                   if (searchedProducts.length === 0) {
                     return (
-                      <div style={{ textAlign: 'center', padding: 40, color: '#888' }}>
-                        <div style={{ fontSize: 36, marginBottom: 8 }}>🔍</div>
-                        <p style={{ fontSize: 13 }}>No products match "{productSearch}"</p>
+                      <div className="adm-nomatch">
+                        <div className="adm-nomatch-icon">🔍</div>
+                        <p className="adm-nomatch-text">No products match "{productSearch}"</p>
                         <button onClick={() => setProductSearch('')}
-                          style={{
-                            marginTop: 12, background: '#0097a7',
-                            color: '#fff', border: 'none',
-                            padding: '8px 16px', borderRadius: 8,
-                            fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                            fontFamily: 'Inter, sans-serif',
-                          }}>
+                          className="adm-clearsearch-btn">
                           Clear search
                         </button>
                       </div>
@@ -986,8 +772,8 @@ export default function AdminPage() {
                   return (
                     <>
                       {productSearch && (
-                        <p style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>
-                          Found <strong style={{ color: '#0097a7' }}>{searchedProducts.length}</strong> result(s)
+                        <p className="adm-found">
+                          Found <strong className="adm-teal">{searchedProducts.length}</strong> result(s)
                         </p>
                       )}
 
@@ -995,41 +781,28 @@ export default function AdminPage() {
                         <div key={p.id} className="p-row">
                           <div className="p-row-info">
                             {p.images?.[0] ? (
-                              <img src={p.images[0]} alt={p.name} style={{
-                                width: 52, height: 52, objectFit: 'cover',
-                                borderRadius: 8, flexShrink: 0,
-                              }} />
+                              <img src={p.images[0]} alt={p.name} className="adm-prow-img" />
                             ) : (
-                              <div style={{
-                                width: 52, height: 52, background: '#f5f5f5',
-                                borderRadius: 8, display: 'flex', alignItems: 'center',
-                                justifyContent: 'center', fontSize: 22, flexShrink: 0,
-                              }}>
+                              <div className="adm-prow-icon">
                                 {p.icon}
                               </div>
                             )}
-                            <div style={{ minWidth: 0 }}>
-                              <div style={{
-                                fontWeight: 700, fontSize: 13, color: '#111',
-                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                              }}>
+                            <div className="adm-prow-textwrap">
+                              <div className="adm-prow-name">
                                 {p.name}
                               </div>
-                              <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
+                              <div className="adm-prow-meta">
                                 {p.brand} · {p.category} · {p.sku}
                               </div>
-                              <div style={{ fontSize: 13, fontWeight: 700, color: '#0097a7', marginTop: 2 }}>
+                              <div className="adm-prow-price">
                                 {p.price}
                                 {p.old_price && (
-                                  <span style={{ fontSize: 11, color: '#ccc', textDecoration: 'line-through', marginLeft: 8 }}>
+                                  <span className="adm-prow-old">
                                     {p.old_price}
                                   </span>
                                 )}
                                 {p.badge && (
-                                  <span style={{
-                                    marginLeft: 8, background: '#e63946', color: '#fff',
-                                    fontSize: 9, padding: '2px 6px', borderRadius: 4, fontWeight: 800,
-                                  }}>
+                                  <span className="adm-prow-badge">
                                     {p.badge}
                                   </span>
                                 )}
@@ -1037,8 +810,8 @@ export default function AdminPage() {
                             </div>
                           </div>
                           <div className="p-row-actions">
-                            <button onClick={() => handleEditProduct(p)} style={editBtn}>✏️ Edit</button>
-                            <button onClick={() => handleDeleteProduct(p.id)} style={deleteBtn}>🗑️</button>
+                            <button onClick={() => handleEditProduct(p)} className="adm-edit-btn">✏️ Edit</button>
+                            <button onClick={() => handleDeleteProduct(p.id)} className="adm-delete-btn">🗑️</button>
                           </div>
                         </div>
                       ))}
@@ -1051,8 +824,8 @@ export default function AdminPage() {
                             disabled={productPage === 1}>
                             ← Prev
                           </button>
-                          <span style={{ fontSize: 13, color: '#666', padding: '0 12px' }}>
-                            Page <strong style={{ color: '#0097a7' }}>{productPage}</strong> of{' '}
+                          <span className="adm-page-info">
+                            Page <strong className="adm-teal">{productPage}</strong> of{' '}
                             <strong>{totalAdminPages}</strong>
                           </span>
                           <button
@@ -1075,12 +848,12 @@ export default function AdminPage() {
         {activeTab === 'hero' && (
           <div>
             <div className="section-header">
-              <h2 style={{ fontSize: 18, fontWeight: 800, color: '#111' }}>
+              <h2 className="adm-section-title">
                 Hero Slides ({heroSlides.length}/3)
               </h2>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={loadHeroSlides} style={refreshBtn}>🔄 Refresh</button>
-                <button onClick={() => setShowHeroForm(true)} style={primaryBtn}
+              <div className="adm-header-actions">
+                <button onClick={loadHeroSlides} className="adm-refresh-btn">🔄 Refresh</button>
+                <button onClick={() => setShowHeroForm(true)} className="adm-primary-btn"
                   disabled={heroSlides.length >= 3}>
                   + Add Slide
                 </button>
@@ -1095,25 +868,25 @@ export default function AdminPage() {
                 <div className="admin-grid">
                   <div className="field-group">
                     <label>Title *</label>
-                    <input style={inputStyle} placeholder="e.g. PlayStation 4 & 5"
+                    <input className="adm-input" placeholder="e.g. PlayStation 4 & 5"
                       value={heroForm.title}
                       onChange={e => setHeroForm({ ...heroForm, title: e.target.value })} />
                   </div>
                   <div className="field-group">
                     <label>Subtitle</label>
-                    <input style={inputStyle} placeholder="e.g. Ex-UK consoles with controllers"
+                    <input className="adm-input" placeholder="e.g. Ex-UK consoles with controllers"
                       value={heroForm.subtitle}
                       onChange={e => setHeroForm({ ...heroForm, subtitle: e.target.value })} />
                   </div>
                   <div className="field-group">
                     <label>Tag label</label>
-                    <input style={inputStyle} placeholder="e.g. NOW IN STOCK"
+                    <input className="adm-input" placeholder="e.g. NOW IN STOCK"
                       value={heroForm.tag}
                       onChange={e => setHeroForm({ ...heroForm, tag: e.target.value })} />
                   </div>
                   <div className="field-group">
                     <label>Price text</label>
-                    <input style={inputStyle} placeholder="e.g. From KSh 25,000"
+                    <input className="adm-input" placeholder="e.g. From KSh 25,000"
                       value={heroForm.price}
                       onChange={e => setHeroForm({ ...heroForm, price: e.target.value })} />
                   </div>
@@ -1141,51 +914,44 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div className="field-group" style={{ marginBottom: 14 }}>
+                <div className="field-group adm-mb14">
                   <label>Features (comma separated)</label>
-                  <input style={inputStyle}
+                  <input className="adm-input"
                     placeholder="Ex-UK Quality, 1 Year Warranty, Free Delivery"
                     value={heroForm.features}
                     onChange={e => setHeroForm({ ...heroForm, features: e.target.value })} />
                 </div>
 
-                <div style={{ marginBottom: 20 }}>
-                  <label style={labelStyle}>Slide Image</label>
-                  <div style={{
-                    border: '2px dashed #e0f7fa', borderRadius: 10,
-                    padding: '20px 16px', textAlign: 'center', background: '#fafffe',
-                  }}>
+                <div className="adm-images">
+                  <label className="adm-label">Slide Image</label>
+                  <div className="adm-dropzone">
                     <input type="file" accept="image/*"
-                      id="hero-img-input" style={{ display: 'none' }}
+                      id="hero-img-input" className="adm-hidden"
                       onChange={e => setHeroImageFile(e.target.files[0])} />
-                    <label htmlFor="hero-img-input" style={{
-                      cursor: 'pointer', color: '#0097a7', fontWeight: 700, fontSize: 15,
-                    }}>
+                    <label htmlFor="hero-img-input" className="adm-dropzone-label">
                       📷 Tap to select image
                     </label>
                     {heroImageFile && (
-                      <p style={{ fontSize: 13, color: '#0097a7', marginTop: 8, fontWeight: 600 }}>
+                      <p className="adm-dropzone-ready">
                         ✓ {heroImageFile.name}
                       </p>
                     )}
                   </div>
                   {editingHero?.image && !heroImageFile && (
-                    <img src={editingHero.image} alt="" style={{
-                      height: 80, marginTop: 10, borderRadius: 8,
-                      border: '1px solid #eee', objectFit: 'cover',
-                    }} />
+                    <img src={editingHero.image} alt="" className="adm-hero-preview" />
                   )}
                 </div>
 
                 <div className="btn-row">
                   <button onClick={handleSaveHero} disabled={savingHero}
-                    style={{ ...primaryBtn, opacity: savingHero ? 0.7 : 1, padding: '12px 24px' }}>
+                    className="adm-primary-btn adm-save-btn"
+                    style={{ opacity: savingHero ? 0.7 : 1 }}>
                     {savingHero ? '💾 Saving...' : (editingHero ? '✅ Update Slide' : '✅ Save Slide')}
                   </button>
                   <button onClick={() => {
                     setShowHeroForm(false); setEditingHero(null); setHeroImageFile(null);
                     setHeroForm({ title: '', subtitle: '', tag: '', price: '', features: '', category_slug: '', sort_order: '1' });
-                  }} style={cancelBtn}>
+                  }} className="adm-cancel-btn">
                     Cancel
                   </button>
                 </div>
@@ -1193,10 +959,10 @@ export default function AdminPage() {
             )}
 
             {heroSlides.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: 60, color: '#888' }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>🎯</div>
+              <div className="adm-empty">
+                <div className="adm-empty-icon">🎯</div>
                 <p>No slides yet. Add up to 3 slides.</p>
-                <p style={{ fontSize: 12, color: '#aaa', marginTop: 6 }}>
+                <p className="adm-empty-sub">
                   Default slides show when empty.
                 </p>
               </div>
@@ -1205,22 +971,19 @@ export default function AdminPage() {
                 <div key={slide.id} className="p-row">
                   <div className="p-row-info">
                     {slide.image && (
-                      <img src={slide.image} alt="" style={{
-                        width: 72, height: 50, objectFit: 'cover',
-                        borderRadius: 8, flexShrink: 0,
-                      }} />
+                      <img src={slide.image} alt="" className="adm-hero-thumb" />
                     )}
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: 14 }}>{slide.title}</div>
-                      <div style={{ fontSize: 12, color: '#888' }}>{slide.subtitle}</div>
-                      <div style={{ fontSize: 12, color: '#0097a7', marginTop: 2 }}>
+                      <div className="adm-hero-title">{slide.title}</div>
+                      <div className="adm-hero-sub">{slide.subtitle}</div>
+                      <div className="adm-hero-price">
                         {slide.price} · Position #{slide.sort_order}
                       </div>
                     </div>
                   </div>
                   <div className="p-row-actions">
-                    <button onClick={() => handleEditHero(slide)} style={editBtn}>✏️ Edit</button>
-                    <button onClick={() => handleDeleteHero(slide.id)} style={deleteBtn}>🗑️</button>
+                    <button onClick={() => handleEditHero(slide)} className="adm-edit-btn">✏️ Edit</button>
+                    <button onClick={() => handleDeleteHero(slide.id)} className="adm-delete-btn">🗑️</button>
                   </div>
                 </div>
               ))
@@ -1231,13 +994,13 @@ export default function AdminPage() {
         {/* ══ DEALS ══ */}
         {activeTab === 'deals' && (
           <div>
-            <div className="section-header" style={{ marginBottom: 6 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 800, color: '#111' }}>
+            <div className="section-header section-header--tight">
+              <h2 className="adm-section-title">
                 🔥 Deals of the Day
               </h2>
-              <button onClick={loadDeals} style={refreshBtn}>🔄 Refresh</button>
+              <button onClick={loadDeals} className="adm-refresh-btn">🔄 Refresh</button>
             </div>
-            <p style={{ fontSize: 13, color: '#888', marginBottom: 20 }}>
+            <p className="adm-deals-desc">
               Pick up to 8 products to feature on the homepage.
             </p>
 
@@ -1255,46 +1018,36 @@ export default function AdminPage() {
               </div>
               <button onClick={handleAddDeal}
                 disabled={savingDeal || deals.length >= 8 || !dealSku}
-                style={{
-                  ...primaryBtn,
-                  opacity: (savingDeal || deals.length >= 8 || !dealSku) ? 0.6 : 1,
-                  padding: '12px 20px', whiteSpace: 'nowrap',
-                }}>
+                className="adm-primary-btn adm-adddeal-btn"
+                style={{ opacity: (savingDeal || deals.length >= 8 || !dealSku) ? 0.6 : 1 }}>
                 {savingDeal ? 'Adding...' : '+ Add to Deals'}
               </button>
             </div>
 
             {deals.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: 60, color: '#888' }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>🔥</div>
+              <div className="adm-empty">
+                <div className="adm-empty-icon">🔥</div>
                 <p>No deals yet. Select products above.</p>
               </div>
             ) : (
               deals.map((deal, i) => (
                 <div key={deal.id} className="d-row">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
-                    <span style={{
-                      width: 28, height: 28, background: '#0097a7', color: '#fff',
-                      borderRadius: '50%', display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', fontWeight: 800, fontSize: 12, flexShrink: 0,
-                    }}>
+                  <div className="adm-drow-info">
+                    <span className="adm-drow-num">
                       {i + 1}
                     </span>
                     {deal.products?.images?.[0] && (
-                      <img src={deal.products.images[0]} alt="" style={{
-                        width: 44, height: 44, objectFit: 'cover',
-                        borderRadius: 6, flexShrink: 0,
-                      }} />
+                      <img src={deal.products.images[0]} alt="" className="adm-drow-img" />
                     )}
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: 13 }}>{deal.products?.name}</div>
-                      <div style={{ fontSize: 11, color: '#888' }}>
+                      <div className="adm-drow-name">{deal.products?.name}</div>
+                      <div className="adm-drow-meta">
                         {deal.products?.category} · {deal.products?.price}
                       </div>
                     </div>
                   </div>
                   <button onClick={() => handleDeleteDeal(deal.id)}
-                    style={{ ...deleteBtn, whiteSpace: 'nowrap' }}>
+                    className="adm-delete-btn adm-drow-remove">
                     🗑️ Remove
                   </button>
                 </div>
@@ -1306,47 +1059,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-// ── Shared styles ──
-const inputStyle = {
-  width: '100%', border: '1.5px solid #e0e0e0',
-  borderRadius: 8, padding: '11px 12px',
-  fontSize: 16, fontFamily: 'Inter, sans-serif',
-  outline: 'none', color: '#111', background: '#fff',
-  boxSizing: 'border-box',
-};
-const labelStyle = {
-  display: 'block', fontSize: 10, fontWeight: 700,
-  color: '#888', marginBottom: 6,
-  textTransform: 'uppercase', letterSpacing: 0.5,
-};
-const primaryBtn = {
-  background: 'linear-gradient(135deg, #0097a7, #00bcd4)',
-  color: '#fff', border: 'none', borderRadius: 8,
-  padding: '11px 20px', fontSize: 14, fontWeight: 700,
-  cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-};
-const cancelBtn = {
-  background: '#fff', color: '#888',
-  border: '1.5px solid #eee', borderRadius: 8,
-  padding: '11px 20px', fontSize: 14,
-  cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-};
-const editBtn = {
-  background: '#f0fafb', color: '#0097a7',
-  border: '1.5px solid #e0f7fa', borderRadius: 8,
-  padding: '8px 14px', fontSize: 13, fontWeight: 700,
-  cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-};
-const deleteBtn = {
-  background: '#fff0f0', color: '#e63946',
-  border: '1.5px solid #ffd0d0', borderRadius: 8,
-  padding: '8px 14px', fontSize: 13, fontWeight: 700,
-  cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-};
-const topBarBtn = {
-  background: 'rgba(255,255,255,0.15)', border: 'none',
-  color: '#fff', padding: '8px 14px', borderRadius: 8,
-  fontSize: 12, fontWeight: 600, cursor: 'pointer',
-  fontFamily: 'Inter, sans-serif',
-};

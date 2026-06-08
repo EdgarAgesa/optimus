@@ -1,34 +1,10 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
+import '../styles/Toast.css';
 
 export default function Toast() {
   const { toast } = useCart();
   if (!toast) return null;
 
-  return (
-    <>
-      <style>{`
-        .toast {
-          position: fixed; top: 100px; right: 24px;
-          background: #fff; padding: 14px 20px;
-          border-radius: 12px;
-          box-shadow: 0 12px 40px rgba(0,151,167,0.2);
-          border-left: 4px solid #0097a7;
-          z-index: 10000; display: flex;
-          align-items: center; gap: 10px;
-          font-size: 13px; font-weight: 600; color: #111;
-          animation: slideInRight 0.3s ease;
-          min-width: 240px;
-        }
-        @keyframes slideInRight {
-          from { transform: translateX(120%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        @media (max-width: 600px) {
-          .toast { right: 12px; left: 12px; min-width: 0; top: 90px; }
-        }
-      `}</style>
-      <div className="toast">✅ {toast.msg}</div>
-    </>
-  );
+  return <div className="toast">✅ {toast.msg}</div>;
 }

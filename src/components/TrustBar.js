@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/TrustBar.css';
 
 const items = [
   { icon: '⭐', title: '4.9 / 5 Trustscore', sub: 'Trusted by hundreds' },
@@ -9,34 +10,16 @@ const items = [
 
 export default function TrustBar() {
   return (
-    <div style={s.bar}>
+    <div className="trust-bar">
       {items.map((item) => (
-        <div key={item.title} style={s.item}>
-          <span style={s.icon}>{item.icon}</span>
+        <div key={item.title} className="trust-item">
+          <span className="trust-icon">{item.icon}</span>
           <div>
-            <div style={s.title}>{item.title}</div>
-            <div style={s.sub}>{item.sub}</div>
+            <div className="trust-title">{item.title}</div>
+            <div className="trust-sub">{item.sub}</div>
           </div>
         </div>
       ))}
     </div>
   );
 }
-
-const s = {
-  bar: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-    borderBottom: '1px solid #eee',
-    borderTop: '3px solid #0097a7',
-    background: '#fff',
-  },
-  item: {
-    display: 'flex', alignItems: 'center', gap: 12,
-    padding: '18px 24px',
-    borderRight: '1px solid #eee',
-  },
-  icon: { fontSize: 26 },
-  title: { fontSize: 13, fontWeight: 700, color: '#111' },
-  sub: { fontSize: 11, color: '#888', marginTop: 2 },
-};

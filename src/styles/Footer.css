@@ -1,0 +1,102 @@
+.foot {
+  background: linear-gradient(180deg, #0d1b2a, #050d14);
+  border-top: 3px solid #0097a7;
+  padding: 56px 32px 0;
+}
+.foot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 40px;
+  max-width: 1280px;
+  margin: 0 auto 40px;
+}
+.foot-brand {
+  cursor: pointer;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.foot-brand-logo { height: 52px; width: auto; object-fit: contain; }
+.foot-brand-text { line-height: 1; }
+.foot-brand-name {
+  font-size: 20px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  font-family: Inter, sans-serif;
+}
+.foot-brand-sub {
+  font-size: 9px;
+  font-weight: 700;
+  color: #0097a7;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-family: Inter, sans-serif;
+  margin-top: 3px;
+}
+.foot-desc {
+  font-size: 12px;
+  color: #7a9eb0;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+.foot-wa-btn {
+  display: inline-block;
+  background: #25d366;
+  color: #fff;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.foot-col-head {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0097a7;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.foot-col-text {
+  font-size: 12px;
+  color: #7a9eb0;
+  margin-bottom: 6px;
+  line-height: 1.6;
+}
+.foot-hours {
+  margin-top: 10px;
+  color: #0097a7;
+  font-weight: 600;
+}
+.foot-phone {
+  display: block;
+  font-size: 14px;
+  color: #e0f7fa;
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.foot-accept { margin-top: 16px; }
+.foot-link {
+  font-size: 12px;
+  color: #7a9eb0;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.foot-bottom {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #3d6070;
+  border-top: 1px solid #0d2b33;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.foot-made { color: #0097a7; }

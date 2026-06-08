@@ -1,0 +1,17 @@
+.trust-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  border-bottom: 1px solid #eee;
+  border-top: 3px solid #0097a7;
+  background: #fff;
+}
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+  border-right: 1px solid #eee;
+}
+.trust-icon { font-size: 26px; }
+.trust-title { font-size: 13px; font-weight: 700; color: #111; }
+.trust-sub { font-size: 11px; color: #888; margin-top: 2px; }

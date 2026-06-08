@@ -3,22 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../context/CartContext';
+import '../styles/ProductPage.css';
 
 function renderDescription(text) {
   if (!text) return null;
   return text.split('\n').map((line, i) => {
     const trimmed = line.trim();
-    if (!trimmed) return <div key={i} style={{ height: 8 }} />;
+    if (!trimmed) return <div key={i} className="pp-desc-spacer" />;
 
     if (trimmed.endsWith(':')) {
       return (
-        <div key={i} style={{
-          fontWeight: 800, color: '#0d2b33',
-          fontSize: 12, marginTop: i === 0 ? 0 : 14,
-          marginBottom: 6, textTransform: 'uppercase',
-          letterSpacing: 0.8, borderLeft: '3px solid #0097a7',
-          paddingLeft: 8,
-        }}>
+        <div key={i} className="pp-desc-heading" style={{ marginTop: i === 0 ? 0 : 14 }}>
           {trimmed}
         </div>
       );
@@ -26,16 +21,9 @@ function renderDescription(text) {
 
     if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
       return (
-        <div key={i} style={{
-          display: 'flex', gap: 8,
-          marginBottom: 5, alignItems: 'flex-start',
-          paddingLeft: 4,
-        }}>
-          <span style={{
-            color: '#0097a7', fontWeight: 700,
-            fontSize: 14, flexShrink: 0, marginTop: 2,
-          }}>•</span>
-          <span style={{ fontSize: 13, color: '#555', lineHeight: 1.7 }}>
+        <div key={i} className="pp-desc-bullet">
+          <span className="pp-desc-dot">•</span>
+          <span className="pp-desc-bullet-text">
             {trimmed.replace(/^[-•]\s*/, '')}
           </span>
         </div>
@@ -43,10 +31,7 @@ function renderDescription(text) {
     }
 
     return (
-      <p key={i} style={{
-        fontSize: 13, color: '#555',
-        lineHeight: 1.8, marginBottom: 8, margin: '0 0 8px 0',
-      }}>
+      <p key={i} className="pp-desc-p">
         {trimmed}
       </p>
     );
@@ -73,20 +58,10 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <div style={{
-        textAlign: 'center', padding: 80,
-        fontFamily: 'Inter, sans-serif',
-      }}>
-        <div style={{ fontSize: 52, marginBottom: 16 }}>🔍</div>
-        <p style={{ fontSize: 16, color: '#555', marginBottom: 20 }}>Product not found</p>
-        <button
-          onClick={() => navigate('/')}
-          style={{
-            background: '#0097a7', color: '#fff', border: 'none',
-            padding: '12px 28px', borderRadius: 8, fontSize: 14,
-            fontWeight: 700, cursor: 'pointer',
-          }}
-        >
+      <div className="pp-notfound">
+        <div className="pp-notfound-icon">🔍</div>
+        <p className="pp-notfound-text">Product not found</p>
+        <button onClick={() => navigate('/')} className="pp-notfound-btn">
           Back to Home
         </button>
       </div>
@@ -112,301 +87,6 @@ export default function ProductPage() {
 
   return (
     <>
-      <style>{`
-        .pp-page {
-          background: #f5f6fa;
-          min-height: 100vh;
-          font-family: Inter, sans-serif;
-        }
-        .pp-breadcrumb {
-          background: #fff;
-          border-bottom: 1px solid #eee;
-          padding: 12px 32px;
-        }
-        .pp-breadcrumb-inner {
-          max-width: 1280px; margin: 0 auto;
-          display: flex; align-items: center;
-          gap: 8px; font-size: 12px;
-          color: #999; flex-wrap: wrap;
-        }
-        .pp-bc-link {
-          color: #0097a7; font-weight: 600; cursor: pointer;
-        }
-        .pp-bc-link:hover { text-decoration: underline; }
-        .pp-main {
-          max-width: 1280px; margin: 0 auto;
-          padding: 28px 32px;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 40px;
-          align-items: start;
-        }
-        .pp-images { position: sticky; top: 20px; }
-        .pp-main-img-wrap {
-          width: 100%; aspect-ratio: 1;
-          border-radius: 16px; overflow: hidden;
-          background: #fff; border: 1px solid #eee;
-          display: flex; align-items: center; justify-content: center;
-          margin-bottom: 12px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-          cursor: zoom-in; position: relative;
-        }
-        .pp-main-img-wrap img {
-          width: 100%; height: 100%; object-fit: cover;
-          transition: transform .3s ease;
-        }
-        .pp-main-img-wrap:hover img { transform: scale(1.04); }
-        .pp-no-img {
-          width: 100%; height: 100%;
-          display: flex; align-items: center;
-          justify-content: center; font-size: 120px; opacity: 0.3;
-        }
-        .pp-img-count {
-          position: absolute; bottom: 12px; right: 12px;
-          background: rgba(0,0,0,0.5); color: #fff;
-          font-size: 11px; font-weight: 700;
-          padding: 4px 10px; border-radius: 20px;
-        }
-        .pp-thumbs { display: flex; gap: 10px; flex-wrap: wrap; }
-        .pp-thumb {
-          width: 72px; height: 72px;
-          border-radius: 10px; border: 2px solid #eee;
-          overflow: hidden; cursor: pointer;
-          transition: border-color .2s, transform .15s;
-          background: #fff; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
-        }
-        .pp-thumb:hover { transform: scale(1.05); }
-        .pp-thumb.active { border-color: #0097a7; }
-        .pp-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .pp-zoom-overlay {
-          position: fixed; inset: 0;
-          background: rgba(0,0,0,0.92);
-          z-index: 99999;
-          display: flex; align-items: center;
-          justify-content: center; padding: 20px;
-          cursor: zoom-out;
-        }
-        .pp-zoom-img {
-          max-width: 90vw; max-height: 90vh;
-          object-fit: contain; border-radius: 12px;
-        }
-        .pp-zoom-close {
-          position: fixed; top: 20px; right: 20px;
-          background: rgba(255,255,255,0.15); border: none;
-          color: #fff; width: 44px; height: 44px;
-          border-radius: 50%; font-size: 18px;
-          cursor: pointer; display: flex;
-          align-items: center; justify-content: center;
-          z-index: 100000; font-weight: 700;
-        }
-        .pp-zoom-prev, .pp-zoom-next {
-          position: fixed; top: 50%; transform: translateY(-50%);
-          background: rgba(255,255,255,0.15); border: none;
-          color: #fff; width: 48px; height: 48px;
-          border-radius: 50%; font-size: 22px;
-          cursor: pointer; display: flex;
-          align-items: center; justify-content: center;
-          z-index: 100000; transition: background .2s; font-weight: 700;
-        }
-        .pp-zoom-prev:hover, .pp-zoom-next:hover { background: rgba(255,255,255,0.3); }
-        .pp-zoom-prev { left: 16px; }
-        .pp-zoom-next { right: 16px; }
-        .pp-info {
-          background: #fff; border-radius: 16px;
-          padding: 28px; border: 1px solid #eee;
-        }
-        .pp-cat-tag {
-          display: inline-block;
-          background: #e0f7fa; color: #0097a7;
-          font-size: 11px; font-weight: 700;
-          padding: 4px 12px; border-radius: 20px;
-          text-transform: uppercase; letter-spacing: 0.8px;
-          margin-bottom: 10px;
-        }
-        .pp-brand { font-size: 13px; color: #999; margin-bottom: 6px; font-weight: 600; }
-        .pp-title {
-          font-size: 26px; font-weight: 900; color: #111;
-          line-height: 1.2; margin-bottom: 8px; letter-spacing: -0.5px;
-        }
-        .pp-sku { font-size: 11px; color: #bbb; margin-bottom: 16px; }
-        .pp-price-box {
-          background: #f8fffe; border: 1px solid #e0f7fa;
-          border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
-        }
-        .pp-price-row {
-          display: flex; align-items: baseline;
-          gap: 12px; flex-wrap: wrap;
-        }
-        .pp-price { font-size: 30px; font-weight: 900; color: #0097a7; }
-        .pp-oldprice { font-size: 16px; color: #bbb; text-decoration: line-through; }
-        .pp-save {
-          background: #fff0f0; color: #e63946;
-          font-size: 11px; font-weight: 700;
-          padding: 3px 10px; border-radius: 4px;
-        }
-        .pp-stock {
-          font-size: 12px; color: #22c55e; font-weight: 600;
-          margin-top: 8px; display: flex; align-items: center; gap: 5px;
-        }
-        .pp-stock-dot {
-          width: 7px; height: 7px;
-          border-radius: 50%; background: #22c55e;
-        }
-        .pp-qty-row {
-          display: flex; gap: 12px;
-          margin-bottom: 14px; align-items: center;
-        }
-        .pp-qty-label { font-size: 13px; color: #666; font-weight: 600; }
-        .pp-qtybox {
-          display: flex; align-items: center;
-          border: 1.5px solid #e0f7fa; border-radius: 8px; overflow: hidden;
-        }
-        .pp-qtybtn {
-          width: 40px; height: 44px; border: none;
-          background: #f0fafb; font-size: 18px;
-          cursor: pointer; color: #0097a7; font-weight: 700;
-        }
-        .pp-qtybtn:hover { background: #e0f7fa; }
-        .pp-qtynum { padding: 0 20px; font-size: 15px; font-weight: 700; color: #111; }
-        .pp-btn-row {
-          display: grid; grid-template-columns: 1fr 1fr;
-          gap: 10px; margin-bottom: 16px;
-        }
-        .pp-add-btn {
-          background: linear-gradient(135deg, #0097a7, #00bcd4);
-          color: #fff; border: none; border-radius: 10px;
-          padding: 14px; font-size: 14px; font-weight: 700;
-          cursor: pointer; font-family: Inter, sans-serif;
-          transition: transform .2s, opacity .2s;
-          display: flex; align-items: center;
-          justify-content: center; gap: 8px;
-        }
-        .pp-add-btn:hover { transform: translateY(-2px); opacity: 0.92; }
-        .pp-wa-btn {
-          background: #25D366; color: #fff;
-          border: none; border-radius: 10px;
-          padding: 14px; font-size: 14px; font-weight: 700;
-          cursor: pointer; font-family: Inter, sans-serif;
-          text-decoration: none;
-          display: flex; align-items: center;
-          justify-content: center; gap: 8px;
-          transition: opacity .2s;
-        }
-        .pp-wa-btn:hover { opacity: 0.88; }
-        .pp-extras {
-          display: flex; gap: 16px;
-          padding-top: 14px; border-top: 1px solid #f0f0f0;
-          flex-wrap: wrap;
-        }
-        .pp-extra-btn {
-          background: none; border: none; cursor: pointer;
-          font-size: 12px; color: #888;
-          font-family: Inter, sans-serif;
-          display: flex; align-items: center;
-          gap: 5px; transition: color .2s; padding: 0;
-        }
-        .pp-extra-btn:hover { color: #0097a7; }
-        .pp-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; }
-        .pp-tag {
-          background: #f5f6fa; color: #666;
-          font-size: 11px; padding: 4px 12px;
-          border-radius: 20px; font-weight: 500;
-        }
-        .pp-details {
-          max-width: 1280px; margin: 0 auto;
-          padding: 0 32px 32px;
-          display: grid; grid-template-columns: 1fr 1fr;
-          gap: 24px;
-        }
-        .pp-section {
-          background: #fff; border-radius: 16px;
-          padding: 24px; border: 1px solid #eee;
-        }
-        .pp-section-title {
-          font-size: 15px; font-weight: 800; color: #111;
-          margin-bottom: 16px; padding-bottom: 12px;
-          border-bottom: 2px solid #e0f7fa;
-        }
-        .pp-desc { font-size: 13px; color: #555; line-height: 1.8; }
-        .pp-specs-table { width: 100%; border-collapse: collapse; }
-        .pp-specs-table tr { border-bottom: 1px solid #f5f5f5; }
-        .pp-specs-table tr:last-child { border-bottom: none; }
-        .pp-specs-table td { padding: 10px 8px; font-size: 13px; }
-        .pp-specs-table td:first-child { color: #888; width: 42%; }
-        .pp-specs-table td:last-child { color: #111; font-weight: 600; }
-        .pp-no-data { font-size: 13px; color: #aaa; }
-        .pp-related {
-          max-width: 1280px; margin: 0 auto;
-          padding: 0 32px 48px;
-        }
-        .pp-related-header {
-          display: flex; justify-content: space-between;
-          align-items: center; margin-bottom: 20px;
-        }
-        .pp-related-title { font-size: 20px; font-weight: 800; color: #111; }
-        .pp-related-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-          gap: 16px;
-        }
-        .pp-rcard {
-          background: #fff; border: 1.5px solid #eee;
-          border-radius: 14px; padding: 16px 14px;
-          display: flex; flex-direction: column;
-          align-items: center; gap: 10px;
-          cursor: pointer; transition: all .25s;
-        }
-        .pp-rcard:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 40px rgba(0,151,167,0.15);
-          border-color: #0097a7;
-        }
-        .pp-rcard-img {
-          width: 100%; height: 140px; border-radius: 10px;
-          background: #f8f9fa; overflow: hidden;
-          display: flex; align-items: center; justify-content: center;
-        }
-        .pp-rcard-img img { width: 100%; height: 100%; object-fit: cover; }
-        .pp-rcard-info { width: 100%; }
-        .pp-rcard-brand {
-          font-size: 9px; color: #aaa;
-          text-transform: uppercase; letter-spacing: 0.8px;
-        }
-        .pp-rcard-name {
-          font-size: 12px; font-weight: 700; color: #111;
-          margin: 3px 0 6px; line-height: 1.3;
-        }
-        .pp-rcard-price { font-size: 14px; font-weight: 800; color: #0097a7; }
-        .pp-rcard-btn {
-          width: 100%;
-          background: linear-gradient(135deg, #0097a7, #00bcd4);
-          border: none; border-radius: 8px;
-          padding: 9px 0; font-size: 12px;
-          font-weight: 700; color: #fff; cursor: pointer;
-          font-family: Inter, sans-serif; transition: opacity .2s;
-        }
-        .pp-rcard-btn:hover { opacity: 0.88; }
-
-        @media (max-width: 900px) {
-          .pp-main { grid-template-columns: 1fr; padding: 20px; gap: 20px; }
-          .pp-images { position: static; }
-          .pp-details { grid-template-columns: 1fr; padding: 0 20px 24px; }
-          .pp-related { padding: 0 20px 40px; }
-          .pp-breadcrumb { padding: 10px 20px; }
-        }
-        @media (max-width: 600px) {
-          .pp-title { font-size: 22px; }
-          .pp-price { font-size: 26px; }
-          .pp-btn-row { grid-template-columns: 1fr; }
-          .pp-related-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-          .pp-thumb { width: 60px; height: 60px; }
-          .pp-main { padding: 14px; }
-          .pp-zoom-prev { left: 8px; }
-          .pp-zoom-next { right: 8px; }
-        }
-      `}</style>
-
       <Helmet>
         <title>{p.name} — {p.price} — Optimus Sphere Tech</title>
         <meta name="description" content={p.description ? p.description.substring(0, 160) : `${p.name} by ${p.brand}. ${p.price}. Available at Optimus Sphere Tech Nairobi.`} />
@@ -463,7 +143,7 @@ export default function ProductPage() {
               {p.category}
             </span>
             <span>›</span>
-            <span style={{ color: '#333', fontWeight: 600 }}>{p.name}</span>
+            <span className="pp-bc-current">{p.name}</span>
           </div>
         </div>
 
@@ -562,7 +242,6 @@ export default function ProductPage() {
                 target="_blank"
                 rel="noreferrer"
                 className="pp-extra-btn"
-                style={{ textDecoration: 'none' }}
               >
                 💬 Ask a Question
               </a>
@@ -625,12 +304,7 @@ export default function ProductPage() {
               <div className="pp-related-title">You may also like</div>
               <button
                 onClick={() => navigate(`/category/${p.category.toLowerCase().replace(/ /g, '-')}`)}
-                style={{
-                  background: 'none', border: '1.5px solid #0097a7',
-                  color: '#0097a7', borderRadius: 8, padding: '8px 16px',
-                  fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
-                }}
+                className="pp-related-viewall"
               >
                 View all
               </button>
@@ -645,7 +319,7 @@ export default function ProductPage() {
                   <div className="pp-rcard-img">
                     {r.img
                       ? <img src={r.img} alt={r.name} />
-                      : <span style={{ fontSize: 44 }}>{r.icon}</span>
+                      : <span className="pp-rcard-emoji">{r.icon}</span>
                     }
                   </div>
                   <div className="pp-rcard-info">
