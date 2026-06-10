@@ -5,18 +5,17 @@ import '../styles/AdminPage.css';
 
 const CATEGORY_DATA = {
   'Gaming Consoles': { parent: 'Gaming', brands: ['PS3', 'PS4', 'PS5', 'Xbox', 'Nintendo', 'Portable'] },
-  'PS5 Games': { parent: 'Gaming', brands: ['Sony', 'Pearl Abyss', 'Sucker Punch', 'Ubisoft', 'EA', 'Activision'] },
-  'PS4 Games': { parent: 'Gaming', brands: ['Sony', 'Pearl Abyss', 'Sucker Punch', 'Ubisoft', 'EA', 'Activision'] },
+  'Games': { parent: 'Gaming', brands: ['PS4', 'PS5', 'Xbox', 'Nintendo'] },
   'Gaming Accessories': { parent: 'Gaming', brands: ['PS4', 'PS5', 'Nintendo', 'Xbox', 'VR', 'Driving Wheel', 'Handheld'] },
   'Smartphones': { parent: 'Phones', brands: ['Apple', 'Samsung', 'Google', 'Nothing', 'Redmi', 'Xiaomi'] },
-  'Tablets': { parent: 'Phones', brands: ['Apple', 'Samsung', 'Modio'] },
   'Laptops': { parent: 'Laptops', brands: ['HP', 'Lenovo', 'Dell', 'Apple', 'Asus', 'Acer'] },
   'Headphones': { parent: 'Audio & Sound', brands: ['Sony', 'JBL', 'Beats', 'Soundcore', 'Bose'] },
   'Earbuds': { parent: 'Audio & Sound', brands: ['Samsung', 'Apple', 'Oraimo', 'Soundcore', 'OnePlus', 'JBL'] },
   'Bluetooth Speakers': { parent: 'Audio & Sound', brands: ['JBL', 'Sony', 'Oraimo', 'Soundcore', 'Harman Kardon', 'Beats'] },
-  'Soundbars': { parent: 'Audio & Sound', brands: ['JBL', 'Sony', 'Samsung', 'TCL', 'Hisense'] },
   'Televisions': { parent: 'TV & Streaming', brands: ['TCL', 'Samsung', 'LG', 'Hisense', 'Vitron'] },
   'Streaming Devices': { parent: 'TV & Streaming', brands: ['Fire Stick', 'Google', 'Xiaomi', 'Apple'] },
+  'Soundbars': { parent: 'Audio & Sound', brands: ['JBL', 'Sony', 'Samsung', 'TCL', 'Hisense'] },
+  'Tablets': { parent: 'Phones', brands: ['Apple', 'Samsung', 'Modio'] },
 };
 
 const BADGES = ['', 'SALE', 'NEW', 'HOT'];
@@ -24,8 +23,7 @@ const HERO_CATEGORIES = [
   { value: 'gaming', label: 'Gaming' },
   { value: 'gaming-consoles', label: 'Gaming Consoles' },
   { value: 'gaming-accessories', label: 'Gaming Accessories' },
-  { value: 'ps5-games', label: 'PS5 Games' },
-  { value: 'ps4-games', label: 'PS4 Games' },
+  { value: 'games', label: 'Games' },
   { value: 'phones', label: 'Phones' },
   { value: 'smartphones', label: 'Smartphones' },
   { value: 'laptops', label: 'Laptops' },
@@ -33,6 +31,8 @@ const HERO_CATEGORIES = [
   { value: 'headphones', label: 'Headphones' },
   { value: 'tv-streaming', label: 'TV & Streaming' },
   { value: 'streaming-devices', label: 'Streaming Devices' },
+  { value: 'soundbars', label: 'Soundbars' },
+  { value: 'tablets', label: 'Tablets' },
 ];
 
 const PRODUCTS_PER_ADMIN_PAGE = 10;

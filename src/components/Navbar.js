@@ -7,7 +7,7 @@ const menuData = [
   {
     label: 'Gaming', slug: 'gaming',
     sub: [
-      { label: 'Games', slug: 'gaming', brands: ['PS4', 'PS5', 'Nintendo', 'Xbox'] },
+      { label: 'Games', slug: 'games', brands: ['PS4', 'PS5', 'Xbox', 'Nintendo'] },
       { label: 'Consoles', slug: 'gaming-consoles', brands: ['PS3', 'PS4', 'PS5', 'Xbox', 'Nintendo', 'Portable'] },
       { label: 'Accessories', slug: 'gaming-accessories', brands: ['PS4', 'PS5', 'Nintendo', 'Xbox', 'VR', 'Driving Wheel', 'Handheld', 'Game Pad'] },
     ],
@@ -26,7 +26,7 @@ const menuData = [
       { label: 'All Laptops', slug: 'laptops', brands: ['HP', 'Lenovo', 'Dell', 'MacBook'] },
     ],
   },
-  {
+ {
     label: 'Audio & Sound', slug: 'audio',
     sub: [
       { label: 'Headphones', slug: 'headphones', brands: ['JBL', 'Sony', 'Beats', 'Soundcore'] },
@@ -42,7 +42,7 @@ const menuData = [
       { label: 'Streaming Devices', slug: 'streaming-devices', brands: ['Fire Stick', 'Google', 'Xiaomi', 'Apple'] },
     ],
 },
-];
+]
 
 export default function Navbar({ onCartClick }) {
   const [open, setOpen] = useState(null);

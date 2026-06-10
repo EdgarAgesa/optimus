@@ -9,12 +9,12 @@ export default function PopularGames() {
   const navigate = useNavigate();
   const { products } = useProducts();
 
-  const items = products.filter(p =>
+    const items = products.filter(p =>
+    p.category === 'Games' ||
     p.category === 'PS5 Games' ||
     p.category === 'PS4 Games' ||
     p.category === 'Gaming Consoles'
   ).slice(0, 8);
-
   return (
     <section className="popular-section">
       <div className="popular-header">

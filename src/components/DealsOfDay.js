@@ -48,10 +48,10 @@ export default function DealsOfDay() {
     fetchDeals();
   }, []);
 
-  const categoryOrder = [
-    'Gaming Consoles', 'PS5 Games', 'PS4 Games',
+    const categoryOrder = [
+    'Gaming Consoles', 'Games', 'PS5 Games', 'PS4 Games',
     'Headphones', 'Earbuds', 'Bluetooth Speakers',
-    'Soundbars', 'Smartphones', 'Televisions', 'Laptops',
+    'Smartphones', 'Televisions', 'Laptops', 'Soundbars', 'Tablets'
   ];
 
   const autoDeals = categoryOrder.reduce((acc, cat) => {

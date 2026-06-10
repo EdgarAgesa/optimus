@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
@@ -38,6 +38,9 @@ function AppContent() {
       <Navbar onCartClick={() => setCartOpen(true)} />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        {/* Old game category URLs now live under the unified Games page */}
+        <Route path="/category/ps5-games" element={<Navigate to="/category/games" replace />} />
+        <Route path="/category/ps4-games" element={<Navigate to="/category/games" replace />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/product/:sku" element={<ProductPage />} />
         <Route path="/admin" element={<AdminPage />} />

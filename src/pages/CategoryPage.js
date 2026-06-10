@@ -7,50 +7,49 @@ import { useCart } from '../context/CartContext';
 import '../styles/CategoryPage.css';
 
 const categoryMap = {
-  'ps5-games':          ['PS5 Games'],
-  'ps4-games':          ['PS4 Games'],
+  // 'PS5 Games' / 'PS4 Games' kept until DB rows are migrated to 'Games'
+  'games':              ['Games', 'PS5 Games', 'PS4 Games'],
   'gaming-consoles':    ['Gaming Consoles'],
   'gaming-accessories': ['Gaming Accessories'],
-  'gaming':             ['PS5 Games', 'PS4 Games', 'Gaming Consoles', 'Gaming Accessories'],
+  'gaming':             ['Games', 'PS5 Games', 'PS4 Games', 'Gaming Consoles', 'Gaming Accessories'],
   'smartphones':        ['Smartphones'],
-  'tablets':            ['Tablets'],
-  'phones':             ['Smartphones', 'Tablets'],
+  'phones':             ['Smartphones'],
   'laptops':            ['Laptops'],
   'headphones':         ['Headphones'],
   'earbuds':            ['Earbuds'],
   'bluetooth-speakers': ['Bluetooth Speakers'],
-  'soundbars':          ['Soundbars'],
-  'audio':              ['Headphones', 'Earbuds', 'Bluetooth Speakers', 'Soundbars'],
+  'audio':              ['Headphones', 'Earbuds', 'Bluetooth Speakers'],
   'televisions':        ['Televisions'],
   'streaming-devices':  ['Streaming Devices'],
   'tv-streaming':       ['Televisions', 'Streaming Devices'],
+  'soundbars':          ['Soundbars'],
+  'tablets':            ['Tablets'],
 };
 
 const slugToTitle = {
-  'ps5-games':          'PS5 Games',
-  'ps4-games':          'PS4 Games',
+  'games':              'Games',
   'gaming-consoles':    'Gaming Consoles',
   'gaming-accessories': 'Gaming Accessories',
   'gaming':             'Gaming',
   'smartphones':        'Smartphones',
-  'tablets':            'Tablets',
   'phones':             'Phones',
   'laptops':            'Laptops',
   'headphones':         'Headphones',
   'earbuds':            'Earbuds',
   'bluetooth-speakers': 'Bluetooth Speakers',
-  'soundbars':          'Soundbars',
   'audio':              'Audio & Sound',
   'televisions':        'Televisions',
   'streaming-devices':  'Streaming Devices',
+  'tv-streaming':       'TV & Streaming',
+  'soundbars':          'Soundbars',
+  'tablets':            'Tablets',
 };
 
 const allSidebarCategories = [
   {
     label: 'Gaming', slug: 'gaming', icon: '🎮',
     children: [
-      { label: 'PS5 Games', slug: 'ps5-games' },
-      { label: 'PS4 Games', slug: 'ps4-games' },
+      { label: 'Games', slug: 'games' },
       { label: 'Consoles', slug: 'gaming-consoles' },
       { label: 'Accessories', slug: 'gaming-accessories' },
     ],
