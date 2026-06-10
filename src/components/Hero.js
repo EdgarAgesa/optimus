@@ -17,7 +17,7 @@ const defaultSlides = [
     slug: 'gaming',
     img: '/images/IMG-20260524-WA0071.jpg',
     accent: '#0097a7',
-    features: ['Ex-UK Quality', '1 Year Warranty', 'Free Delivery'],
+    // features: ['Ex-UK Quality', '1 Year Warranty', 'Free Delivery'],
   },
   {
     id: 2,
@@ -32,7 +32,7 @@ const defaultSlides = [
     slug: 'phones',
     img: '/images/IMG-20260524-WA0090.jpg',
     accent: '#00bcd4',
-    features: ['Original Apple', 'Sealed Box', '128GB Storage'],
+    // features: ['Original Apple', 'Sealed Box', '128GB Storage'],
   },
   {
     id: 3,
@@ -47,7 +47,7 @@ const defaultSlides = [
     slug: 'audio',
     img: '/images/IMG-20260524-WA0077.jpg',
     accent: '#26c6da',
-    features: ['Active ANC', '30hr Battery', 'Hi-Res Audio'],
+    // features: ['Active ANC', '30hr Battery', 'Hi-Res Audio'],
   },
 ];
 
