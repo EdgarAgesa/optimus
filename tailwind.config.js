@@ -75,6 +75,8 @@ module.exports = {
         'grad-audio': 'linear-gradient(160deg, #007a8a 0%, #06161b 100%)',
         'grad-deals': 'linear-gradient(160deg, #e63946 0%, #8f1d27 100%)',
         'grad-phones': 'linear-gradient(160deg, #3ddbe8 0%, #0097a7 100%)',
+        'grad-tv': 'linear-gradient(160deg, #0097a7 0%, #06161b 100%)',
+        'grad-laptops': 'linear-gradient(200deg, #00bcd4 0%, #123a45 70%, #06161b 100%)',
       },
       // spacing: default Tailwind scale already covers the approved 4..96 ladder
       // (p-1=4px ... p-24=96px). No override needed; do NOT use arbitrary values.
