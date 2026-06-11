@@ -90,6 +90,7 @@ export default function DealsOfDay() {
               key={p.sku}
               product={p}
               featured={i === 0}
+              className={i === 0 ? 'col-span-2 md:col-span-1' : ''}
               onOpen={() => navigate(`/product/${encodeURIComponent(p.sku)}`)}
               onAddToCart={(prod) => addToCart(prod, 1)}
               secondaryLabel="Details"

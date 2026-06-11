@@ -9,11 +9,12 @@ export default function ProductCard({
   onAddToCart,
   secondaryLabel = null,
   onSecondary = null,
+  className = '',
 }) {
   return (
     <div
       onClick={onOpen}
-      className={`relative flex flex-col bg-ink-800 border border-edge overflow-hidden cursor-pointer transition-colors duration-200 hover:bg-ink-700 font-sans ${featured ? 'rounded-feat shadow-glow-featured' : 'rounded-xl'}`}
+      className={`relative flex flex-col bg-ink-800 border border-edge overflow-hidden cursor-pointer transition-colors duration-200 hover:bg-ink-700 font-sans ${featured ? 'rounded-feat shadow-glow-featured' : 'rounded-xl'} ${className}`}
     >
       {p.badge && (
         <span

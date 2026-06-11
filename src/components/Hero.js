@@ -23,7 +23,17 @@ const defaultSlides = [
   },
 ];
 
-const icons = ['🎮', '📱', '🎧']; // used only in the Supabase slide mapper below
+const icons = ['🎮', '📱', '🎧'];
+
+// Display-only price normalization (admin data untouched): ensures the KSh
+// prefix and tames raw casing — "FROM 90,000KSH" -> "From KSh 90,000".
+function displayPrice(raw) {
+  if (!raw) return raw;
+  let p = raw.trim();
+  const hasFrom = /^from\s*/i.test(p);
+  p = p.replace(/^from\s*/i, '').replace(/ksh\s*/gi, '').trim();
+  return `${hasFrom ? 'From ' : ''}KSh ${p}`;
+} // used only in the Supabase slide mapper below
 
 export default function Hero() {
   const [active, setActive] = useState(0);
@@ -32,6 +42,10 @@ export default function Hero() {
   // Initially the active slide (0) and its successor (1). Slide 3 stays unfetched
   // until slide 2 is active.
   const [warmed, setWarmed] = useState(() => new Set([0, 1]));
+  // Images crossfade in only after they finish loading; until then the emoji
+  // placeholder shows (prevents the alt-text-over-dark-card flash on slow data).
+  const [loadedImgs, setLoadedImgs] = useState(() => new Set());
+  const [failedImgs, setFailedImgs] = useState(() => new Set());
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -101,13 +115,15 @@ export default function Hero() {
               {slide.tag}
             </span>
 
-            <h1 className="text-display-xl text-fg-hi mt-6 max-w-2xl">{slide.title}</h1>
-            <p className="text-body text-fg-mid mt-4 max-w-md">{slide.sub}</p>
+            {/* Sentence-case is display-only (admin data untouched); trade-off:
+                proper nouns/model codes render lowercased after the first letter. */}
+            <h1 className="text-display-xl text-fg-hi mt-6 max-w-2xl lowercase first-letter:uppercase">{slide.title}</h1>
+            <p className="text-body text-fg-mid mt-4 max-w-md lowercase first-letter:uppercase">{slide.sub}</p>
 
             <div className="flex items-baseline gap-3 mt-6">
-              <span className="text-price text-teal-500">{slide.price}</span>
+              <span className="text-price text-teal-500">{displayPrice(slide.price)}</span>
               {slide.oldPrice && (
-                <span className="text-body text-fg-low line-through">{slide.oldPrice}</span>
+                <span className="text-body text-fg-low line-through">{displayPrice(slide.oldPrice)}</span>
               )}
             </div>
 
@@ -126,27 +142,32 @@ export default function Hero() {
           {/* Floating product card (small, lazy, aspect-locked — zero CLS) */}
           <div className="relative w-48 md:w-64 shrink-0 self-center md:self-end">
             <div className="relative aspect-square bg-ink-800 border border-edge rounded-xl shadow-glow-featured overflow-hidden">
+              {/* Emoji placeholder shows until the active image has actually
+                  loaded — no alt-text flash on slow connections. */}
+              {(!slide.img || failedImgs.has(slide.id) || !loadedImgs.has(slide.id)) && (
+                <div className="absolute inset-0 flex items-center justify-center text-display">{slide.icon}</div>
+              )}
               {slides.map((s, i) =>
-                warmed.has(i) && s.img ? (
+                warmed.has(i) && s.img && !failedImgs.has(s.id) ? (
                   <img
                     key={s.id}
                     src={s.img}
-                    alt={s.title}
+                    alt=""
+                    aria-hidden="true"
                     loading={i === 0 ? 'eager' : 'lazy'}
                     fetchPriority={i === 0 ? 'high' : 'auto'}
                     decoding="async"
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 motion-reduce:transition-none ${i === activeIdx ? 'opacity-100' : 'opacity-0'}`}
+                    onLoad={() => setLoadedImgs(prev => new Set(prev).add(s.id))}
+                    onError={() => setFailedImgs(prev => new Set(prev).add(s.id))}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 motion-reduce:transition-none ${i === activeIdx && loadedImgs.has(s.id) ? 'opacity-100' : 'opacity-0'}`}
                   />
                 ) : null
-              )}
-              {!slide.img && (
-                <div className="absolute inset-0 flex items-center justify-center text-display">{slide.icon}</div>
               )}
             </div>
             {slide.price && (
               <div className="absolute -bottom-3 left-3 bg-ink-800 border border-edge rounded-lg px-3 py-1">
                 <div className="text-micro text-fg-low uppercase">Starting at</div>
-                <div className="text-body font-medium text-teal-500">{slide.price}</div>
+                <div className="text-body font-medium text-teal-500">{displayPrice(slide.price)}</div>
               </div>
             )}
           </div>
