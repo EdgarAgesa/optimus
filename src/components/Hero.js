@@ -23,7 +23,7 @@ const defaultSlides = [
   },
 ];
 
-const icons = ['🎮', '📱', '🎧'];
+const icons = ['🎮', '📱', '🎧']; // used only in the Supabase slide mapper below
 
 export default function Hero() {
   const [active, setActive] = useState(0);
@@ -51,7 +51,6 @@ export default function Hero() {
           slug: s.category_slug || 'gaming',
           img: s.image || null,
         })));
-        setWarmed(new Set([0, 1]));
       }
     };
     fetchSlides();
@@ -64,6 +63,11 @@ export default function Hero() {
     return () => clearInterval(timer);
   }, [slides.length]);
 
+  // Clamp active if Supabase returns fewer slides than the current index.
+  useEffect(() => {
+    if (active >= slides.length) setActive(0);
+  }, [slides.length, active]);
+
   // Warm the next slide whenever the active one changes (D6).
   useEffect(() => {
     setWarmed(prev => {
@@ -74,7 +78,8 @@ export default function Hero() {
     });
   }, [active, slides.length]);
 
-  const slide = slides[active];
+  const activeIdx = active < slides.length ? active : 0;
+  const slide = slides[activeIdx];
 
   return (
     <section className="hero-section relative overflow-hidden bg-ink-950 font-sans">
@@ -85,7 +90,7 @@ export default function Hero() {
       <div className="relative max-w-screen-xl mx-auto px-4 pt-12 pb-16 md:pt-20 md:pb-24">
         {/* Counter */}
         <div className="text-label uppercase text-fg-low mb-6">
-          <strong className="text-fg-hi font-medium">0{active + 1}</strong> / 0{slides.length}
+          <strong className="text-fg-hi font-medium">{String(activeIdx + 1).padStart(2, '0')}</strong> / {String(slides.length).padStart(2, '0')}
         </div>
 
         <div className="flex flex-col md:flex-row md:items-end gap-10">
@@ -129,7 +134,7 @@ export default function Hero() {
                     alt={s.title}
                     loading={i === 0 ? 'eager' : 'lazy'}
                     decoding="async"
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${i === active ? 'opacity-100' : 'opacity-0'}`}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 motion-reduce:transition-none ${i === activeIdx ? 'opacity-100' : 'opacity-0'}`}
                   />
                 ) : null
               )}
@@ -153,8 +158,10 @@ export default function Hero() {
               key={i}
               onClick={() => setActive(i)}
               aria-label={`Slide ${i + 1}`}
-              className={`h-1 rounded-full border-0 cursor-pointer transition-opacity duration-300 ${i === active ? 'w-8 bg-teal-500' : 'w-4 bg-ink-700'}`}
-            />
+              className={`flex items-center bg-transparent border-0 cursor-pointer p-2 min-h-11 group`}
+            >
+              <span className={`h-1 rounded-full transition-opacity duration-300 motion-reduce:transition-none ${i === activeIdx ? 'w-8 bg-teal-500' : 'w-4 bg-ink-700'}`} />
+            </button>
           ))}
         </div>
       </div>
