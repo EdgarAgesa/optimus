@@ -277,7 +277,7 @@ export default function CategoryPage() {
           <main className="flex-1 min-w-0">
             {/* Mobile brand pills (spec 5: pill-tab filter row) */}
             {allInCategory.length > 0 && (
-              <div className="flex md:hidden gap-2 overflow-x-auto snap-x scroll-pl-4 pb-3 -mx-4 px-4">
+              <div className="flex md:hidden gap-2 overflow-x-auto snap-x scroll-pl-4 pb-3 -mx-4 px-4 scrollbar-hide">
                 <button
                   onClick={() => handleBrandFilter(null)}
                   className={`snap-start shrink-0 rounded-full px-4 py-2 text-body min-h-11 cursor-pointer ${!brandFilter ? 'bg-teal-500 text-ink-950 font-medium border-0' : 'bg-transparent text-fg-mid border border-edge'}`}

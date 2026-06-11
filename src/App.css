@@ -21,9 +21,11 @@ body {
 a { text-decoration: none; color: inherit; }
 button { font-family: 'Inter', sans-serif; cursor: pointer; }
 
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #f5f6fa; }
-::-webkit-scrollbar-thumb { background: #0097a7; border-radius: 3px; }
+/* Dark-canvas scrollbar (re-valued for the redesign: track was light #f5f6fa,
+   which read as a stray white strip on the dark theme). */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #06161b; } /* ink-950 */
+::-webkit-scrollbar-thumb { background: #0097a7; border-radius: 3px; } /* teal-600 */
 
 .product-card:hover {
   transform: translateY(-4px) !important;
