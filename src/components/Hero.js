@@ -133,6 +133,7 @@ export default function Hero() {
                     src={s.img}
                     alt={s.title}
                     loading={i === 0 ? 'eager' : 'lazy'}
+                    fetchPriority={i === 0 ? 'high' : 'auto'}
                     decoding="async"
                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 motion-reduce:transition-none ${i === activeIdx ? 'opacity-100' : 'opacity-0'}`}
                   />
