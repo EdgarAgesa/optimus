@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../context/CartContext';
-import '../styles/PopularGames.css';
+import ProductCard from './ProductCard';
 
 export default function PopularGames() {
   const { addToCart } = useCart();
@@ -16,58 +16,30 @@ export default function PopularGames() {
     p.category === 'Gaming Consoles'
   ).slice(0, 8);
   return (
-    <section className="popular-section">
-      <div className="popular-header">
-        <div>
-          <div className="popular-eyebrow">🎮 Most Wanted</div>
-          <h2 className="popular-title">Popular Games & Consoles</h2>
-          <div className="popular-underline" />
-        </div>
-        <button
-          className="popular-viewall"
-          onClick={() => navigate('/category/gaming')}
-        >
-          View all gaming →
-        </button>
-      </div>
-
-      <div className="popular-grid">
-        {items.map((p) => (
-          <div
-            key={p.sku}
-            className="pop-card"
-            onClick={() => navigate(`/product/${encodeURIComponent(p.sku)}`)}
-          >
-            {p.badge && (
-              <span
-                className="pop-badge"
-                style={{ background: p.badge === 'SALE' ? '#e63946' : '#0097a7' }}
-              >
-                {p.badge}
-              </span>
-            )}
-            <div className="pop-imgbox">
-              {p.img
-                ? <img src={p.img} alt={p.name} />
-                : <span className="pop-emoji">{p.icon}</span>
-              }
-            </div>
-            <div className="pop-info">
-              <div className="pop-brand">{p.brand}</div>
-              <div className="pop-name">{p.name}</div>
-              <div className="pop-pricerow">
-                <span className="pop-price">{p.price}</span>
-                {p.oldPrice && <span className="pop-old">{p.oldPrice}</span>}
-              </div>
-            </div>
-            <button
-              className="pop-btn"
-              onClick={(e) => { e.stopPropagation(); addToCart(p, 1); }}
-            >
-              + Add to Cart
-            </button>
+    <section className="bg-ink-900 font-sans">
+      <div className="max-w-screen-xl mx-auto px-4 py-12">
+        <div className="flex items-end justify-between gap-4 mb-6">
+          <div>
+            <span className="text-label uppercase text-teal-500">Most Wanted</span>
+            <h2 className="text-heading text-fg-hi mt-2">Popular Games &amp; Consoles</h2>
           </div>
-        ))}
+          <button
+            onClick={() => navigate('/category/gaming')}
+            className="bg-transparent text-fg-hi text-body border border-edge rounded-full px-5 py-2 cursor-pointer min-h-11 shrink-0"
+          >
+            View all gaming →
+          </button>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {items.map((p) => (
+            <ProductCard
+              key={p.sku}
+              product={p}
+              onOpen={() => navigate(`/product/${encodeURIComponent(p.sku)}`)}
+              onAddToCart={(prod) => addToCart(prod, 1)}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
