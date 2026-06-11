@@ -126,7 +126,7 @@ export default function Navbar({ onCartClick }) {
 
         <div className="flex items-center gap-2 ml-auto">
           <a href="https://wa.me/254759962068" target="_blank" rel="noreferrer" title="WhatsApp"
-            className="hidden sm:flex items-center gap-1 text-fg-mid hover:text-fg-hi text-body px-3 py-2 rounded-full">
+            className="hidden sm:flex items-center gap-1 text-fg-mid hover:text-fg-hi text-body px-3 py-2 rounded-full min-h-11">
             <span>💬</span><span className="text-label uppercase">Chat</span>
           </a>
           <button onClick={onCartClick} title="Cart"
@@ -152,6 +152,7 @@ export default function Navbar({ onCartClick }) {
             type="text" placeholder="Search products..."
             value={searchQuery || ''}
             onChange={e => handleSearch(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Escape') clearSearch(); }}
             className="flex-1 bg-transparent border-0 outline-none text-body text-fg-hi placeholder:text-fg-low"
           />
           <button onClick={() => handleSearch(searchQuery)} aria-label="Search"
@@ -210,7 +211,7 @@ export default function Navbar({ onCartClick }) {
       )}
 
       {/* Mobile menu */}
-      <div ref={drawerRef} className={`fixed top-0 right-0 h-full w-80 max-w-full bg-ink-950 border-l border-edge z-50 flex flex-col transition-transform duration-300 md:hidden ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div ref={drawerRef} inert={!mobileOpen} className={`fixed top-0 right-0 h-full w-80 max-w-full bg-ink-950 border-l border-edge z-50 flex flex-col transition-transform duration-300 md:hidden ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex items-center justify-between px-4 py-4 border-b border-edge">
           <div className="flex items-center gap-2">
             <img src="/images/logo.png" alt="Optimus Sphere Tech" className="h-9 w-9 object-contain" loading="lazy" decoding="async" />
