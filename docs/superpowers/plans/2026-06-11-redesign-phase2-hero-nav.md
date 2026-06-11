@@ -246,6 +246,57 @@ export default function Navbar({ onCartClick }) {
 }
 ```
 
+- [ ] **Step 1b: Keyboard interaction layer (spec Phase 2 exit gate — binding)**
+
+Apply these exact modifications to the replacement component from Step 1:
+
+**(a) Mobile drawer: Escape closes, body scroll locked, focus moved in and contained.**
+Add at the top of the component body (after the `useCart()` line):
+
+```jsx
+  const drawerRef = React.useRef(null);
+
+  // Drawer a11y: Escape closes, body scroll locks, focus enters and stays in the drawer.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    document.body.style.overflow = 'hidden';
+    const drawer = drawerRef.current;
+    const focusables = () =>
+      drawer ? Array.from(drawer.querySelectorAll('button, a, input')) : [];
+    focusables()[0]?.focus();
+    const onKey = (e) => {
+      if (e.key === 'Escape') { setMobileOpen(false); return; }
+      if (e.key !== 'Tab' || !drawer) return;
+      const list = focusables();
+      if (list.length === 0) return;
+      const first = list[0];
+      const last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [mobileOpen]);
+```
+
+Also: `import React, { useState, useEffect } from 'react';` (add `useEffect` to the import), and attach `ref={drawerRef}` to the mobile-menu `<div>` (the one with `fixed top-0 right-0 h-full w-80 ...`).
+
+**(b) Desktop dropdowns: keyboard-operable, not hover-only.**
+On each top-level wrapper `<div key={i} className="relative" ...>` add:
+
+```jsx
+              onFocus={() => { setOpen(i); }}
+              onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) { setOpen(null); setSubOpen(null); } }}
+              onKeyDown={(e) => { if (e.key === 'Escape') { setOpen(null); setSubOpen(null); } }}
+```
+
+(React's onFocus/onBlur bubble, so focusing any button inside keeps the panel open; tabbing out of the whole group closes it; Escape closes from anywhere inside.) On each `drop-sub-wrap` equivalent (`<div key={j} className="relative" ...>`) add `onFocus={() => setSubOpen(j)}` alongside the existing `onMouseEnter`.
+
+**(c) Focus ring:** no work needed — global `:focus-visible` law from Phase 1 covers every element; verify visually in Step 4.
+
 - [ ] **Step 2: Delete the stylesheet**
 
 Run: `git rm src/styles/Navbar.css`
@@ -550,8 +601,12 @@ The report must include: Lighthouse table vs baseline, tokens added since Phase 
 1. **Anti-flat gate (D4 mandate):** does the hero read cinematic — glow atmosphere visible, type carrying the page? If inert → tune glow opacity/saturation as named token variants, re-push, re-check, BEFORE Phase 3.
 2. **Android scroll gate (D5):** scroll under the sticky nav on the mid-range Android — jank means we delete the blur classes (solid is the design).
 3. **Admin hero CRUD:** edit a slide in `/admin`, confirm it renders.
+4. **Keyboard nav gate (spec Phase 2 exit gate):** with Tab on the preview —
+   - mobile drawer: focus is contained while open, Escape closes it, body scroll is locked behind it
+   - desktop dropdowns: open on focus/Enter, close on Escape and on tabbing out — fully operable without a mouse
+   - every interactive element (links, buttons, dots, inputs) shows the teal focus ring
 
-**NO Phase 3 work until all three gates pass.**
+**NO Phase 3 work until all four gates pass.**
 
 ---
 
