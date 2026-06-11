@@ -95,7 +95,8 @@ export default function Navbar({ onCartClick }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 font-sans bg-ink-950 supports-[backdrop-filter]:bg-ink-950/90 supports-[backdrop-filter]:backdrop-blur border-b border-edge">
+    <>
+    <header className="sticky top-0 z-50 font-sans bg-ink-950 supports-[backdrop-filter]:bg-ink-950/90 supports-[backdrop-filter]:backdrop-blur-nav border-b border-edge">
       {/* Announce bar */}
       <div className="bg-ink-950 text-fg-mid text-label uppercase text-center py-2 px-4 border-b border-edge">
         Call us on <strong className="text-fg-hi font-medium">0759 962 068</strong> or{' '}
@@ -209,6 +210,11 @@ export default function Navbar({ onCartClick }) {
         </div>
       </nav>
 
+    </header>
+
+    {/* Mobile overlay + drawer live OUTSIDE the blurred header: backdrop-filter
+        makes an ancestor the containing block for position:fixed descendants,
+        which previously clipped the drawer to the header's box on mobile. */}
       {/* Mobile overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 bg-ink-950/80 z-40 md:hidden" onClick={() => setMobileOpen(false)} />
@@ -281,12 +287,11 @@ export default function Navbar({ onCartClick }) {
             💬 Chat on WhatsApp
           </a>
           <div className="text-body text-fg-low mt-4 space-y-1">
-            <div>📞 0759 962 068</div>
-            <div>📞 0757 255 539</div>
-            <div>📍 Mithoo Biashara Centre, Basement B69</div>
+            <div><span className="text-label uppercase text-teal-500">Call</span> 0759 962 068 · 0757 255 539</div>
+            <div><span className="text-label uppercase text-teal-500">Visit</span> Mithoo Biashara Centre, Basement B69</div>
           </div>
         </div>
       </div>
-    </header>
+    </>
   );
 }

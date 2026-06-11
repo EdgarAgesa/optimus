@@ -20,3 +20,13 @@ Notes:
   The redesign's aspect-ratio-box rule (spec §5 performance measures) targets exactly this.
 - Homepage Best-Practices 73 driven by console errors/image aspect warnings on current build.
 - Run-to-run perf variance ±5-10 points is normal on local hardware; medians recorded.
+
+## Phase 2 addendum (2026-06-11)
+
+- Post-Phase-2 medians: home 61/87/77/100 (CLS 0.022, TBT 330ms), category 59/82/100/100,
+  product 39 (5-run median; page untouched until Phase 4). All scores ≥ floor.
+- **Mobile LCP element (for the record, parked for Phase 5):** the floating hero card
+  image (slide 0) — React-injected, so discovered late (~1.2s resourceLoadDelay);
+  `fetchPriority=high` applied. Polish candidate: make the display-xl HEADLINE the
+  mobile LCP instead (e.g. defer the card image below the fold on small screens or
+  render it later), which would tie LCP to first text paint. "Headline as mobile LCP."

@@ -39,6 +39,10 @@ module.exports = {
       none: 'none',
       'glow-featured': '0 0 24px rgba(0,188,212,0.25)',
     },
+    // Full override: the ONLY backdrop blur (sticky nav, D5). No default-scale values.
+    backdropBlur: {
+      nav: '8px',
+    },
     fontFamily: {
       sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
     },
