@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex"/>
+<title>Optimus — Design Tokens (Phase 1 review)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  /* Mirrors tailwind.config.js — review artifact only, deleted before merge */
+  body{margin:0 auto;background:#0d2b33;color:#fff;font-family:Inter,sans-serif;padding:24px;max-width:760px}
+  h1{font-size:clamp(2.5rem,8vw,4.5rem);line-height:1.05;letter-spacing:-2px;font-weight:600;margin:16px 0}
+  h2{font-size:1.75rem;line-height:1.2;letter-spacing:-.5px;font-weight:600;margin:48px 0 16px;border-bottom:1px solid rgba(0,188,212,.14);padding-bottom:8px}
+  .label{font-size:.75rem;letter-spacing:.35px;font-weight:500;text-transform:uppercase;color:#7d99a1}
+  .sw{display:flex;align-items:center;gap:12px;margin:8px 0}
+  .chip{width:56px;height:36px;border-radius:8px;border:1px solid rgba(0,188,212,.14);flex:none}
+  .sw code{color:#9fb6bc;font-size:13px}
+  .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+  .btn{font-size:14px;font-weight:600;border-radius:9999px;padding:11px 24px;border:0;cursor:pointer;font-family:Inter,sans-serif}
+  .btn:focus-visible{outline:2px solid #00bcd4;outline-offset:2px}
+  .badge{font-size:13px;font-weight:600;border-radius:9999px;padding:4px 10px;display:inline-block}
+  .card{border:1px solid rgba(0,188,212,.14);background:#123a45;padding:24px;margin:12px 0}
+  .grad{height:88px;border-radius:32px;display:flex;align-items:flex-end;padding:14px;font-weight:600;font-size:14px;margin:10px 0}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  td{padding:8px 10px;border-bottom:1px solid rgba(0,188,212,.14);color:#9fb6bc}
+  td:first-child{color:#fff}
+</style>
+</head>
+<body>
+<p class="label">Optimus Sphere Tech · premium redesign · Phase 1 token review</p>
+<h1>Design tokens.</h1>
+<p style="color:#9fb6bc;font-size:15px;line-height:1.5">Approve this system and every component in Phases 2–5 is built from ONLY these values.</p>
+
+<h2>Palette</h2>
+<div class="sw"><span class="chip" style="background:#06161b"></span><code>ink-950 #06161b — deepest canvas (hero, footer)</code></div>
+<div class="sw"><span class="chip" style="background:#0d2b33"></span><code>ink-900 #0d2b33 — page canvas (brand dark)</code></div>
+<div class="sw"><span class="chip" style="background:#123a45"></span><code>ink-800 #123a45 — card surface</code></div>
+<div class="sw"><span class="chip" style="background:#1a4a57"></span><code>ink-700 #1a4a57 — hover surface</code></div>
+<div class="sw"><span class="chip" style="background:#00bcd4"></span><code>teal-500 #00bcd4 — primary accent / CTA</code></div>
+<div class="sw"><span class="chip" style="background:#0097a7"></span><code>teal-600 #0097a7 — pressed</code></div>
+<div class="sw"><span class="chip" style="background:#e63946"></span><code>accent #e63946 — SALE / error ONLY</code></div>
+<div class="sw"><span class="chip" style="background:#e8b339"></span><code>warn #e8b339 — badges/hints only</code></div>
+<div class="sw"><span class="chip" style="background:#25D366"></span><code>whatsapp #25D366 — checkout only, dark text</code></div>
+<div class="sw"><span class="chip" style="background:#ffffff"></span><code>fg-hi #ffffff · fg-mid #9fb6bc · fg-low #7d99a1 — text tiers</code></div>
+
+<h2>Type scale (all Inter)</h2>
+<div style="font-size:clamp(2.5rem,8vw,4.5rem);line-height:1.05;letter-spacing:-2px;font-weight:600">display-xl</div>
+<div style="font-size:2.5rem;line-height:1.05;letter-spacing:-1.2px;font-weight:600">display 40</div>
+<div style="font-size:1.75rem;line-height:1.2;letter-spacing:-.5px;font-weight:600">heading 28</div>
+<div style="font-size:1.125rem;line-height:1.3;font-weight:600">card-title 18</div>
+<div style="font-size:.9375rem;line-height:1.5">body 15 — Gaming, phones &amp; audio delivered across Nairobi.</div>
+<div class="label">label 12 uppercase +0.35px</div>
+<div style="font-size:1.125rem;font-weight:700">price 18 w700 — KSh 64,999 <span style="color:#7d99a1;font-weight:400;text-decoration:line-through;font-size:.9375rem">KSh 72,000</span></div>
+
+<h2>Buttons (all pill, focus ring = Tab key)</h2>
+<div class="row">
+  <button class="btn" style="background:#00bcd4;color:#06161b">Primary</button>
+  <button class="btn" style="background:transparent;color:#fff;border:1px solid rgba(0,188,212,.4)">Secondary</button>
+  <button class="btn" style="background:#e63946;color:#fff">Sale / Remove</button>
+  <button class="btn" style="background:#25D366;color:#06161b">WhatsApp Checkout</button>
+  <button class="btn" style="background:#1a4a57;color:#7d99a1" disabled>Disabled</button>
+</div>
+
+<h2>Badges</h2>
+<div class="row">
+  <span class="badge" style="background:#e63946;color:#fff">SALE −20%</span>
+  <span class="badge" style="background:#00bcd4;color:#06161b">NEW</span>
+  <span class="badge" style="background:#e8b339;color:#06161b">LOW STOCK</span>
+  <span class="badge" style="background:#1a4a57;color:#9fb6bc">OUT OF STOCK</span>
+</div>
+
+<h2>Cards — the 32/16 radius signature</h2>
+<div class="card" style="border-radius:32px;box-shadow:0 0 24px rgba(0,188,212,.25)">
+  <span class="label">featured · radius 32 · glow-featured (the only shadow)</span>
+  <div style="font-size:1.125rem;font-weight:600;margin-top:8px">PS5 Slim 1TB</div>
+  <div style="font-size:1.125rem;font-weight:700;color:#00bcd4">KSh 64,999</div>
+</div>
+<div class="card" style="border-radius:16px">
+  <span class="label">standard · radius 16 · zero shadow, edge border</span>
+  <div style="font-size:1.125rem;font-weight:600;margin-top:8px">Sony WH-1000XM5</div>
+  <div style="font-size:1.125rem;font-weight:700;color:#00bcd4">KSh 38,500</div>
+</div>
+
+<h2>Category identity gradients (zero-bandwidth color)</h2>
+<div class="grad" style="background:linear-gradient(160deg,#00bcd4 0%,#0097a7 55%,#0d2b33 100%);color:#06161b">Gaming</div>
+<div class="grad" style="background:linear-gradient(160deg,#007a8a 0%,#06161b 100%)">Audio</div>
+<div class="grad" style="background:linear-gradient(160deg,#e63946 0%,#8f1d27 100%)">Deals (red = deals only)</div>
+<div class="grad" style="background:linear-gradient(160deg,#3ddbe8 0%,#0097a7 100%);color:#06161b">Phones</div>
+
+<h2>Hero atmosphere (glow-teal radial)</h2>
+<div style="position:relative;overflow:hidden;background:#06161b;border-radius:16px;padding:40px 24px">
+  <div style="position:absolute;top:-60px;right:-40px;width:260px;height:260px;background:radial-gradient(circle,rgba(0,188,212,.35) 0%,rgba(0,188,212,0) 70%)"></div>
+  <div style="font-size:clamp(2rem,6vw,3rem);line-height:1.05;letter-spacing:-1.2px;font-weight:600">Deals that<br/>hit different.</div>
+</div>
+
+<h2>Laws</h2>
+<table>
+  <tr><td>Focus ring</td><td>2px teal-500, offset 2 — every interactive element</td></tr>
+  <tr><td>Zero shadow</td><td>depth = surface steps + edge borders + glow; glow-featured is the only shadow</td></tr>
+  <tr><td>Red legibility</td><td>accent red never as text &lt;14px on dark; small sale info uses red pill + white text</td></tr>
+  <tr><td>WhatsApp contrast</td><td>green button always carries ink-950 text</td></tr>
+  <tr><td>No ad-hoc values</td><td>need a value? add a named token to tailwind.config.js first</td></tr>
+  <tr><td>Buttons</td><td>always pill (radius full)</td></tr>
+</table>
+<p style="color:#7d99a1;font-size:13px;margin-top:32px">Review artifact — deleted in Phase 5 before merge. Not linked from the app.</p>
+</body>
+</html>
