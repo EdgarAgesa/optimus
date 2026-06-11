@@ -1,67 +1,39 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/CategoryBanner.css';
 
+// Gradient identity cards (spec 5): zero-bandwidth CSS replaces the previous
+// remote stock photos. Mobile: scroll-snap row with next-card peek (D7) —
+// w-72 cards on 360-414px viewports leave ~15-25% of the next card visible.
 const cats = [
-  {
-    img: 'https://media.istockphoto.com/id/1412240771/photo/headphones-on-white-background.jpg?b=1&s=612x612&w=0&k=20&c=nh6m1Og0JhZgMvz5IY73WKgC9nCt8ZVvgY1Uk2PPL4M=',
-    label: 'Music lovers on the go',
-    sub: 'Wired & wireless',
-    slug: 'audio',
-    bg: '#1c1c1c',
-  },
-  {
-    img: 'https://media.istockphoto.com/id/1563409200/photo/man-watching-tv-with-remote-control-in-hand.jpg?b=1&s=612x612&w=0&k=20&c=pDP-xS_LBLYmicDCd6N8BMy9n4EewiFi4cfd_r8kvfQ=',
-    label: 'TVs & accessories',
-    sub: 'Wide variety',
-    slug: 'tv-streaming',
-    bg: '#2c2c2c',
-  },
-  {
-    img: 'https://images.pexels.com/photos/14740033/pexels-photo-14740033.jpeg',
-    label: 'Games and consoles',
-    sub: 'PS4 · PS5 · Xbox · Nintendo',
-    slug: 'gaming',
-    bg: '#1a1a2e',
-  },
-  {
-    img: 'https://images.pexels.com/photos/16442035/pexels-photo-16442035.jpeg',
-    label: 'Smartphones & tablets',
-    sub: 'All top brands',
-    slug: 'phones',
-    bg: '#0f3460',
-  },
-  {
-    img: 'https://images.pexels.com/photos/20432893/pexels-photo-20432893.jpeg',
-    label: 'Laptops',
-    sub: 'HP · Dell · Lenovo · Mac',
-    slug: 'laptops',
-    bg: '#1b2838',
-  },
+  { label: 'Music lovers on the go', sub: 'Wired & wireless', slug: 'audio', grad: 'bg-grad-audio' },
+  { label: 'TVs & accessories', sub: 'Wide variety', slug: 'tv-streaming', grad: 'bg-grad-tv' },
+  { label: 'Games and consoles', sub: 'PS4 · PS5 · Xbox · Nintendo', slug: 'gaming', grad: 'bg-grad-gaming' },
+  { label: 'Smartphones & tablets', sub: 'All top brands', slug: 'phones', grad: 'bg-grad-phones' },
+  { label: 'Laptops', sub: 'HP · Dell · Lenovo · Mac', slug: 'laptops', grad: 'bg-grad-laptops' },
 ];
 
 export default function CategoryBanner() {
   const navigate = useNavigate();
 
   return (
-    <>
-      <section className="cat-banner">
-        {cats.map((c) => (
-          <div
-            key={c.label}
-            className="cat-card"
-            style={{ background: c.bg }}
-            onClick={() => navigate(`/category/${c.slug}`)}
-          >
-            <img src={c.img} alt={c.label} />
-            <div className="cat-arrow">→</div>
-            <div className="cat-overlay">
-              <div className="cat-sub">{c.sub}</div>
-              <div className="cat-label">{c.label}</div>
-            </div>
-          </div>
-        ))}
-      </section>
-    </>
+    <section className="bg-ink-900 font-sans">
+      <div className="max-w-screen-xl mx-auto py-12">
+        <h2 className="text-heading text-fg-hi px-4 mb-6">Shop by category</h2>
+        <div className="flex md:grid md:grid-cols-5 gap-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory scroll-pl-4 px-4 pb-2">
+          {cats.map((c) => (
+            <button
+              key={c.slug}
+              onClick={() => navigate(`/category/${c.slug}`)}
+              className={`relative snap-start shrink-0 w-72 md:w-auto h-44 ${c.grad} rounded-feat border-0 p-6 flex flex-col justify-end items-start text-left cursor-pointer overflow-hidden`}
+            >
+              <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950/70 to-transparent" />
+              <span aria-hidden="true" className="absolute top-4 right-5 text-card-title text-white">→</span>
+              <span className="relative text-label uppercase text-fg-mid">{c.sub}</span>
+              <span className="relative text-card-title text-white mt-1">{c.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
