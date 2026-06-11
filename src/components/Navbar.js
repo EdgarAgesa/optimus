@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
@@ -52,7 +52,8 @@ export default function Navbar({ onCartClick }) {
   const navigate = useNavigate();
   const { cartCount, handleSearch, searchQuery, clearSearch } = useCart();
 
-  const drawerRef = React.useRef(null);
+  const drawerRef = useRef(null);
+  const triggerRefs = useRef([]);
 
   // Drawer a11y: Escape closes, body scroll locks, focus enters and stays in the drawer.
   useEffect(() => {
@@ -138,7 +139,7 @@ export default function Navbar({ onCartClick }) {
               </span>
             )}
           </button>
-          <button onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"
+          <button onClick={() => setMobileOpen(!mobileOpen)} aria-label={mobileOpen ? 'Close menu' : 'Open menu'} aria-expanded={mobileOpen}
             className="md:hidden bg-transparent border-0 cursor-pointer text-fg-hi text-card-title min-w-11 min-h-11">
             {mobileOpen ? '✕' : '☰'}
           </button>
@@ -169,9 +170,11 @@ export default function Navbar({ onCartClick }) {
               onMouseLeave={() => { setOpen(null); setSubOpen(null); }}
               onFocus={() => { setOpen(i); }}
               onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) { setOpen(null); setSubOpen(null); } }}
-              onKeyDown={(e) => { if (e.key === 'Escape') { setOpen(null); setSubOpen(null); } }}>
+              onKeyDown={(e) => { if (e.key === 'Escape') { setOpen(null); setSubOpen(null); triggerRefs.current[i]?.focus(); } }}>
               <button
+                ref={el => (triggerRefs.current[i] = el)}
                 onClick={() => handleNav(item.slug)}
+                aria-expanded={open === i}
                 className={`flex items-center gap-1 bg-transparent border-0 cursor-pointer text-label uppercase px-4 py-3 ${open === i ? 'text-teal-500' : 'text-fg-mid hover:text-fg-hi'}`}>
                 {item.label}<span className="text-micro">▾</span>
               </button>
@@ -179,7 +182,8 @@ export default function Navbar({ onCartClick }) {
                 <div className="absolute left-0 top-full bg-ink-800 border border-edge rounded-lg min-w-56 py-2 z-50">
                   {item.sub.map((sub, j) => (
                     <div key={j} className="relative"
-                      onMouseEnter={() => setSubOpen(j)} onMouseLeave={() => setSubOpen(null)}
+                      onMouseEnter={() => setSubOpen(j)}
+                      onMouseLeave={(e) => { if (!e.currentTarget.contains(document.activeElement)) setSubOpen(null); }}
                       onFocus={() => setSubOpen(j)}>
                       <button onClick={() => handleNav(sub.slug)}
                         className="flex w-full items-center justify-between bg-transparent border-0 cursor-pointer text-body text-fg-mid hover:text-fg-hi hover:bg-ink-700 px-4 py-2 text-left">
@@ -232,6 +236,7 @@ export default function Navbar({ onCartClick }) {
           {menuData.map((item, i) => (
             <div key={i} className="border-t border-edge">
               <button onClick={() => setMobileExpanded(mobileExpanded === i ? null : i)}
+                aria-expanded={mobileExpanded === i}
                 className="flex w-full items-center justify-between bg-transparent border-0 cursor-pointer text-body text-fg-hi px-4 py-3 min-h-11 text-left">
                 <span>{item.label}</span>
                 <span className="text-micro text-fg-low">{mobileExpanded === i ? '▴' : '▾'}</span>
