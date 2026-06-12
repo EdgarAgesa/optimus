@@ -209,7 +209,7 @@ export default function CategoryPage() {
         <div className="max-w-screen-xl mx-auto px-4 py-6 md:flex md:gap-6">
           {/* Sidebar: mobile drawer / desktop static rail */}
           <aside
-            className={`fixed top-0 left-0 h-full w-72 bg-ink-950 border-r border-edge z-50 flex flex-col transition-transform duration-300 md:static md:h-auto md:w-56 md:shrink-0 md:bg-transparent md:border-0 md:translate-x-0 ${filtersOpen ? 'translate-x-0' : '-translate-x-full'}`}
+            className={`fixed top-0 left-0 h-full w-72 bg-ink-950 border-r border-edge z-50 flex flex-col transition-transform duration-300 motion-reduce:transition-none md:static md:h-auto md:w-56 md:shrink-0 md:bg-transparent md:border-0 md:translate-x-0 ${filtersOpen ? 'translate-x-0' : '-translate-x-full'}`}
           >
             <div className="flex md:hidden items-center justify-between px-4 py-4 border-b border-edge">
               <div>

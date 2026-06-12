@@ -221,7 +221,7 @@ export default function Navbar({ onCartClick }) {
       )}
 
       {/* Mobile menu */}
-      <div ref={drawerRef} inert={!mobileOpen} className={`fixed top-0 right-0 h-full w-80 max-w-full bg-ink-950 border-l border-edge z-50 flex flex-col transition-transform duration-300 md:hidden ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div ref={drawerRef} inert={!mobileOpen} className={`fixed top-0 right-0 h-full w-80 max-w-full bg-ink-950 border-l border-edge z-50 flex flex-col transition-transform duration-300 motion-reduce:transition-none md:hidden ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex items-center justify-between px-4 py-4 border-b border-edge">
           <div className="flex items-center gap-2">
             <img src="/images/logo.png" alt="Optimus Sphere Tech" className="h-9 w-9 object-contain" loading="lazy" decoding="async" />

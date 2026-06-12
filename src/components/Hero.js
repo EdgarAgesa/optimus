@@ -46,7 +46,24 @@ export default function Hero() {
   // placeholder shows (prevents the alt-text-over-dark-card flash on slow data).
   const [loadedImgs, setLoadedImgs] = useState(() => new Set());
   const [failedImgs, setFailedImgs] = useState(() => new Set());
+  // "Headline as mobile LCP" (perf-baseline.md Phase 2 addendum): on small
+  // screens the card images mount after idle, so the display-xl headline is
+  // the first large paint. Desktop is unaffected.
+  const [imgsReady, setImgsReady] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth >= 768
+  );
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (imgsReady) return;
+    const idle = window.requestIdleCallback
+      ? window.requestIdleCallback(() => setImgsReady(true), { timeout: 1500 })
+      : setTimeout(() => setImgsReady(true), 800);
+    return () => {
+      if (window.requestIdleCallback) window.cancelIdleCallback(idle);
+      else clearTimeout(idle);
+    };
+  }, [imgsReady]);
 
   useEffect(() => {
     const fetchSlides = async () => {
@@ -96,7 +113,7 @@ export default function Hero() {
   const slide = slides[activeIdx];
 
   return (
-    <section className="hero-section relative overflow-hidden bg-ink-950 font-sans">
+    <section className="relative overflow-hidden bg-ink-950 font-sans">
       {/* Atmosphere — two glow layers (anti-flat mandate) */}
       <div aria-hidden="true" className="absolute -top-24 -right-16 w-96 h-96 bg-glow-teal" />
       <div aria-hidden="true" className="absolute -bottom-32 -left-24 w-96 h-96 bg-glow-teal opacity-60" />
@@ -148,7 +165,7 @@ export default function Hero() {
                 <div className="absolute inset-0 flex items-center justify-center text-display">{slide.icon}</div>
               )}
               {slides.map((s, i) =>
-                warmed.has(i) && s.img && !failedImgs.has(s.id) ? (
+                imgsReady && warmed.has(i) && s.img && !failedImgs.has(s.id) ? (
                   <img
                     key={s.id}
                     src={s.img}
