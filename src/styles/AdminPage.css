@@ -186,7 +186,7 @@
 }
 .adm-login-header { text-align: center; margin-bottom: 28px; }
 .adm-login-logo { height: 56px; margin-bottom: 12px; object-fit: contain; }
-.adm-login-title { font-size: 20px; font-weight: 800; color: #0d2b33; }
+.adm-login-title { font-size: 20px; font-weight: 800; color: #ffffff; }
 .adm-login-sub { font-size: 13px; color: #9fb6bc; margin-top: 4px; }
 .adm-login-error { color: #e63946; font-size: 12px; margin-top: 8px; }
 .adm-login-submit { width: 100%; margin-top: 20px; padding: 14px 0; font-size: 15px; }
