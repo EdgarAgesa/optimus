@@ -57,6 +57,23 @@ test('buildWaMessage handles an empty cart without crashing', () => {
   expect(decoded).toContain(`Hi! I'd like to order:`);
   expect(decoded).toContain(`*Total: ${formatPrice(0)}*`);
 });
+
+// Edgar's ruling: deep-coverage case — 3 line items, mixed quantities incl. >1,
+// six-figure comma totals; exercises the loop ordering and toLocaleString formatting.
+test('buildWaMessage formats a 3-item mixed-quantity cart with six-figure totals', () => {
+  const cart = [
+    { sku: 'TV1', name: 'TCL 55" QLED', price: 'KSh 58,000', qty: 3 },
+    { sku: 'PS5-1', name: 'PS5 Slim 1TB', price: 'KSh 64,999', qty: 1 },
+    { sku: 'EB1', name: 'Oraimo FreePods', price: 'KSh 2,500', qty: 2 },
+  ];
+  const cartTotal = 58000 * 3 + 64999 + 2500 * 2; // 243,999
+  const decoded = decodeURIComponent(buildWaMessage(cart, cartTotal, formatPrice));
+
+  expect(decoded).toContain(`1. TCL 55" QLED\n   Qty: 3 × KSh 58,000 = ${formatPrice(174000)}`);
+  expect(decoded).toContain(`2. PS5 Slim 1TB\n   Qty: 1 × KSh 64,999 = ${formatPrice(64999)}`);
+  expect(decoded).toContain(`3. Oraimo FreePods\n   Qty: 2 × KSh 2,500 = ${formatPrice(5000)}`);
+  expect(decoded).toContain(`*Total: ${formatPrice(243999)}*`);
+});
 ```
 
 - [ ] **Step 2: Run it — must FAIL** (`Cannot find module './waMessage'`):
@@ -465,6 +482,25 @@ Not-found branch:
 ```
 (add `SearchIcon` to the icons import)
 
+**Zoom Escape (Edgar ruling — binding):** the keyboard law applies to every interactive surface. Add `useRef` to the React import, then inside the component (after the existing state declarations):
+
+```jsx
+  const zoomTriggerRef = useRef(null);
+
+  // Keyboard law: Escape closes the zoom overlay; focus returns to the trigger.
+  useEffect(() => {
+    if (!imgZoomed) return;
+    const onKey = (e) => { if (e.key === 'Escape') setImgZoomed(false); };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      zoomTriggerRef.current?.focus();
+    };
+  }, [imgZoomed]);
+```
+
+And the main image wrap becomes a focusable `<button ref={zoomTriggerRef} ...>` (see JSX below — `w-full` added since buttons don't stretch by default).
+
 Main return, after Helmet:
 ```jsx
       {/* Zoom overlay */}
@@ -508,8 +544,8 @@ Main return, after Helmet:
         <div className="max-w-screen-xl mx-auto px-4 py-8 grid md:grid-cols-2 gap-10">
           {/* Images */}
           <div>
-            <div onClick={() => allImages.length > 0 && setImgZoomed(true)}
-              className="relative aspect-square bg-ink-800 border border-edge rounded-xl overflow-hidden cursor-zoom-in">
+            <button ref={zoomTriggerRef} onClick={() => allImages.length > 0 && setImgZoomed(true)} aria-label="Zoom image"
+              className="relative block w-full aspect-square bg-ink-800 border border-edge rounded-xl overflow-hidden cursor-zoom-in p-0">
               {allImages.length > 0 ? (
                 <img src={allImages[activeImg]} alt={p.name} fetchPriority="high" decoding="async"
                   className="absolute inset-0 w-full h-full object-cover" />
@@ -521,7 +557,7 @@ Main return, after Helmet:
                   {activeImg + 1} / {allImages.length}
                 </div>
               )}
-            </div>
+            </button>
             {allImages.length > 1 && (
               <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-hide">
                 {allImages.map((img, i) => (
@@ -900,7 +936,7 @@ grep -rnP "[\x{1F300}-\x{1FAFF}\x{2600}-\x{27BF}\x{2B00}-\x{2BFF}\x{FE0F}]" src/
 - [ ] **Step 5: Report to Edgar and STOP — his gates:**
   1. **D8 WhatsApp E2E ON A PHONE:** cart → Checkout via WhatsApp opens the WhatsApp APP with the itemized message; product page → Buy via WhatsApp; Ask a Question. All three carry correct text.
   2. **Cart flow:** add/remove/qty/clear; localStorage persistence across reload; toast appears (teal semantic).
-  3. **Keyboard:** cart drawer focus trap + Escape + scroll lock; zoom overlay Escape?? (zoom closes on ✕/backdrop — note: Escape-to-close for zoom is NOT implemented; flag if wanted); search overlay close; footer/product buttons all ringed.
+  3. **Keyboard:** cart drawer focus trap + Escape + scroll lock; zoom overlay Escape closes + focus returns to the gallery trigger (Edgar ruling, implemented in T3); search overlay close; footer/product buttons all ringed.
   4. **Visual:** product gallery, price box, dark specs table, related row, emoji-free chrome.
   5. **Helmet check:** product page title/og intact in page source.
 
@@ -913,5 +949,6 @@ grep -rnP "[\x{1F300}-\x{1FAFF}\x{2600}-\x{27BF}\x{2B00}-\x{2BFF}\x{FE0F}]" src/
 - **Spec coverage:** §5 ProductPage/CartDrawer/Footer/SearchOverlay/Toast (T2-T4), D8 phone gate + D9 TDD test (T1, T5), CLS kill via aspect-locked gallery (T3), deletion ledger 6 CSS + App.css patches (T2-T4), emoji sweep with audit command (T5), ProductDrawer correctly absent.
 - **Plan error caught in self-review and marked inline:** the SearchOverlay wrapper initially included `max-h-[unset]` (arbitrary value — forbidden) and a stray `style={undefined}`; the implementer note specifies the corrected classes (`max-h-96 md:max-h-screen`). Implementer MUST apply the corrected version.
 - **Type consistency:** icon names in T2-T4 match T1's additions; ProductCard props match its API; buildWaMessage(cart, cartTotal, formatPrice) signature consistent across module/test/CartDrawer.
-- **Zoom-overlay Escape gap:** noted honestly in T5 gate 3 rather than silently scoped in.
+- **Zoom-overlay Escape:** ruled IN by Edgar — implemented in T3 (Escape closes, focus returns to the gallery trigger button).
+- **Reviewer mandate (Edgar):** T3's review must DIFF the two wa.me message strings and the full Helmet block against the pre-conversion file (`git show <pre-T3-sha>:src/pages/ProductPage.js`), byte-level — not eyeball.
 ```
