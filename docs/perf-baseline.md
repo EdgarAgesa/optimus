@@ -21,6 +21,22 @@ Notes:
 - Homepage Best-Practices 73 driven by console errors/image aspect warnings on current build.
 - Run-to-run perf variance ±5-10 points is normal on local hardware; medians recorded.
 
+## Phase 5 FINAL (2026-06-12) — the before/after story
+
+| Page | Perf | A11y | BP | CLS |
+|---|---|---|---|---|
+| `/` | 59 → **71** | 77 → **87** | 73 → **100** | 0.046 → **0.022** |
+| `/category/games` | 48 → **65** | 81 → **83** | 96 → **100** | 0.016 → **0.011** |
+| product page | 39 → **72** | 88 → 87 | 96 → **100** | **0.424 → 0.000** |
+
+- Headline-as-mobile-LCP: idle-deferred hero card images shipped; homepage LCP median
+  6.0s → 4.9s. Honest note: the card image can still claim LCP on runs where it
+  mounts+loads fast post-idle; making the headline DEFINITIVE LCP would require
+  hiding the card on mobile (a design change, not taken).
+- Admin recolored to dark via value map (D2); login-title ink-on-ink contrast catch
+  fixed; CRUD round-trips are Edgar's gate (credentials).
+- style-guide.html removed; App.css dead rules removed; body canvas dark.
+
 ## Phase 2 addendum (2026-06-11)
 
 - Post-Phase-2 medians: home 61/87/77/100 (CLS 0.022, TBT 330ms), category 59/82/100/100,
