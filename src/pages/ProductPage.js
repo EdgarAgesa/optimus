@@ -60,11 +60,12 @@ export default function ProductPage() {
   // Keyboard law: Escape closes the zoom overlay; focus returns to the trigger.
   useEffect(() => {
     if (!imgZoomed) return;
+    const trigger = zoomTriggerRef.current;
     const onKey = (e) => { if (e.key === 'Escape') setImgZoomed(false); };
     document.addEventListener('keydown', onKey);
     return () => {
       document.removeEventListener('keydown', onKey);
-      zoomTriggerRef.current?.focus();
+      trigger?.focus();
     };
   }, [imgZoomed]);
 
