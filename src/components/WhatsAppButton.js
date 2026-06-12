@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/WhatsAppButton.css';
+import { ChatIcon } from './icons';
 
 export default function WhatsAppButton() {
   return (
@@ -7,11 +7,11 @@ export default function WhatsAppButton() {
       href="https://wa.me/254759962068"
       target="_blank"
       rel="noreferrer"
-      className="wa-float-btn"
       title="Chat on WhatsApp"
+      className="fixed bottom-6 right-4 z-40 flex items-center gap-2 bg-whatsapp text-ink-950 text-body font-medium rounded-full px-4 py-3 min-h-11 font-sans"
     >
-      <span className="wa-float-icon">💬</span>
-      <span className="wa-float-label">Need help? Chat with us</span>
+      <ChatIcon className="w-5 h-5" />
+      <span className="hidden sm:inline">Need help? Chat with us</span>
     </a>
   );
 }

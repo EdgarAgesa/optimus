@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../context/CartContext';
 import { supabase } from '../supabase';
-import '../styles/DealsOfDay.css';
+import ProductCard from './ProductCard';
 
 export default function DealsOfDay() {
   const { addToCart } = useCart();
@@ -68,49 +68,37 @@ export default function DealsOfDay() {
   const deals = supabaseDeals.length > 0 ? supabaseDeals : autoDeals;
 
   return (
-    <>
-      <section className="deals-section">
-        <div className="deals-header">
+    <section className="bg-ink-900 font-sans">
+      <div className="max-w-screen-xl mx-auto px-4 py-12">
+        <div className="flex items-end justify-between gap-4 mb-6">
           <div>
-            <div className="deals-tagline">🔥 Limited Time</div>
-            <h2 className="deals-heading">Deals of the Day</h2>
-            <div className="deals-line" />
+            <span className="inline-block bg-accent text-white text-label uppercase rounded-full px-3 py-1">
+              Limited Time
+            </span>
+            <h2 className="text-heading text-fg-hi mt-3">Deals of the Day</h2>
           </div>
-          <button className="deals-viewall" onClick={() => navigate('/category/gaming')}>
+          <button
+            onClick={() => navigate('/category/gaming')}
+            className="bg-transparent text-fg-hi text-body border border-edge rounded-full px-5 py-2 cursor-pointer min-h-11 shrink-0"
+          >
             View all →
           </button>
         </div>
-        <div className="deals-grid">
-          {deals.map((p) => (
-            <div key={p.sku} className="deal-card" onClick={() => navigate(`/product/${encodeURIComponent(p.sku)}`)}>
-              {p.badge && (
-                <span className="deal-badge" style={{ background: p.badge === 'SALE' ? '#e63946' : '#0097a7' }}>
-                  {p.badge}
-                </span>
-              )}
-              <div className="deal-imgbox">
-                {p.img ? <img src={p.img} alt={p.name} /> : <span className="deal-emoji">{p.icon}</span>}
-              </div>
-              <div className="deal-info">
-                <div className="deal-brand">{p.brand}</div>
-                <div className="deal-name">{p.name}</div>
-                <div className="deal-pricerow">
-                  <span className="deal-price">{p.price}</span>
-                  {p.oldPrice && <span className="deal-oldprice">{p.oldPrice}</span>}
-                </div>
-              </div>
-              <div className="deal-actions">
-                <button className="deal-cart-btn" onClick={(e) => { e.stopPropagation(); addToCart(p, 1); }}>
-                  + Cart
-                </button>
-                <button className="deal-view-btn" onClick={(e) => {e.stopPropagation(); navigate(`/product/${encodeURIComponent(p.sku)}`); }}>
-                  Details
-                </button>
-              </div>
-            </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {deals.map((p, i) => (
+            <ProductCard
+              key={p.sku}
+              product={p}
+              featured={i === 0}
+              className={i === 0 ? 'col-span-2 md:col-span-1' : ''}
+              onOpen={() => navigate(`/product/${encodeURIComponent(p.sku)}`)}
+              onAddToCart={(prod) => addToCart(prod, 1)}
+              secondaryLabel="Details"
+              onSecondary={(prod) => navigate(`/product/${encodeURIComponent(prod.sku)}`)}
+            />
           ))}
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

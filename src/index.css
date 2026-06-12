@@ -1,3 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* FOCUS RING LAW (spec §4): every interactive element, no exceptions.
+   Global on purpose — unconverted legacy components benefit too. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid #00bcd4; /* teal-500 */
+    outline-offset: 2px;
+  }
+}
+
+/* Named structural utility (flagged in Phase 3 summary): hides the scrollbar on
+   horizontal snap rows — the peek affordance signals scrollability, the raw
+   track read as a stray white line on the dark canvas. */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
