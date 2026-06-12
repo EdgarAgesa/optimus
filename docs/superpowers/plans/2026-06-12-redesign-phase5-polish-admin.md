@@ -110,7 +110,11 @@ git commit -m "a11y(p5): respect prefers-reduced-motion on drawer transforms"
 - [ ] **Step 1:** Apply the map across `src/styles/AdminPage.css`.
 - [ ] **Step 2:** Check the 4 inline `style={{}}` objects in AdminPage.js — re-value colors per the same map; if any inline style is structural (positioning/size), leave it.
 - [ ] **Step 3:** `CI=true npm run build` + tests green.
-- [ ] **Step 4: Admin smoke (npm start, /admin):** login works; all three tabs render legibly (no dark-on-dark or light-on-light text); product create/edit form readable; image upload control visible; hero slides + deals tabs usable. Fix any contrast misses by adjusting the mapped VALUE (never structure).
+- [ ] **Step 4: Admin exit check (Edgar ruling — binding):** login works; all three tabs render legibly (no dark-on-dark or light-on-light); AND one full CRUD round-trip per tab against Supabase with trivially reversible edits (live client data):
+  - Products: edit one product's name suffix (e.g. append " ."), save, verify it shows in the list/storefront, revert, verify reverted.
+  - Hero Slides: edit one slide's tag, save, verify on `/`, revert.
+  - Deals: reorder or edit one deal's sort_order, save, verify deals row, revert.
+  Legible-but-broken forms are the failure mode this exists to catch. Fix any contrast misses by adjusting the mapped VALUE (never structure).
 - [ ] **Step 5:** Commit: `git add src/styles/AdminPage.css src/pages/AdminPage.js && git commit -m "feat(p5): admin tokens-only dark recolor (D2) — value map only, buttons pilled, shadows dropped, auth untouched"`
 
 ---
@@ -141,6 +145,7 @@ git commit -m "a11y(p5): respect prefers-reduced-motion on drawer transforms"
   9. Helmet: home/category/product titles + product og: tags in page source
   10. 404-ish: unknown product sku → not-found state with working Back to Home
   11. Admin auth: login still works (logic untouched), all tabs functional post-recolor
+  12. **Light-body assumption sweep (Edgar ruling — binding):** with the body now dark, check every INTERMEDIATE state for dark-on-dark or invisible elements: initial paint (hard reload, throttled), route transitions (home→category→product→back), search overlay opening moment, empty-cart state, no-results search state, category empty state, product not-found, admin login screen, any loading/blank state. ANY offender gets an explicit background on the ELEMENT — never a body revert.
 
 - [ ] **Step 3:** Push branch. Verify Vercel preview builds green.
 
