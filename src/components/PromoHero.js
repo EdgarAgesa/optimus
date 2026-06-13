@@ -63,59 +63,56 @@ export default function PromoHero({ promo, fadeIn = false }) {
 
   return (
     <section className={`relative overflow-hidden bg-ink-950 font-sans${fadeIn ? ` transition-opacity duration-500 motion-reduce:transition-none ${shown ? 'opacity-100' : 'opacity-0'}` : ''}`}>
-      <div aria-hidden="true" className="absolute -top-24 -right-16 w-96 h-96 bg-glow-teal" />
-      <div aria-hidden="true" className="absolute -bottom-32 -left-24 w-96 h-96 bg-glow-teal opacity-60" />
+      {/* Full-bleed media — video on capable connections, still poster otherwise. Edge to edge, cover. */}
+      <div className="absolute inset-0 bg-ink-800">
+        {showVideo ? (
+          <video
+            ref={videoRef}
+            src={promo.video_url}
+            poster={poster || undefined}
+            muted
+            loop
+            playsInline
+            preload="none"
+            className="w-full h-full object-cover"
+          />
+        ) : poster ? (
+          <img src={poster} alt="" aria-hidden="true" className="w-full h-full object-cover" />
+        ) : (
+          <div aria-hidden="true" className="w-full h-full flex items-center justify-center text-display">🎮</div>
+        )}
+      </div>
 
-      <div className="relative max-w-screen-xl mx-auto px-4 pt-12 pb-16 md:pt-20 md:pb-24">
-        <div className="flex flex-col md:flex-row md:items-center gap-10">
-          {/* Statement */}
-          <div className="flex-1 min-w-0">
-            <span className="inline-flex items-center gap-2 border border-edge rounded-full px-4 py-1 text-label uppercase text-fg-mid">
-              <span className="w-2 h-2 rounded-full bg-teal-500" />
-              {caption}
-            </span>
-            <h1 className="text-display-xl text-fg-hi mt-6 max-w-2xl">{promo.title}</h1>
-            <div className="flex flex-wrap gap-3 mt-8">
-              <button type="button" onClick={goToProduct}
-                className="bg-teal-500 active:bg-teal-600 text-ink-950 text-body font-medium border-0 rounded-full px-6 py-3 cursor-pointer min-h-11">
-                {ctaLabel} →
+      {/* Contrast scrim — guarantees readable text over ANY uploaded media regardless of how
+          bright it is (not relying on the video being dark). Strong left anchor; on desktop the
+          right fades to transparent so the autoplaying video stays vivid. On mobile the media is
+          the still poster, so a heavier fade is fine and keeps text readable at narrow widths. */}
+      <div aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-r from-ink-950 via-ink-950/80 to-ink-950/40 md:via-ink-950/65 md:to-transparent" />
+
+      {/* Content overlay — left-aligned, vertically centered. Same single <h1>, type scale, teal pill. */}
+      <div className="relative max-w-screen-xl mx-auto px-4 flex items-center min-h-[28rem] md:min-h-[34rem] py-16 md:py-24">
+        <div className="max-w-xl">
+          <span className="inline-flex items-center gap-2 border border-edge rounded-full px-4 py-1 text-label uppercase text-fg-mid">
+            <span className="w-2 h-2 rounded-full bg-teal-500" />
+            {caption}
+          </span>
+          <h1 className="text-display-xl text-fg-hi mt-6">{promo.title}</h1>
+          <div className="flex flex-wrap items-center gap-3 mt-8">
+            <button type="button" onClick={goToProduct}
+              className="bg-teal-500 active:bg-teal-600 text-ink-950 text-body font-medium border-0 rounded-full px-6 py-3 cursor-pointer min-h-11">
+              {ctaLabel} →
+            </button>
+            {!showVideo && (
+              <button
+                type="button"
+                onClick={handleManualPlay}
+                aria-label={`Watch the featured video for ${promo.title}`}
+                className="inline-flex items-center gap-2 bg-ink-900/80 active:bg-ink-700 text-fg-hi text-body border border-edge rounded-full px-6 py-3 cursor-pointer min-h-11">
+                <span aria-hidden="true">▶</span>
+                <span className="text-label uppercase">Watch the featured video</span>
               </button>
-            </div>
-          </div>
-
-          {/* Media */}
-          <div className="relative w-full md:w-[28rem] shrink-0">
-            <div className="relative aspect-video bg-ink-800 border border-edge rounded-xl shadow-glow-featured overflow-hidden">
-              {showVideo ? (
-                <video
-                  ref={videoRef}
-                  src={promo.video_url}
-                  poster={poster || undefined}
-                  muted
-                  loop
-                  playsInline
-                  preload="none"
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              ) : (
-                <>
-                  {poster ? (
-                    <img src={poster} alt="" aria-hidden="true"
-                      className="absolute inset-0 w-full h-full object-cover" />
-                  ) : (
-                    <div aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-display">🎮</div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={handleManualPlay}
-                    aria-label={`Watch the featured video for ${promo.title}`}
-                    className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink-950/40 text-fg-hi cursor-pointer border-0">
-                    <span className="text-display" aria-hidden="true">▶</span>
-                    <span className="text-label uppercase">Watch the featured video</span>
-                  </button>
-                </>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>
