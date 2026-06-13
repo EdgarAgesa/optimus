@@ -1171,6 +1171,15 @@ No code. Run the dev server (`npm start`) against the live Supabase project
   - In DevTools → Network, throttle to a fast profile; confirm the video streams
     progressively (it is not fully downloaded before playing — `preload="none"`).
   - CTA → navigates to `/product/<sku>`.
+  - **Full-bleed scrim — BRIGHT-video contrast check.** Use a **bright** clip
+    (snowy / daytime gameplay, not a dark game) so the desktop scrim's right side
+    (which fades to transparent to keep video vivid) is genuinely tested. The
+    headline sits in the dark left band and is fine; specifically confirm the
+    **caption pill and any text near the fade still hold WCAG contrast** over the
+    bright footage. The scrim handles dark uploads trivially — the bright upload on
+    the faded side is the failure-prone case. If it fails, the fix is to **extend
+    the text's local scrim** (a tighter gradient/backing behind the text block),
+    **not** to darken the whole video.
 
 - [ ] **Step 3: Mobile-data / Save-Data render** (BANDWIDTH GATE)
   - DevTools → Network conditions → enable **Save-Data** (or emulate 3g), reload.
