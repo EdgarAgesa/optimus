@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAutoplayAllowed from '../hooks/useAutoplayAllowed';
 import { useProducts } from '../hooks/useProducts';
@@ -30,13 +30,21 @@ export default function PromoHero({ promo }) {
     }
   }, [mode, autoplayFailed, userStarted]);
 
-  const handleManualPlay = () => {
-    setUserStarted(true);
-    requestAnimationFrame(() => {
-      const el = videoRef.current;
-      if (el) { const p = el.play(); if (p && p.catch) p.catch(() => {}); }
-    });
-  };
+  // Reset transient state when the promo changes so a swapped promo doesn't inherit a prior failure/tap.
+  useEffect(() => {
+    setAutoplayFailed(false);
+    setUserStarted(false);
+  }, [promo.id]);
+
+  const handleManualPlay = () => setUserStarted(true);
+
+  // After a manual tap, the <video> mounts; play it synchronously post-commit
+  // (ref guaranteed populated — more robust than rAF under concurrent React).
+  useLayoutEffect(() => {
+    if (!userStarted) return;
+    const el = videoRef.current;
+    if (el) { const p = el.play(); if (p && p.catch) p.catch(() => {}); }
+  }, [userStarted]);
 
   const goToProduct = () => {
     if (promo.product_sku) navigate(`/product/${encodeURIComponent(promo.product_sku)}`);
@@ -57,7 +65,7 @@ export default function PromoHero({ promo }) {
             </span>
             <h1 className="text-display-xl text-fg-hi mt-6 max-w-2xl">{promo.title}</h1>
             <div className="flex flex-wrap gap-3 mt-8">
-              <button onClick={goToProduct}
+              <button type="button" onClick={goToProduct}
                 className="bg-teal-500 active:bg-teal-600 text-ink-950 text-body font-medium border-0 rounded-full px-6 py-3 cursor-pointer min-h-11">
                 {ctaLabel} →
               </button>
@@ -84,11 +92,13 @@ export default function PromoHero({ promo }) {
                     <img src={poster} alt="" aria-hidden="true"
                       className="absolute inset-0 w-full h-full object-cover" />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-display">🎮</div>
+                    <div aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-display">🎮</div>
                   )}
                   <button
+                    type="button"
                     onClick={handleManualPlay}
-                    className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink-950/40 text-fg-hi cursor-pointer border-0 motion-reduce:transition-none">
+                    aria-label={`Watch the featured video for ${promo.title}`}
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink-950/40 text-fg-hi cursor-pointer border-0">
                     <span className="text-display" aria-hidden="true">▶</span>
                     <span className="text-label uppercase">Watch — this week's featured game</span>
                   </button>

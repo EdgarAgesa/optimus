@@ -41,14 +41,14 @@ test('poster mode: shows poster + play button, no video src until tap', () => {
   expect(container.querySelector('video')).not.toBeNull();
 });
 
-test('autoplay mode: video has preload=none, poster attr, and plays', () => {
+test('autoplay mode: video has preload=none, poster attr, and plays', async () => {
   useAutoplayAllowed.mockReturnValue('autoplay');
   const { container } = renderHero();
   const video = container.querySelector('video');
   expect(video).not.toBeNull();
   expect(video.getAttribute('preload')).toBe('none');
   expect(video.getAttribute('poster')).toBe('/poster.jpg');
-  expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalled();
+  await waitFor(() => expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalled());
 });
 
 test('autoplay rejection falls back to poster + play button', async () => {
