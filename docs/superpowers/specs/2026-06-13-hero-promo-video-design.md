@@ -41,7 +41,7 @@ Each unit has one purpose, a defined interface, and is testable in isolation.
 | Unit | Type | Responsibility | Depends on |
 |------|------|----------------|------------|
 | `src/hooks/useAutoplayAllowed.js` | hook (pure logic) | Decide `'autoplay'` vs `'poster'` from connection + motion + viewport signals | `navigator.connection`, `window.matchMedia` |
-| `src/lib/videoUpload.js` | pure helper | `validateVideoFile(file)` → `{ ok, level, message }`; size gate | none |
+| `src/lib/videoUpload.js` | pure helper | `validateVideoFile(file)` and `validatePosterFile(file)` → `{ ok, level, message }`; size gates | none |
 | `src/components/PromoHero.js` | component (Tailwind) | Render video-or-poster + title/caption + product CTA, honoring the gate | `useAutoplayAllowed`, `react-router` `useNavigate` |
 | `Hero.js` (edited) | component | Fetch active promo; branch to `PromoHero` or existing carousel | `supabase`, `PromoHero` |
 | `AdminPage.js` (edited) | component | New "Promo Video" tab: CRUD + activate + upload validation | `supabase`, `uploadImage`, `deleteFromBucket`, `CustomSelect` |
@@ -106,10 +106,15 @@ are undefined.
 
 - Attributes always: `muted`, `loop`, `playsInline`, **`preload="none"`**, and
   **no `autoplay` attribute** (prevents the browser from prefetching bytes).
+  `preload` is **never** set to `"auto"` on any path.
 - **Autoplay path** (`gate === 'autoplay'`):
   - Set the `poster` attribute to `poster_url` so there is **no black flash**
     before the first frame paints.
-  - Attach `src` and call `videoRef.current.play()` in an effect.
+  - Attach `src` (with `preload="none"`) and call `videoRef.current.play()` in
+    an effect. With `preload="none"`, `.play()` **streams progressively** — it
+    does not front-load the whole file. This is what closes the
+    25 MB-on-unknown-desktop case: a long clip streams in rather than being
+    fully downloaded before it can start.
   - **If `.play()` rejects** (browser blocks autoplay): catch it and fall back
     to the poster + play-button state — **never leave a frozen/blank frame.**
 - **Poster path** (`gate === 'poster'`):
@@ -121,9 +126,16 @@ are undefined.
 ### Poster source (resolved at render)
 
 `poster_url` (admin-uploaded, required) → fall back to linked
-`product.images[0]` → fall back to emoji placeholder (consistent with the
+`product.img` → fall back to emoji placeholder (consistent with the
 carousel's placeholder treatment). The linked product is resolved via the
-existing `useProducts()` list by `product_sku`.
+existing `useProducts()` hook (named export, returns `{ products }`; each item
+has `.sku` and `.img`) by `product_sku`.
+
+**The poster is the mobile-data payload** — it is the one asset constrained
+users actually download on the "safe" path. So it gets its own size guard, just
+like the video: `validatePosterFile(file)` **warns above ~500 KB** and
+**blocks above 1 MB**. A required-but-uncapped poster would recreate the
+bandwidth problem on the gated path.
 
 ## 6. CTA & SEO
 
@@ -145,7 +157,8 @@ rest), Edit, and Delete.
   - **> 25 MB → block** (clear message, cannot save).
   - **> 10 MB → warn** inline (allowed, but flagged).
   - else ok.
-- Poster dropzone (`accept="image/*"`) — **required** to save.
+- Poster dropzone (`accept="image/*"`) — **required** to save; runs
+  `validatePosterFile`: **> 1 MB → block**, **> 500 KB → warn**, else ok.
 - Title, Caption, CTA label (text inputs).
 - Product link: `CustomSelect` over products (`label: "name — price"`,
   value `sku`) — same pattern as the Deals tab.
@@ -171,9 +184,29 @@ signature change.
 
 ## 9. Testing & phased gates
 
-- **Phase 0 — Supabase setup.** Create `promo_video` table + `promo-videos`
-  bucket (public). Documented as SQL/steps in this spec's follow-up; verified by
-  a manual read returning empty set.
+- **Phase 0 — Supabase setup (RLS-gated, matching the existing tables).** The
+  site is RLS-gated by design (CLAUDE.md), so this is specified explicitly, not
+  "just create a table":
+  - **Table `promo_video`:** create with the columns in §4. Enable RLS.
+    - **Read:** `SELECT` policy `USING (true)` for `anon` (public read — the
+      homepage reads the active promo with the anon key, exactly like
+      `hero_slides`/`products`).
+    - **Write:** `INSERT`/`UPDATE`/`DELETE` policies that match how the existing
+      admin tables (`hero_slides`, `products`) are gated — i.e. **do not** grant
+      blanket write to `anon` beyond what those tables already allow. Mirror the
+      project's current admin-write policy on `hero_slides` so this table is no
+      more permissive than what already ships.
+  - **Bucket `promo-videos`:** create as **public-read** (so `getPublicUrl`
+    works for the `<video>`/`poster`, like `hero-images`). Add a Storage
+    **write/`INSERT`** policy scoped to this bucket so it is **not an open
+    upload target** — mirror the existing write policy on the `hero-images`
+    bucket. Public read does not imply public write; the write policy is set
+    deliberately to match `hero-images`.
+  - **Verify:** an anon `SELECT` on `promo_video` returns an empty set (read
+    works); confirm the bucket exists and its policies match `hero-images`.
+  - *Note:* the existing admin auth (plaintext/anon-key) is the known parked
+    issue and is **out of scope** — we match the current gating, we do not try
+    to fix or tighten auth here.
 - **Phase 1 — pure logic + tests.** `validateVideoFile` and `useAutoplayAllowed`
   with Jest tests mocking `navigator.connection` (saveData, each effectiveType,
   absent) and `matchMedia` (reduced-motion, viewport/pointer). **GATE: the
