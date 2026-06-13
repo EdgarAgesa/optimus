@@ -51,6 +51,28 @@ the active promo and an **early return** of `<PromoHero promo={...} />` when one
 exists. The existing carousel JSX, lazy-warming (`warmed`), crossfade-on-load,
 and dots run **completely unchanged** when there is no active promo.
 
+**Render-switch timing (decided 2026-06-13) — never block first paint.** The
+homepage must never block on the promo fetch; fast first paint for the slow-data
+audience is the priority, and most weeks there is no active promo (no swap at
+all). So the default is **carousel-first**: the carousel paints immediately and,
+if the async promo fetch later returns an active promo, the hero swaps to
+`PromoHero`. Two refinements soften the swap during an active-promo week WITHOUT
+blocking paint or reserving height:
+1. **Crossfade the swap.** When `PromoHero` is swapped in after the carousel was
+   shown, it fades in (`transition-opacity duration-500 motion-reduce:transition-none`,
+   reusing the carousel's crossfade idiom) so it reads as intentional, not a pop.
+   On a direct (cached) first-paint render there is no fade.
+2. **Render directly from cache when the promo is already known.** A network
+   fetch cannot resolve before first paint, so a small `localStorage`
+   stale-while-revalidate cache (`src/lib/promoCache.js`, key `optimus-promo`)
+   records the last-known active promo. On a return visit during a promo week,
+   `Hero` initializes from the cache and renders `PromoHero` **directly on first
+   paint (no carousel, no swap)**, then revalidates via the fetch and updates if
+   it changed. Best case: no swap. Worst case (cold cache): carousel-first with
+   the graceful crossfade. Rejected: blocking paint until the check resolves —
+   that taxes 100% of loads (regressing the documented headline-as-LCP work) to
+   fix a flash that only affects promo-active weeks.
+
 **Styling split (per CLAUDE.md):** `PromoHero` is **Tailwind** (matches the
 redesign-converted `Hero.js` — brand tokens `teal-500`, `ink-950`, `fg-hi`,
 `bg-glow-teal`, Inter, `motion-reduce:`). The admin tab is **CSS** — reuses
