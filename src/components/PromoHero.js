@@ -111,7 +111,7 @@ export default function PromoHero({ promo, fadeIn = false }) {
                     aria-label={`Watch the featured video for ${promo.title}`}
                     className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink-950/40 text-fg-hi cursor-pointer border-0">
                     <span className="text-display" aria-hidden="true">▶</span>
-                    <span className="text-label uppercase">Watch — this week's featured game</span>
+                    <span className="text-label uppercase">Watch the featured video</span>
                   </button>
                 </>
               )}
