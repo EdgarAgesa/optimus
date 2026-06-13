@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
+import { validateVideoFile, validatePosterFile } from '../lib/videoUpload';
+import { deleteFromBucket } from '../lib/storage';
 import '../styles/AdminPage.css';
 
 const CATEGORY_DATA = {
@@ -117,12 +119,24 @@ export default function AdminPage() {
   const [dealSku, setDealSku] = useState('');
   const [savingDeal, setSavingDeal] = useState(false);
 
+  // Promo Video
+  const [promos, setPromos] = useState([]);
+  const [showPromoForm, setShowPromoForm] = useState(false);
+  const [editingPromo, setEditingPromo] = useState(null);
+  const [promoForm, setPromoForm] = useState({ title: '', caption: '', cta_label: '', product_sku: '' });
+  const [promoVideoFile, setPromoVideoFile] = useState(null);
+  const [promoPosterFile, setPromoPosterFile] = useState(null);
+  const [promoVideoMsg, setPromoVideoMsg] = useState(null);   // { level, message } | null
+  const [promoPosterMsg, setPromoPosterMsg] = useState(null);
+  const [savingPromo, setSavingPromo] = useState(false);
+
   // Auto-refresh on tab switch
   useEffect(() => {
     if (!authed) return;
     if (activeTab === 'products') loadProducts();
     if (activeTab === 'hero') loadHeroSlides();
     if (activeTab === 'deals') loadDeals();
+    if (activeTab === 'promo') loadPromos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, authed]);
 
@@ -143,6 +157,7 @@ export default function AdminPage() {
     loadProducts();
     loadHeroSlides();
     loadDeals();
+    loadPromos();
   };
 
   // ── Load ──
@@ -177,6 +192,14 @@ export default function AdminPage() {
       `)
       .order('sort_order');
     setDeals(data || []);
+  };
+
+  const loadPromos = async () => {
+    const { data } = await supabase
+      .from('promo_video')
+      .select('*')
+      .order('created_at', { ascending: false });
+    setPromos(data || []);
   };
 
   // ── Upload image ──
@@ -349,6 +372,95 @@ export default function AdminPage() {
     loadHeroSlides();
   };
 
+  // ── Promo Video ──
+  const resetPromoForm = () => {
+    setPromoForm({ title: '', caption: '', cta_label: '', product_sku: '' });
+    setPromoVideoFile(null); setPromoPosterFile(null);
+    setPromoVideoMsg(null); setPromoPosterMsg(null);
+    setEditingPromo(null); setShowPromoForm(false);
+  };
+
+  const onSelectPromoVideo = (file) => {
+    const res = validateVideoFile(file);
+    if (!res.ok) { setPromoVideoFile(null); setPromoVideoMsg(res); return; }
+    setPromoVideoFile(file);
+    setPromoVideoMsg(res.level === 'warn' ? res : null);
+  };
+
+  const onSelectPromoPoster = (file) => {
+    const res = validatePosterFile(file);
+    if (!res.ok) { setPromoPosterFile(null); setPromoPosterMsg(res); return; }
+    setPromoPosterFile(file);
+    setPromoPosterMsg(res.level === 'warn' ? res : null);
+  };
+
+  const handleSavePromo = async () => {
+    if (!promoForm.title) { alert('Title is required'); return; }
+    if (!promoForm.product_sku) { alert('Please link a product'); return; }
+    if (!promoVideoFile && !editingPromo?.video_url) { alert('A video is required'); return; }
+    if (!promoPosterFile && !editingPromo?.poster_url) { alert('A poster image is required'); return; }
+    setSavingPromo(true);
+    try {
+      let video_url = editingPromo?.video_url || '';
+      let poster_url = editingPromo?.poster_url || '';
+      if (promoVideoFile) {
+        if (editingPromo?.video_url) await deleteFromBucket(editingPromo.video_url, 'promo-videos'); // best-effort replace cleanup
+        video_url = await uploadImage(promoVideoFile, 'promo-videos');
+      }
+      if (promoPosterFile) {
+        if (editingPromo?.poster_url) await deleteFromBucket(editingPromo.poster_url, 'promo-videos');
+        poster_url = await uploadImage(promoPosterFile, 'promo-videos');
+      }
+      const payload = {
+        title: promoForm.title,
+        caption: promoForm.caption,
+        cta_label: promoForm.cta_label,
+        product_sku: promoForm.product_sku,
+        video_url, poster_url,
+      };
+      if (editingPromo) {
+        await supabase.from('promo_video').update(payload).eq('id', editingPromo.id);
+      } else {
+        await supabase.from('promo_video').insert({ ...payload, is_active: false });
+      }
+      resetPromoForm();
+      loadPromos();
+    } catch (err) {
+      alert('Error saving promo: ' + err.message);
+    }
+    setSavingPromo(false);
+  };
+
+  const handleEditPromo = (promo) => {
+    setEditingPromo(promo);
+    setPromoForm({
+      title: promo.title || '', caption: promo.caption || '',
+      cta_label: promo.cta_label || '', product_sku: promo.product_sku || '',
+    });
+    setPromoVideoFile(null); setPromoPosterFile(null);
+    setPromoVideoMsg(null); setPromoPosterMsg(null);
+    setShowPromoForm(true);
+    window.scrollTo(0, 0);
+  };
+
+  // Single active at a time: deactivate all others, then toggle this one.
+  const handleToggleActive = async (promo) => {
+    await supabase.from('promo_video').update({ is_active: false }).neq('id', promo.id);
+    await supabase.from('promo_video').update({ is_active: !promo.is_active }).eq('id', promo.id);
+    loadPromos();
+  };
+
+  // Delete the row AND both files from the bucket; warn (don't block) on cleanup failure.
+  const handleDeletePromo = async (promo) => {
+    if (!window.confirm('Delete this promo? This also removes its video and poster.')) return;
+    const failed = [];
+    if (promo.video_url) { const { error } = await deleteFromBucket(promo.video_url, 'promo-videos'); if (error) failed.push('video'); }
+    if (promo.poster_url) { const { error } = await deleteFromBucket(promo.poster_url, 'promo-videos'); if (error) failed.push('poster'); }
+    await supabase.from('promo_video').delete().eq('id', promo.id);
+    loadPromos();
+    if (failed.length) alert(`Promo deleted, but cleanup of the ${failed.join(' and ')} file failed — remove it from the promo-videos bucket manually.`);
+  };
+
   // ── Deals ──
   const handleAddDeal = async () => {
     if (!dealSku) return;
@@ -426,6 +538,7 @@ export default function AdminPage() {
             { key: 'products', label: '📦 Products' },
             { key: 'hero', label: '🎯 Hero Slides' },
             { key: 'deals', label: '🔥 Deals' },
+            { key: 'promo', label: '🎬 Promo Video' },
           ].map(tab => (
             <button key={tab.key}
               className={`admin-tab-btn ${activeTab === tab.key ? 'active' : ''}`}
@@ -1050,6 +1163,128 @@ export default function AdminPage() {
                     className="adm-delete-btn adm-drow-remove">
                     🗑️ Remove
                   </button>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* ══ PROMO VIDEO ══ */}
+        {activeTab === 'promo' && (
+          <div>
+            <div className="section-header">
+              <h2 className="adm-section-title">🎬 Promo Video ({promos.length})</h2>
+              <div className="adm-header-actions">
+                <button onClick={loadPromos} className="adm-refresh-btn">🔄 Refresh</button>
+                <button onClick={() => { resetPromoForm(); setShowPromoForm(true); }} className="adm-primary-btn">
+                  + Add Promo
+                </button>
+              </div>
+            </div>
+
+            {showPromoForm && (
+              <div className="form-card">
+                <div className="form-title">{editingPromo ? '✏️ Edit Promo' : '🎬 New Promo Video'}</div>
+                <div className="admin-grid">
+                  <div className="field-group">
+                    <label>Title *</label>
+                    <input className="adm-input" placeholder="e.g. Elden Ring"
+                      value={promoForm.title}
+                      onChange={e => setPromoForm({ ...promoForm, title: e.target.value })} />
+                  </div>
+                  <div className="field-group">
+                    <label>Caption</label>
+                    <input className="adm-input" placeholder="e.g. This week's best seller"
+                      value={promoForm.caption}
+                      onChange={e => setPromoForm({ ...promoForm, caption: e.target.value })} />
+                  </div>
+                  <div className="field-group">
+                    <label>CTA label</label>
+                    <input className="adm-input" placeholder="e.g. Shop This Game"
+                      value={promoForm.cta_label}
+                      onChange={e => setPromoForm({ ...promoForm, cta_label: e.target.value })} />
+                  </div>
+                  <div className="field-group">
+                    <label>Linked product *</label>
+                    <CustomSelect
+                      value={promoForm.product_sku}
+                      placeholder="Select a product..."
+                      options={products.map(p => ({ value: p.sku, label: `${p.name} — ${p.price}` }))}
+                      onChange={val => setPromoForm({ ...promoForm, product_sku: val })}
+                    />
+                  </div>
+                </div>
+
+                <div className="adm-images">
+                  <label className="adm-label">Promo Video * (max 25 MB)</label>
+                  <div className="adm-dropzone">
+                    <input type="file" accept="video/*" id="promo-vid-input" className="adm-hidden"
+                      onChange={e => onSelectPromoVideo(e.target.files[0])} />
+                    <label htmlFor="promo-vid-input" className="adm-dropzone-label">🎬 Tap to select video</label>
+                    {promoVideoFile && <p className="adm-dropzone-ready">✓ {promoVideoFile.name}</p>}
+                    {editingPromo?.video_url && !promoVideoFile && <p className="adm-dropzone-ready">✓ current video kept</p>}
+                  </div>
+                  {promoVideoMsg && (
+                    <p style={{ color: promoVideoMsg.level === 'block' ? '#e63946' : '#d9a400', marginTop: 6 }}>
+                      {promoVideoMsg.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="adm-images">
+                  <label className="adm-label">Poster image * (shown on mobile data — max 1 MB)</label>
+                  <div className="adm-dropzone">
+                    <input type="file" accept="image/*" id="promo-poster-input" className="adm-hidden"
+                      onChange={e => onSelectPromoPoster(e.target.files[0])} />
+                    <label htmlFor="promo-poster-input" className="adm-dropzone-label">📷 Tap to select poster</label>
+                    {promoPosterFile && <p className="adm-dropzone-ready">✓ {promoPosterFile.name}</p>}
+                  </div>
+                  {promoPosterMsg && (
+                    <p style={{ color: promoPosterMsg.level === 'block' ? '#e63946' : '#d9a400', marginTop: 6 }}>
+                      {promoPosterMsg.message}
+                    </p>
+                  )}
+                  {editingPromo?.poster_url && !promoPosterFile && (
+                    <img src={editingPromo.poster_url} alt="" className="adm-hero-preview" />
+                  )}
+                </div>
+
+                <div className="btn-row">
+                  <button onClick={handleSavePromo} disabled={savingPromo}
+                    className="adm-primary-btn adm-save-btn" style={{ opacity: savingPromo ? 0.7 : 1 }}>
+                    {savingPromo ? '💾 Saving...' : (editingPromo ? '✅ Update Promo' : '✅ Save Promo')}
+                  </button>
+                  <button onClick={resetPromoForm} className="adm-cancel-btn">Cancel</button>
+                </div>
+              </div>
+            )}
+
+            {promos.length === 0 ? (
+              <div className="adm-empty">
+                <div className="adm-empty-icon">🎬</div>
+                <p>No promos yet. Add one and activate it to replace the hero.</p>
+                <p className="adm-empty-sub">When none is active, the hero shows the slide carousel.</p>
+              </div>
+            ) : (
+              promos.map(promo => (
+                <div key={promo.id} className="p-row">
+                  <div className="p-row-info">
+                    {promo.poster_url && <img src={promo.poster_url} alt="" className="adm-hero-thumb" />}
+                    <div>
+                      <div className="adm-hero-title">
+                        {promo.title} {promo.is_active && <span className="adm-teal">● ACTIVE</span>}
+                      </div>
+                      <div className="adm-hero-sub">{promo.caption}</div>
+                      <div className="adm-hero-price">Linked: {promo.product_sku || '—'}</div>
+                    </div>
+                  </div>
+                  <div className="p-row-actions">
+                    <button onClick={() => handleToggleActive(promo)} className="adm-edit-btn">
+                      {promo.is_active ? '⏸️ Deactivate' : '▶️ Activate'}
+                    </button>
+                    <button onClick={() => handleEditPromo(promo)} className="adm-edit-btn">✏️ Edit</button>
+                    <button onClick={() => handleDeletePromo(promo)} className="adm-delete-btn">🗑️</button>
+                  </div>
                 </div>
               ))
             )}
