@@ -1,0 +1,56 @@
+# Known Security Debt
+
+> Recorded 2026-06-13, during the hero-promo-video feature. `CLAUDE.md` carries a
+> short version of this note locally (it is gitignored); this file is the
+> version-controlled record.
+
+## Anon key permits public read/write to ALL tables and buckets
+
+The Supabase URL and **anon key are committed and shipped in the public bundle**
+(`src/supabase.js`). Combined with the current RLS policies — `SELECT` /
+`INSERT` / `UPDATE` / `DELETE` open to the `anon` role with `USING (true)` /
+`WITH CHECK (true)` on `products`, `hero_slides`, `promo_video`, etc., and
+equivalently open write policies on the `product-images`, `hero-images`, and
+`promo-videos` storage buckets — **anyone with the public bundle can read and
+write all data and upload to all buckets.**
+
+The `/admin` login is **UI-only**: it reads plaintext credentials from the
+`admin_users` table and gates the admin *interface* in React state. It grants no
+extra database privilege and stops nobody from calling Supabase directly with
+the anon key.
+
+## Why new surfaces match the open gating (rather than tightening one)
+
+New surfaces (e.g. the hero-promo-video feature) deliberately **match this
+existing open gating** rather than tightening a single table/bucket in
+isolation, because:
+
+1. **Partial tightening is false security** — locking `promo_video` /
+   `promo-videos` while `products`, `hero_slides`, and the other buckets stay
+   open just sends an attacker to the still-open surfaces.
+2. **Requiring the `authenticated` role would break the feature** — the admin
+   panel is not a real Supabase Auth session; uploads run with the **anon** role
+   via the committed key. An `authenticated`-only write policy would block the
+   admin's own uploads.
+
+### Bucket-level guards that do NOT need auth (used where they help)
+
+These shrink the open-upload surface without expanding scope into the auth fix:
+
+- `promo-videos`: `file_size_limit` ≥ 25 MB (matches the app-level cap), and
+  `allowed_mime_types` restricted to video/image types only.
+
+## Next work item
+
+**A dedicated auth pass is the next work item after the hero-promo-video feature
+ships.** Scope:
+
+- Move admin auth to **Supabase Auth** (or a server-side **RPC / Edge Function**
+  that verifies credentials without exposing `admin_users` to the anon role).
+- Lock down RLS so the DB is not publicly writable: restrict `INSERT` / `UPDATE`
+  / `DELETE` (and sensitive `SELECT`s) to an authenticated admin role across all
+  tables and storage buckets.
+- Lock `admin_users` so it is not client-readable.
+
+Until that lands, **do not build new protected surfaces assuming the database is
+private.**
