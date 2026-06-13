@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import PromoHero from './PromoHero';
+import { readCachedPromo, writeCachedPromo } from '../lib/promoCache';
 
 const defaultSlides = [
   {
@@ -38,7 +39,8 @@ function displayPrice(raw) {
 
 export default function Hero() {
   const [active, setActive] = useState(0);
-  const [promo, setPromo] = useState(null);
+  const [promo, setPromo] = useState(() => readCachedPromo());
+  const initialHadPromoRef = useRef(promo != null);
   const [promoChecked, setPromoChecked] = useState(false);
   const [slides, setSlides] = useState(defaultSlides);
   // D6 lazy discipline: an image mounts only once its slide index is "warmed".
@@ -99,6 +101,7 @@ export default function Hero() {
         .limit(1)
         .maybeSingle();
       setPromo(data || null);
+      writeCachedPromo(data || null);
       setPromoChecked(true);
     };
     fetchPromo();
@@ -129,9 +132,11 @@ export default function Hero() {
   const activeIdx = active < slides.length ? active : 0;
   const slide = slides[activeIdx];
 
-  // Active promo replaces the hero entirely; otherwise fall through to the carousel.
-  if (promoChecked && promo) {
-    return <PromoHero promo={promo} />;
+  // Carousel-first by default; if a promo is known (cache or fetch) render it.
+  // Crossfade only when we swapped in AFTER the carousel was shown (cold cache).
+  if (promo) {
+    const swappedIn = promoChecked && !initialHadPromoRef.current;
+    return <PromoHero promo={promo} fadeIn={swappedIn} />;
   }
 
   return (

@@ -3,13 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import useAutoplayAllowed from '../hooks/useAutoplayAllowed';
 import { useProducts } from '../hooks/useProducts';
 
-export default function PromoHero({ promo }) {
+export default function PromoHero({ promo, fadeIn = false }) {
   const navigate = useNavigate();
   const { products } = useProducts();
   const mode = useAutoplayAllowed();          // 'autoplay' | 'poster'
   const videoRef = useRef(null);
   const [userStarted, setUserStarted] = useState(false);
   const [autoplayFailed, setAutoplayFailed] = useState(false);
+  const [shown, setShown] = useState(!fadeIn);
+  useEffect(() => {
+    if (!fadeIn) return;
+    const id = requestAnimationFrame(() => setShown(true));
+    return () => cancelAnimationFrame(id);
+  }, [fadeIn]);
 
   const linkedProduct = products.find((p) => p.sku === promo.product_sku);
   const poster = promo.poster_url || linkedProduct?.img || null;
@@ -51,7 +57,7 @@ export default function PromoHero({ promo }) {
   };
 
   return (
-    <section className="relative overflow-hidden bg-ink-950 font-sans">
+    <section className={`relative overflow-hidden bg-ink-950 font-sans${fadeIn ? ` transition-opacity duration-500 motion-reduce:transition-none ${shown ? 'opacity-100' : 'opacity-0'}` : ''}`}>
       <div aria-hidden="true" className="absolute -top-24 -right-16 w-96 h-96 bg-glow-teal" />
       <div aria-hidden="true" className="absolute -bottom-32 -left-24 w-96 h-96 bg-glow-teal opacity-60" />
 

@@ -66,3 +66,11 @@ test('CTA navigates to the linked product page', () => {
   fireEvent.click(screen.getByRole('button', { name: /shop this game/i }));
   expect(mockNavigate).toHaveBeenCalledWith('/product/WA0091');
 });
+
+test('fadeIn: starts at opacity-0 then transitions to opacity-100', async () => {
+  useAutoplayAllowed.mockReturnValue('poster');
+  const { container } = render(<MemoryRouter><PromoHero promo={promo} fadeIn /></MemoryRouter>);
+  const section = container.querySelector('section');
+  expect(section.className).toMatch(/opacity-0/);
+  await waitFor(() => expect(section.className).toMatch(/opacity-100/));
+});
