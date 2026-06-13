@@ -21,6 +21,11 @@ describe('validateVideoFile', () => {
   test('blocks when no file', () => {
     expect(validateVideoFile(null).ok).toBe(false);
   });
+  test('allows exactly 25 MB (strict >) as warn', () => {
+    const r = validateVideoFile(fileOf(25 * MB));
+    expect(r.ok).toBe(true);
+    expect(r.level).toBe('warn');
+  });
 });
 
 describe('validatePosterFile', () => {
@@ -37,5 +42,13 @@ describe('validatePosterFile', () => {
   });
   test('ok below 500 KB', () => {
     expect(validatePosterFile(fileOf(0.3 * MB))).toEqual({ ok: true, level: 'ok', message: '' });
+  });
+  test('allows exactly 1 MB (strict >) as warn', () => {
+    const r = validatePosterFile(fileOf(1 * MB));
+    expect(r.ok).toBe(true);
+    expect(r.level).toBe('warn');
+  });
+  test('blocks when no file', () => {
+    expect(validatePosterFile(null).ok).toBe(false);
   });
 });

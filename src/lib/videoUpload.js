@@ -7,7 +7,8 @@ const LIMITS = {
   poster: { warn: 0.5 * MB, block: 1 * MB, noun: 'Poster', max: '1 MB',  warnAt: '500 KB' },
 };
 
-const fmt = (bytes) => `${(bytes / MB).toFixed(1)} MB`;
+const fmt = (bytes) =>
+  bytes >= 2 * MB ? `${(bytes / MB).toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
 
 function validate(file, kind) {
   const L = LIMITS[kind];
