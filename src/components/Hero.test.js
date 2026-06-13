@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock PromoHero so we only assert which branch renders.
@@ -37,6 +37,7 @@ test('no active promo -> renders the carousel, not PromoHero', async () => {
   await waitFor(() => expect(screen.queryByTestId('promo-hero')).toBeNull());
   // Carousel hallmark: the NN / NN slide counter exists.
   expect(screen.getByText('/', { exact: false })).toBeInTheDocument();
+  await act(async () => {}); // flush pending fetch state to silence act() warnings
 });
 
 test('no cache + active promo -> swaps in PromoHero with fade', async () => {
@@ -44,9 +45,10 @@ test('no cache + active promo -> swaps in PromoHero with fade', async () => {
   render(<MemoryRouter><Hero /></MemoryRouter>);
   const el = await screen.findByTestId('promo-hero');
   expect(el.getAttribute('data-fadein')).toBe('true');
+  await act(async () => {}); // flush pending fetch state to silence act() warnings
 });
 
-test('cached promo -> renders PromoHero on first paint, no fade', () => {
+test('cached promo -> renders PromoHero on first paint, no fade', async () => {
   const cached = { id: 'c', title: 'Cached', video_url: '/v.mp4', poster_url: '/p.jpg', product_sku: 'S1' };
   localStorage.setItem('optimus-promo', JSON.stringify(cached));
   results.promo_video = { data: cached };
@@ -54,4 +56,5 @@ test('cached promo -> renders PromoHero on first paint, no fade', () => {
   const el = screen.getByTestId('promo-hero'); // present synchronously on first render
   expect(el).toBeInTheDocument();
   expect(el.getAttribute('data-fadein')).toBe('false');
+  await act(async () => {}); // flush pending fetch state to silence act() warnings
 });

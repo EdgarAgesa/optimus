@@ -13,8 +13,13 @@ export default function PromoHero({ promo, fadeIn = false }) {
   const [shown, setShown] = useState(!fadeIn);
   useEffect(() => {
     if (!fadeIn) return;
-    const id = requestAnimationFrame(() => setShown(true));
-    return () => cancelAnimationFrame(id);
+    // Two frames: guarantees the opacity-0 frame is composited before flipping
+    // to opacity-100, so the transition actually runs (matters on slow devices).
+    let id2;
+    const id1 = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => setShown(true));
+    });
+    return () => { cancelAnimationFrame(id1); if (id2) cancelAnimationFrame(id2); };
   }, [fadeIn]);
 
   const linkedProduct = products.find((p) => p.sku === promo.product_sku);

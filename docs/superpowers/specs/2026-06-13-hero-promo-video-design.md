@@ -73,6 +73,15 @@ blocking paint or reserving height:
    that taxes 100% of loads (regressing the documented headline-as-LCP work) to
    fix a flash that only affects promo-active weeks.
 
+**Known limitation (accepted).** The crossfade covers the *forward* swap only.
+If a returning visitor has a cached promo that has since been **deactivated**,
+`Hero` renders `PromoHero` on first paint (from cache) and then, when the fetch
+returns null, reverts to the carousel **without** a fade-out (a brief reverse
+flash). This is narrow (only when a campaign ends between a cached visitor's
+visits), self-heals on the next load (the cache is cleared on revalidation), and
+building a fade-out machine for it isn't worth the complexity. Accepted, not
+fixed.
+
 **Styling split (per CLAUDE.md):** `PromoHero` is **Tailwind** (matches the
 redesign-converted `Hero.js` — brand tokens `teal-500`, `ink-950`, `fg-hi`,
 `bg-glow-teal`, Inter, `motion-reduce:`). The admin tab is **CSS** — reuses
