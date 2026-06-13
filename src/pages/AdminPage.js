@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import { validateVideoFile, validatePosterFile } from '../lib/videoUpload';
 import { deleteFromBucket } from '../lib/storage';
+import { handleFileDrop } from '../lib/fileDrop';
 import '../styles/AdminPage.css';
 
 const CATEGORY_DATA = {
@@ -131,6 +132,8 @@ export default function AdminPage() {
   const [savingPromo, setSavingPromo] = useState(false);
   const promoVidInputRef = useRef(null);
   const promoPosterInputRef = useRef(null);
+  const [videoDragOver, setVideoDragOver] = useState(false);
+  const [posterDragOver, setPosterDragOver] = useState(false);
 
   // Auto-refresh on tab switch
   useEffect(() => {
@@ -1239,11 +1242,15 @@ export default function AdminPage() {
 
                 <div className="adm-images">
                   <label className="adm-label">Promo Video * (max 25 MB)</label>
-                  <div className="adm-dropzone">
+                  <div className="adm-dropzone"
+                    onDragOver={e => { e.preventDefault(); setVideoDragOver(true); }}
+                    onDragLeave={() => setVideoDragOver(false)}
+                    onDrop={e => { setVideoDragOver(false); handleFileDrop(e, onSelectPromoVideo); }}
+                    style={videoDragOver ? { borderColor: '#00bcd4', background: 'rgba(0,188,212,0.08)' } : undefined}>
                     <input type="file" accept="video/*" id="promo-vid-input" className="adm-hidden"
                       ref={promoVidInputRef}
                       onChange={e => onSelectPromoVideo(e.target.files[0])} />
-                    <label htmlFor="promo-vid-input" className="adm-dropzone-label">🎬 Tap to select video</label>
+                    <label htmlFor="promo-vid-input" className="adm-dropzone-label">🎬 Tap to select or drop a video</label>
                     {promoVideoFile && <p className="adm-dropzone-ready">✓ {promoVideoFile.name}</p>}
                     {editingPromo?.video_url && !promoVideoFile && <p className="adm-dropzone-ready">✓ current video kept</p>}
                   </div>
@@ -1256,11 +1263,15 @@ export default function AdminPage() {
 
                 <div className="adm-images">
                   <label className="adm-label">Poster image * (shown on mobile data — max 1 MB)</label>
-                  <div className="adm-dropzone">
+                  <div className="adm-dropzone"
+                    onDragOver={e => { e.preventDefault(); setPosterDragOver(true); }}
+                    onDragLeave={() => setPosterDragOver(false)}
+                    onDrop={e => { setPosterDragOver(false); handleFileDrop(e, onSelectPromoPoster); }}
+                    style={posterDragOver ? { borderColor: '#00bcd4', background: 'rgba(0,188,212,0.08)' } : undefined}>
                     <input type="file" accept="image/*" id="promo-poster-input" className="adm-hidden"
                       ref={promoPosterInputRef}
                       onChange={e => onSelectPromoPoster(e.target.files[0])} />
-                    <label htmlFor="promo-poster-input" className="adm-dropzone-label">📷 Tap to select poster</label>
+                    <label htmlFor="promo-poster-input" className="adm-dropzone-label">📷 Tap to select or drop a poster</label>
                     {promoPosterFile && <p className="adm-dropzone-ready">✓ {promoPosterFile.name}</p>}
                   </div>
                   {promoPosterMsg && (
