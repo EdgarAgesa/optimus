@@ -71,10 +71,6 @@ module.exports = {
     extend: {
       backgroundImage: {
         'glow-teal': 'radial-gradient(circle, rgba(0,188,212,0.35) 0%, rgba(0,188,212,0) 70%)',
-        // PromoHero local text scrim — a soft, feathered dark backing sized to the copy
-        // (not a full-width band). Floats the title/caption/CTA for WCAG contrast over ANY
-        // upload (bright or dark) while letting the rest of the media show through.
-        'scrim-text': 'radial-gradient(120% 125% at 50% 50%, rgba(6,22,27,0.92) 0%, rgba(6,22,27,0.82) 48%, rgba(6,22,27,0.60) 72%, rgba(6,22,27,0) 90%)',
         'grad-gaming': 'linear-gradient(160deg, #00bcd4 0%, #0097a7 55%, #0d2b33 100%)',
         'grad-audio': 'linear-gradient(160deg, #007a8a 0%, #06161b 100%)',
         'grad-deals': 'linear-gradient(160deg, #e63946 0%, #8f1d27 100%)',

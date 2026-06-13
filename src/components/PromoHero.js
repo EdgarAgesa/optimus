@@ -63,53 +63,63 @@ export default function PromoHero({ promo, fadeIn = false }) {
 
   return (
     <section className={`relative overflow-hidden bg-ink-950 font-sans${fadeIn ? ` transition-opacity duration-500 motion-reduce:transition-none ${shown ? 'opacity-100' : 'opacity-0'}` : ''}`}>
-      {/* Full-bleed media — video on capable connections, still poster otherwise. Edge to edge, cover. */}
-      <div className="absolute inset-0 bg-ink-800">
-        {showVideo ? (
-          <video
-            ref={videoRef}
-            src={promo.video_url}
-            poster={poster || undefined}
-            muted
-            loop
-            playsInline
-            preload="none"
-            className="w-full h-full object-cover"
-          />
-        ) : poster ? (
-          <img src={poster} alt="" aria-hidden="true" className="w-full h-full object-cover" />
-        ) : (
-          <div aria-hidden="true" className="w-full h-full flex items-center justify-center text-display">🎮</div>
-        )}
-      </div>
+      {/* Atmosphere — glow layers (brand anti-flat treatment) */}
+      <div aria-hidden="true" className="absolute -top-24 -right-16 w-96 h-96 bg-glow-teal" />
+      <div aria-hidden="true" className="absolute -bottom-32 -left-24 w-96 h-96 bg-glow-teal opacity-60" />
 
-      {/* Content overlay — left-aligned, vertically centered. Same single <h1>, type scale, teal pill. */}
-      <div className="relative max-w-screen-xl mx-auto px-4 flex items-center min-h-[28rem] md:min-h-[34rem] py-16 md:py-24">
-        <div className="relative isolate max-w-xl">
-          {/* Local contrast scrim — a soft feathered backing sized to the text only (not a
-              full-width band), so the media shows through around it. Contrast comes from this
-              local backing, so it holds over bright AND dark uploads. */}
-          <div aria-hidden="true" className="absolute -inset-x-10 -inset-y-8 -z-10 bg-scrim-text" />
-          <span className="inline-flex items-center gap-2 border border-edge rounded-full px-4 py-1 text-label uppercase text-fg-mid">
-            <span className="w-2 h-2 rounded-full bg-teal-500" />
-            {caption}
-          </span>
-          <h1 className="text-display-xl text-fg-hi mt-6">{promo.title}</h1>
-          <div className="flex flex-wrap items-center gap-3 mt-8">
-            <button type="button" onClick={goToProduct}
-              className="bg-teal-500 active:bg-teal-600 text-ink-950 text-body font-medium border-0 rounded-full px-6 py-3 cursor-pointer min-h-11">
-              {ctaLabel} →
-            </button>
-            {!showVideo && (
-              <button
-                type="button"
-                onClick={handleManualPlay}
-                aria-label={`Watch the featured video for ${promo.title}`}
-                className="inline-flex items-center gap-2 bg-ink-900/80 active:bg-ink-700 text-fg-hi text-body border border-edge rounded-full px-6 py-3 cursor-pointer min-h-11">
-                <span aria-hidden="true">▶</span>
-                <span className="text-label uppercase">Watch the featured video</span>
+      <div className="relative max-w-screen-xl mx-auto px-4 pt-12 pb-16 md:pt-20 md:pb-24">
+        <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-12">
+          {/* Statement — beside the panel, on the dark section (no scrim needed for contrast).
+              Mobile: text below the panel (order-2); desktop: text on the left (order-1). */}
+          <div className="order-2 md:order-1 flex-1 min-w-0">
+            <span className="inline-flex items-center gap-2 border border-edge rounded-full px-4 py-1 text-label uppercase text-fg-mid">
+              <span className="w-2 h-2 rounded-full bg-teal-500" />
+              {caption}
+            </span>
+            <h1 className="text-display-xl text-fg-hi mt-6">{promo.title}</h1>
+            <div className="flex flex-wrap items-center gap-3 mt-8">
+              <button type="button" onClick={goToProduct}
+                className="bg-teal-500 active:bg-teal-600 text-ink-950 text-body font-medium border-0 rounded-full px-6 py-3 cursor-pointer min-h-11">
+                {ctaLabel} →
               </button>
-            )}
+            </div>
+          </div>
+
+          {/* Featured media panel — large, contained 16:9. object-contain so the WHOLE frame
+              shows (centered 16:9 gameplay is never cropped); letterboxes odd ratios instead.
+              Mobile: panel on top (order-1) to lead with the promo; desktop: panel on the right. */}
+          <div className="order-1 md:order-2 w-full md:w-7/12 shrink-0">
+            <div className="relative aspect-video bg-ink-800 border border-edge rounded-xl shadow-glow-featured overflow-hidden">
+              {showVideo ? (
+                <video
+                  ref={videoRef}
+                  src={promo.video_url}
+                  poster={poster || undefined}
+                  muted
+                  loop
+                  playsInline
+                  preload="none"
+                  className="absolute inset-0 w-full h-full object-contain"
+                />
+              ) : (
+                <>
+                  {poster ? (
+                    <img src={poster} alt="" aria-hidden="true"
+                      className="absolute inset-0 w-full h-full object-contain" />
+                  ) : (
+                    <div aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-display">🎮</div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleManualPlay}
+                    aria-label={`Watch the featured video for ${promo.title}`}
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink-950/40 text-fg-hi cursor-pointer border-0">
+                    <span className="text-display" aria-hidden="true">▶</span>
+                    <span className="text-label uppercase">Watch the featured video</span>
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
