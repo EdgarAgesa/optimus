@@ -83,16 +83,13 @@ export default function PromoHero({ promo, fadeIn = false }) {
         )}
       </div>
 
-      {/* Contrast scrim — guarantees readable text over ANY uploaded media regardless of how
-          bright it is (not relying on the video being dark). Strong left anchor; on desktop the
-          right fades to transparent so the autoplaying video stays vivid. On mobile the media is
-          the still poster, so a heavier fade is fine and keeps text readable at narrow widths. */}
-      <div aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-r from-ink-950 via-ink-950/80 to-ink-950/40 md:via-ink-950/65 md:to-transparent" />
-
       {/* Content overlay — left-aligned, vertically centered. Same single <h1>, type scale, teal pill. */}
       <div className="relative max-w-screen-xl mx-auto px-4 flex items-center min-h-[28rem] md:min-h-[34rem] py-16 md:py-24">
-        <div className="max-w-xl">
+        <div className="relative isolate max-w-xl">
+          {/* Local contrast scrim — a soft feathered backing sized to the text only (not a
+              full-width band), so the media shows through around it. Contrast comes from this
+              local backing, so it holds over bright AND dark uploads. */}
+          <div aria-hidden="true" className="absolute -inset-x-10 -inset-y-8 -z-10 bg-scrim-text" />
           <span className="inline-flex items-center gap-2 border border-edge rounded-full px-4 py-1 text-label uppercase text-fg-mid">
             <span className="w-2 h-2 rounded-full bg-teal-500" />
             {caption}
