@@ -26,11 +26,12 @@ export default function useAutoplayAllowed() {
   useEffect(() => {
     const update = () => setMode(decideAutoplay());
     update(); // re-decide after mount/hydration
-    const conn = navigator.connection;
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (conn && conn.addEventListener) {
       conn.addEventListener('change', update);
       return () => conn.removeEventListener('change', update);
     }
+    return undefined; // no connection API: nothing to clean up
   }, []);
   return mode;
 }

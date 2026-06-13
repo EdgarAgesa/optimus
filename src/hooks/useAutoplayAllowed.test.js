@@ -52,4 +52,14 @@ describe('decideAutoplay', () => {
     setConnection(undefined);
     expect(decideAutoplay()).toBe('poster');
   });
+  test('connection present, unknown effectiveType, desktop -> autoplay (fall-through)', () => {
+    mockMatchMedia({ [DESKTOP]: true });
+    setConnection({ effectiveType: 'unknown', saveData: false });
+    expect(decideAutoplay()).toBe('autoplay');
+  });
+  test('connection present, unknown effectiveType, narrow -> poster (fall-through)', () => {
+    mockMatchMedia({ [DESKTOP]: false });
+    setConnection({ effectiveType: 'unknown', saveData: false });
+    expect(decideAutoplay()).toBe('poster');
+  });
 });
