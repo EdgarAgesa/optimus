@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import { validateVideoFile, validatePosterFile } from '../lib/videoUpload';
@@ -129,6 +129,8 @@ export default function AdminPage() {
   const [promoVideoMsg, setPromoVideoMsg] = useState(null);   // { level, message } | null
   const [promoPosterMsg, setPromoPosterMsg] = useState(null);
   const [savingPromo, setSavingPromo] = useState(false);
+  const promoVidInputRef = useRef(null);
+  const promoPosterInputRef = useRef(null);
 
   // Auto-refresh on tab switch
   useEffect(() => {
@@ -382,14 +384,14 @@ export default function AdminPage() {
 
   const onSelectPromoVideo = (file) => {
     const res = validateVideoFile(file);
-    if (!res.ok) { setPromoVideoFile(null); setPromoVideoMsg(res); return; }
+    if (!res.ok) { setPromoVideoFile(null); setPromoVideoMsg(res); if (promoVidInputRef.current) promoVidInputRef.current.value = ''; return; }
     setPromoVideoFile(file);
     setPromoVideoMsg(res.level === 'warn' ? res : null);
   };
 
   const onSelectPromoPoster = (file) => {
     const res = validatePosterFile(file);
-    if (!res.ok) { setPromoPosterFile(null); setPromoPosterMsg(res); return; }
+    if (!res.ok) { setPromoPosterFile(null); setPromoPosterMsg(res); if (promoPosterInputRef.current) promoPosterInputRef.current.value = ''; return; }
     setPromoPosterFile(file);
     setPromoPosterMsg(res.level === 'warn' ? res : null);
   };
@@ -400,9 +402,9 @@ export default function AdminPage() {
     if (!promoVideoFile && !editingPromo?.video_url) { alert('A video is required'); return; }
     if (!promoPosterFile && !editingPromo?.poster_url) { alert('A poster image is required'); return; }
     setSavingPromo(true);
+    let video_url = editingPromo?.video_url || '';
+    let poster_url = editingPromo?.poster_url || '';
     try {
-      let video_url = editingPromo?.video_url || '';
-      let poster_url = editingPromo?.poster_url || '';
       if (promoVideoFile) {
         if (editingPromo?.video_url) await deleteFromBucket(editingPromo.video_url, 'promo-videos'); // best-effort replace cleanup
         video_url = await uploadImage(promoVideoFile, 'promo-videos');
@@ -426,6 +428,9 @@ export default function AdminPage() {
       resetPromoForm();
       loadPromos();
     } catch (err) {
+      // A later step failed after an upload — delete any freshly-uploaded files so they don't orphan.
+      if (promoVideoFile && video_url && video_url !== editingPromo?.video_url) await deleteFromBucket(video_url, 'promo-videos');
+      if (promoPosterFile && poster_url && poster_url !== editingPromo?.poster_url) await deleteFromBucket(poster_url, 'promo-videos');
       alert('Error saving promo: ' + err.message);
     }
     setSavingPromo(false);
@@ -443,11 +448,28 @@ export default function AdminPage() {
     window.scrollTo(0, 0);
   };
 
-  // Single active at a time: deactivate all others, then toggle this one.
+  // Single active at a time: directional logic, error handling, double-fire guard.
   const handleToggleActive = async (promo) => {
-    await supabase.from('promo_video').update({ is_active: false }).neq('id', promo.id);
-    await supabase.from('promo_video').update({ is_active: !promo.is_active }).eq('id', promo.id);
-    loadPromos();
+    setSavingPromo(true);
+    try {
+      if (promo.is_active) {
+        // Deactivate just this one (single atomic write).
+        const { error } = await supabase.from('promo_video').update({ is_active: false }).eq('id', promo.id);
+        if (error) throw error;
+      } else {
+        // Activate this one; deactivate all others first (single-active invariant).
+        const { error: e1 } = await supabase.from('promo_video').update({ is_active: false }).neq('id', promo.id);
+        if (e1) throw e1;
+        const { error: e2 } = await supabase.from('promo_video').update({ is_active: true }).eq('id', promo.id);
+        if (e2) throw e2;
+      }
+      loadPromos();
+    } catch (err) {
+      alert('Could not update active state — please refresh and try again.');
+      loadPromos(); // re-sync UI to the actual DB state
+    } finally {
+      setSavingPromo(false);
+    }
   };
 
   // Delete the row AND both files from the bucket; warn (don't block) on cleanup failure.
@@ -1219,6 +1241,7 @@ export default function AdminPage() {
                   <label className="adm-label">Promo Video * (max 25 MB)</label>
                   <div className="adm-dropzone">
                     <input type="file" accept="video/*" id="promo-vid-input" className="adm-hidden"
+                      ref={promoVidInputRef}
                       onChange={e => onSelectPromoVideo(e.target.files[0])} />
                     <label htmlFor="promo-vid-input" className="adm-dropzone-label">🎬 Tap to select video</label>
                     {promoVideoFile && <p className="adm-dropzone-ready">✓ {promoVideoFile.name}</p>}
@@ -1235,6 +1258,7 @@ export default function AdminPage() {
                   <label className="adm-label">Poster image * (shown on mobile data — max 1 MB)</label>
                   <div className="adm-dropzone">
                     <input type="file" accept="image/*" id="promo-poster-input" className="adm-hidden"
+                      ref={promoPosterInputRef}
                       onChange={e => onSelectPromoPoster(e.target.files[0])} />
                     <label htmlFor="promo-poster-input" className="adm-dropzone-label">📷 Tap to select poster</label>
                     {promoPosterFile && <p className="adm-dropzone-ready">✓ {promoPosterFile.name}</p>}
@@ -1279,7 +1303,7 @@ export default function AdminPage() {
                     </div>
                   </div>
                   <div className="p-row-actions">
-                    <button onClick={() => handleToggleActive(promo)} className="adm-edit-btn">
+                    <button onClick={() => handleToggleActive(promo)} disabled={savingPromo} className="adm-edit-btn">
                       {promo.is_active ? '⏸️ Deactivate' : '▶️ Activate'}
                     </button>
                     <button onClick={() => handleEditPromo(promo)} className="adm-edit-btn">✏️ Edit</button>
