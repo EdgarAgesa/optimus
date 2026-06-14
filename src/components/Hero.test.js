@@ -58,3 +58,30 @@ test('cached promo -> renders PromoHero on first paint, no fade', async () => {
   expect(el.getAttribute('data-fadein')).toBe('false');
   await act(async () => {}); // flush pending fetch state to silence act() warnings
 });
+
+const makeSlides = (n) =>
+  Array.from({ length: n }, (_, i) => ({
+    id: i + 1, title: `Hero ${i + 1}`, subtitle: 's', price: 'KSh 1',
+    category_slug: 'gaming', image: `/img${i + 1}.jpg`, sort_order: i + 1,
+  }));
+
+test('carousel renders one dot per slide for 5 slides', async () => {
+  results.hero_slides = { data: makeSlides(5) };
+  renderHero();
+  await waitFor(() =>
+    expect(screen.getAllByRole('button', { name: /^Slide \d/ }).length).toBe(5)
+  );
+  await act(async () => {});
+});
+
+test('lazy-warming: only the first two slide images mount initially with 5 slides', async () => {
+  results.hero_slides = { data: makeSlides(5) };
+  const { container } = renderHero();
+  await waitFor(() =>
+    expect(screen.getAllByRole('button', { name: /^Slide \d/ }).length).toBe(5)
+  );
+  // D6 lazy discipline: warmed starts {0,1}, so only 2 images are mounted up front
+  // even with 5 slides — the rest warm in as the carousel rotates.
+  expect(container.querySelectorAll('img').length).toBe(2);
+  await act(async () => {});
+});

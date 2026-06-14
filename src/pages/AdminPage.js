@@ -987,12 +987,12 @@ export default function AdminPage() {
           <div>
             <div className="section-header">
               <h2 className="adm-section-title">
-                Hero Slides ({heroSlides.length}/3)
+                Hero Slides ({heroSlides.length}/5)
               </h2>
               <div className="adm-header-actions">
                 <button onClick={loadHeroSlides} className="adm-refresh-btn">🔄 Refresh</button>
                 <button onClick={() => setShowHeroForm(true)} className="adm-primary-btn"
-                  disabled={heroSlides.length >= 3}>
+                  disabled={heroSlides.length >= 5}>
                   + Add Slide
                 </button>
               </div>
@@ -1046,6 +1046,8 @@ export default function AdminPage() {
                         { value: '1', label: '1st Slide' },
                         { value: '2', label: '2nd Slide' },
                         { value: '3', label: '3rd Slide' },
+                        { value: '4', label: '4th Slide' },
+                        { value: '5', label: '5th Slide' },
                       ]}
                       onChange={val => setHeroForm({ ...heroForm, sort_order: val })}
                     />
@@ -1099,7 +1101,7 @@ export default function AdminPage() {
             {heroSlides.length === 0 ? (
               <div className="adm-empty">
                 <div className="adm-empty-icon">🎯</div>
-                <p>No slides yet. Add up to 3 slides.</p>
+                <p>No slides yet. Add up to 5 slides.</p>
                 <p className="adm-empty-sub">
                   Default slides show when empty.
                 </p>
