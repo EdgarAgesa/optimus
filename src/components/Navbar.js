@@ -105,9 +105,11 @@ export default function Navbar({ onCartClick }) {
 
       {/* Main bar */}
       <div className="flex items-center gap-4 px-4 py-3 max-w-screen-xl mx-auto">
-        <button onClick={goHome} className="flex items-center gap-2 bg-transparent border-0 cursor-pointer p-0 shrink-0">
-          <img src="/images/logo.png" alt="Optimus Sphere Tech" className="h-10 w-10 object-contain" loading="lazy" decoding="async" />
-          <span className="flex flex-col items-start leading-none">
+        <button onClick={goHome} className="flex items-center gap-3 bg-transparent border-0 cursor-pointer p-0 shrink-0">
+          {/* Transparent icon sits directly on the ink-950 nav — no background box. */}
+          <img src="/images/optimus-icon.png" alt="Optimus Sphere Tech home" width="56" height="56" className="h-14 w-14 md:h-11 md:w-11 object-contain" loading="lazy" decoding="async" />
+          {/* Mobile: icon only — text hidden to keep the phone bar clean next to the hamburger. */}
+          <span className="hidden md:flex flex-col items-start leading-none">
             <span className="text-card-title text-fg-hi tracking-tight">OPTIMUS</span>
             <span className="text-micro text-fg-low uppercase">SPHERE TECH</span>
           </span>
@@ -223,8 +225,8 @@ export default function Navbar({ onCartClick }) {
       {/* Mobile menu */}
       <div ref={drawerRef} inert={!mobileOpen} className={`fixed top-0 right-0 h-full w-80 max-w-full bg-ink-950 border-l border-edge z-50 flex flex-col transition-transform duration-300 motion-reduce:transition-none md:hidden ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex items-center justify-between px-4 py-4 border-b border-edge">
-          <div className="flex items-center gap-2">
-            <img src="/images/logo.png" alt="Optimus Sphere Tech" className="h-9 w-9 object-contain" loading="lazy" decoding="async" />
+          <div className="flex items-center gap-3">
+            <img src="/images/optimus-icon.png" alt="Optimus Sphere Tech" width="36" height="36" className="h-9 w-9 object-contain" loading="lazy" decoding="async" />
             <span className="flex flex-col leading-none">
               <span className="text-card-title text-fg-hi">OPTIMUS</span>
               <span className="text-micro text-fg-low uppercase">SPHERE TECH</span>
