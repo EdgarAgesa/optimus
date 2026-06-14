@@ -18,12 +18,9 @@ export default function Footer() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-screen-xl mx-auto px-4 py-12">
         {/* Brand */}
         <div>
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 bg-transparent border-0 cursor-pointer p-0">
-            <img src="/images/logo.png" alt="Optimus Sphere Tech" loading="lazy" decoding="async" className="h-10 w-10 object-contain" />
-            <span className="flex flex-col items-start leading-none">
-              <span className="text-card-title text-fg-hi">OPTIMUS</span>
-              <span className="text-micro text-fg-low uppercase">SPHERE TECH</span>
-            </span>
+          <button onClick={() => navigate('/')} className="flex items-center bg-transparent border-0 cursor-pointer p-0">
+            {/* Full lockup (icon + wordmark) on the dark footer — transparent PNG, no box. */}
+            <img src="/images/optimus-logo-transparent.png" alt="Optimus Sphere Tech" width="256" height="165" className="w-64 max-w-full h-auto object-contain" loading="lazy" decoding="async" />
           </button>
           <p className="text-body text-fg-low mt-4">
             Nairobi's premier tech store for gaming, phones, laptops, audio & TVs. Only original products. No fakes.
