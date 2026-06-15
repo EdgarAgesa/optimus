@@ -9,7 +9,7 @@ import '../styles/AdminPage.css';
 const CATEGORY_DATA = {
   'Gaming Consoles': { parent: 'Gaming', brands: ['PS3', 'PS4', 'PS5', 'Xbox', 'Nintendo', 'Portable'] },
   'Games': { parent: 'Gaming', brands: ['PS4', 'PS5', 'Xbox', 'Nintendo'] },
-  'Gaming Accessories': { parent: 'Gaming', brands: ['PS4', 'PS5', 'Nintendo', 'Xbox', 'VR', 'Driving Wheel', 'Handheld'] },
+  'Gaming Accessories': { parent: 'Gaming', brands: ['PS4', 'PS5', 'Nintendo', 'Xbox', 'VR', 'Driving Wheel', 'Handheld', 'Headsets'] },
   'Smartphones': { parent: 'Phones', brands: ['Apple', 'Samsung', 'Google', 'Nothing', 'Redmi', 'Xiaomi'] },
   'Laptops': { parent: 'Laptops', brands: ['HP', 'Lenovo', 'Dell', 'Apple', 'Asus', 'Acer'] },
   'Headphones': { parent: 'Audio & Sound', brands: ['Sony', 'JBL', 'Beats', 'Soundcore', 'Bose'] },
