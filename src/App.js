@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
@@ -16,6 +17,7 @@ import Toast from './components/Toast';
 import SearchOverlay from './components/SearchOverlay';
 import ProductPage from './pages/ProductPage';
 import AdminPage from './pages/AdminPage';
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 
 
@@ -53,6 +55,8 @@ function AppContent() {
     </>
   );
 }
+
+
 
 function App() {
   return (
