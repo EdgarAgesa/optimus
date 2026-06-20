@@ -40,9 +40,12 @@ No app code ships in this phase; nothing in the live app changes. RLS stays open
   Authentication → Sign In / Providers → turn **off** "Allow new users to sign
   up". This guarantees the `authenticated` role can only ever be this one admin.
 
-- [ ] **Step 4: Enable leaked-password protection**
-  Authentication → Policies (Password security) → enable the HaveIBeenPwned
-  check. Confirm the default login attempt rate limits are active.
+- [ ] **Step 4: Choose a strong admin password; note leaked-password skip**
+  Leaked-password protection (HaveIBeenPwned) is **Pro-plan only** on Supabase and
+  this project is on the **free tier**, so it is **deliberately skipped** —
+  mitigated by manually setting a **strong, unique admin password** in Step 1.
+  (Recorded as an intentional tier constraint, like the Vercel/Edge/CAPTCHA calls,
+  not an oversight.) Confirm the default Supabase Auth login rate limits are active.
 
 - [ ] **Step 5: Hand the new email credentials to the client** (see callout above).
 
@@ -503,8 +506,9 @@ run it after Phase 1–2 are confirmed and the email login is proven).
 **Files:**
 - Modify: `docs/superpowers/security-debt.md`
 
-- [ ] **Step 1: Confirm Supabase built-ins** (Phase 0): leaked-password protection
-      on, login attempt rate limits active, signups disabled.
+- [ ] **Step 1: Confirm Supabase built-ins** (Phase 0): login attempt rate limits
+      active, signups disabled, strong admin password set. (Leaked-password
+      protection is Pro-only → deliberately skipped on free tier; record the reason.)
 
 - [ ] **Step 2: Mark the debt resolved** — append a "Resolved 2026-06-… by
       `feature/security-hardening`" note recording: admin moved to Supabase Auth;

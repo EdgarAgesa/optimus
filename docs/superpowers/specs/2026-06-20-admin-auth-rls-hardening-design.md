@@ -39,8 +39,8 @@ fast rollback exists for every DB change.
   promo feature's Phase 0) on `products`, `hero_slides`, `deals`, `promo_video`,
   and `storage.objects` for `product-images` / `hero-images` / `promo-videos`.
 - `DROP TABLE admin_users` + removal of the dead login query/state.
-- Supabase Auth dashboard config: one admin account, signups disabled,
-  leaked-password protection on, login rate limits tuned.
+- Supabase Auth dashboard config: one admin account, signups disabled, login
+  rate limits tuned (leaked-password protection is Pro-only → skipped, see §6).
 
 ### Out of scope (scope guard)
 - **Storefront read paths are untouched.** `useProducts.js`, `Hero.js`,
@@ -216,8 +216,11 @@ isn't re-litigated:
 - **What actually protects credentials (and is free):**
   - Supabase Auth's **built-in login rate limiting** (per-IP attempt throttling
     on `/auth/v1/token`) — already on; confirm/tune in the dashboard.
-  - **Leaked-password protection** (HaveIBeenPwned check) — enable in
-    Authentication → Policies.
+  - **Leaked-password protection** (HaveIBeenPwned check) — **Pro-plan only on
+    Supabase; this project is on the free tier, so it is deliberately SKIPPED**
+    (decided 2026-06-20). Mitigated by manually choosing a **strong, unique admin
+    password** at account creation. Recorded as an intentional tier constraint,
+    not an oversight — same as the Vercel/Edge and CAPTCHA decisions above.
   - **Signups disabled** — closes account creation as an attack vector.
   - **RLS itself** — once writes require auth, an attacker with the anon key can
     only do public reads (which are public by design). The blast radius of the
@@ -238,7 +241,8 @@ locked and Supabase Auth's built-ins are on. We use the built-ins and stop there
   password). Confirm it can sign in from the dashboard.
 - **Disable public signups** (Authentication → Providers / Sign-in settings →
   turn off "Allow new users to sign up"). This makes `authenticated` == admin.
-- **Enable leaked-password protection;** confirm login rate limits.
+- **Choose a strong, unique admin password** (leaked-password protection is
+  Pro-only → skipped on free tier, see §6); confirm login rate limits.
 - **Test:** none of this affects the live app yet (no code shipped, RLS still
   open). Storefront and current admin keep working.
 - **Rollback:** delete the test user; nothing in production changed.
@@ -294,7 +298,8 @@ locked and Supabase Auth's built-ins are on. We use the built-ins and stop there
   Phase 1–2 are confirmed; export rows first if any audit value is wanted).
 
 ### Phase 4 — Confirm rate-limiting posture (mostly dashboard verification)
-- Verify leaked-password protection + login rate limits are on (Phase 0).
+- Verify login rate limits are on and a strong admin password is set (Phase 0);
+  leaked-password protection is Pro-only and intentionally skipped (§6).
 - Record in `security-debt.md` that the debt is resolved and that Vercel/Edge
   rate limiting was assessed and intentionally skipped (§6).
 - No code; nothing to roll back.
