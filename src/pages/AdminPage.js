@@ -4,6 +4,7 @@ import { supabase } from '../supabase';
 import { validateVideoFile, validatePosterFile } from '../lib/videoUpload';
 import { deleteFromBucket } from '../lib/storage';
 import { handleFileDrop } from '../lib/fileDrop';
+import { useAdminAuth } from '../hooks/useAdminAuth';
 import '../styles/AdminPage.css';
 
 const CATEGORY_DATA = {
@@ -79,8 +80,12 @@ function CustomSelect({ value, onChange, options, placeholder = 'Select...' }) {
 
 export default function AdminPage() {
   const navigate = useNavigate();
-  const [authed, setAuthed] = useState(false);
-  const [username, setUsername] = useState('');
+  const { authed: sessionAuthed, login, logout } = useAdminAuth();
+  // TEMP fallback (Phase 1–2 only; removed in Phase 3) so a bug in the new
+  // login can never block UI access while RLS is still open.
+  const [fallbackAuthed, setFallbackAuthed] = useState(false);
+  const authed = sessionAuthed || fallbackAuthed;
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [activeTab, setActiveTab] = useState('products');
@@ -148,21 +153,28 @@ export default function AdminPage() {
   // ── Auth ──
   const handleLogin = async () => {
     setLoginError('');
-    const { data, error } = await supabase
+    const { error } = await login(email, password);
+    if (!error) return; // real session established; onAuthStateChange flips authed
+
+    // ── TEMPORARY fallback — REMOVE IN PHASE 3 (admin_users legacy login) ──
+    const { data } = await supabase
       .from('admin_users')
       .select('*')
-      .eq('username', username)
+      .eq('username', email)
       .eq('password', password)
       .single();
-    if (error || !data) {
-      setLoginError('Invalid username or password');
+    if (data) {
+      setFallbackAuthed(true);
       return;
     }
-    setAuthed(true);
-    loadProducts();
-    loadHeroSlides();
-    loadDeals();
-    loadPromos();
+    // ── end temporary fallback ──
+
+    setLoginError('Invalid email or password');
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    setFallbackAuthed(false);
   };
 
   // ── Load ──
@@ -517,9 +529,9 @@ export default function AdminPage() {
             <h2 className="adm-login-title">Admin Panel</h2>
             <p className="adm-login-sub">Optimus Sphere Tech</p>
           </div>
-          <label className="adm-label">Username</label>
-          <input className="adm-input" placeholder="admin"
-            value={username} onChange={e => setUsername(e.target.value)} />
+          <label className="adm-label">Email</label>
+          <input className="adm-input" type="email" placeholder="admin@optimus.co.ke"
+            value={email} onChange={e => setEmail(e.target.value)} />
           <label className="adm-label adm-label-mt">Password</label>
           <input type="password" className="adm-input" placeholder="••••••••"
             value={password} onChange={e => setPassword(e.target.value)}
@@ -552,7 +564,7 @@ export default function AdminPage() {
         </div>
         <div className="adm-topbar-right">
           <button onClick={() => navigate('/')} className="adm-topbar-btn">Store</button>
-          <button onClick={() => setAuthed(false)} className="adm-topbar-btn">Logout</button>
+          <button onClick={handleLogout} className="adm-topbar-btn">Logout</button>
         </div>
       </div>
 
