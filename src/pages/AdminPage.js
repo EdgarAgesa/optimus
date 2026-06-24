@@ -80,11 +80,7 @@ function CustomSelect({ value, onChange, options, placeholder = 'Select...' }) {
 
 export default function AdminPage() {
   const navigate = useNavigate();
-  const { authed: sessionAuthed, login, logout } = useAdminAuth();
-  // TEMP fallback (Phase 1–2 only; removed in Phase 3) so a bug in the new
-  // login can never block UI access while RLS is still open.
-  const [fallbackAuthed, setFallbackAuthed] = useState(false);
-  const authed = sessionAuthed || fallbackAuthed;
+  const { authed, login, logout } = useAdminAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -154,27 +150,12 @@ export default function AdminPage() {
   const handleLogin = async () => {
     setLoginError('');
     const { error } = await login(email, password);
-    if (!error) return; // real session established; onAuthStateChange flips authed
-
-    // ── TEMPORARY fallback — REMOVE IN PHASE 3 (admin_users legacy login) ──
-    const { data } = await supabase
-      .from('admin_users')
-      .select('*')
-      .eq('username', email)
-      .eq('password', password)
-      .single();
-    if (data) {
-      setFallbackAuthed(true);
-      return;
-    }
-    // ── end temporary fallback ──
-
-    setLoginError('Invalid email or password');
+    if (error) setLoginError('Invalid email or password');
+    // success: onAuthStateChange flips authed
   };
 
   const handleLogout = async () => {
     await logout();
-    setFallbackAuthed(false);
   };
 
   // ── Load ──
