@@ -12,6 +12,25 @@
 
 ---
 
+## Status (updated 2026-06-20)
+
+- ✅ **Phase 0** — Supabase Auth admin account created, signups disabled, strong
+  password set (leaked-password protection Pro-only → skipped, see spec §6).
+- ✅ **Phase 1** — email login (Supabase Auth → JWT) shipped via PR #6, **live in
+  production**. Verified on prod: email login works, admin CRUD + image upload
+  succeed.
+- ✅ **Phase 2** — RLS write-lock live in production. Verified: 7-surface incognito
+  storefront read intact, admin writes succeed with a session, anon writes blocked
+  at the DB.
+- ⏸️ **Phase 3 — ON HOLD.** Removing the temporary `admin_users` fallback +
+  `DROP TABLE admin_users` waits for **a few days of clean prod auth** before
+  cutover. The fallback only gates the UI and produces no JWT, so it cannot write
+  under the live RLS — safe to leave temporarily.
+- ⬜ **Phase 4** — pending (after Phase 3): mark `security-debt.md` resolved; record
+  rate-limiting decisions.
+
+---
+
 ## ⚠️ Client handoff (do not skip — surfaced per Edgar's instruction)
 
 **Login becomes email-keyed, not username.** Before the Phase 1 code reaches the
