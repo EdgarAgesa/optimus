@@ -3,6 +3,11 @@
 > Recorded 2026-06-13, during the hero-promo-video feature. `CLAUDE.md` carries a
 > short version of this note locally (it is gitignored); this file is the
 > version-controlled record.
+>
+> **STATUS: RESOLVED 2026-06-24** by `feature/security-hardening` (admin auth +
+> RLS hardening). The original debt described below is closed; see the
+> **[Resolution](#resolution-2026-06-24)** section at the end for what shipped.
+> The section below is retained as the historical record of the debt.
 
 ## Anon key permits public read/write to ALL tables and buckets
 
@@ -54,3 +59,35 @@ ships.** Scope:
 
 Until that lands, **do not build new protected surfaces assuming the database is
 private.**
+
+## Resolution (2026-06-24)
+
+The dedicated auth pass shipped via `feature/security-hardening`. The debt above
+is resolved:
+
+- **Admin moved to Supabase Auth.** `/admin` authenticates with email + password
+  through `supabase.auth.signInWithPassword` (the `useAdminAuth()` hook), which
+  carries a real JWT (`role: authenticated`) on every request. The old plaintext
+  `admin_users` username/password lookup is gone — UI access is now derived from
+  a real session, not React state.
+- **RLS writes locked to `authenticated`.** `INSERT` / `UPDATE` / `DELETE` on
+  `products`, `hero_slides`, `deals`, and `promo_video`, plus writes to the
+  `product-images`, `hero-images`, and `promo-videos` storage buckets, now require
+  the authenticated admin. **Public reads stay open** (`SELECT` to `public`) so
+  the anon-key storefront is unchanged — verified across all read surfaces with no
+  session. Anon writes are rejected at the database.
+- **`admin_users` dropped.** The temporary fallback login was removed in code
+  (commit `2ea40b1`); the table itself is dropped with
+  `DROP TABLE IF EXISTS public.admin_users;` as the final manual cutover step,
+  run in Supabase after the deployed build is verified. No application code
+  references it.
+- **Rate limiting — intentionally left to Supabase Auth built-ins.** Vercel/Edge
+  -level rate limiting was assessed and deliberately skipped: storefront and admin
+  traffic hits Supabase directly (bypassing Vercel), and all writes now require
+  the authenticated admin, so the realistic lever is Supabase Auth's built-in
+  login-attempt rate limits + disabled public signups. Leaked-password protection
+  (HaveIBeenPwned) is Pro-tier only and skipped on the free tier, mitigated by a
+  strong, unique admin password. (Consistent with the existing Vercel/Edge/CAPTCHA
+  tier-constraint decisions.)
+
+Plan: `docs/superpowers/plans/2026-06-20-admin-auth-rls-hardening.md`.
